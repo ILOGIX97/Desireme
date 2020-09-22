@@ -39,7 +39,9 @@ use Illuminate\Support\Facades\Route;
     Route::group([
         'middleware' => 'auth:api'
       ], function() {
-          Route::post('alluser', 'Api\V1\AuthController@alluser');
+          Route::post('alluser', 'Api\V1\UserController@alluser');
+          Route::post('getuser', 'Api\V1\UserController@getuser');
+          Route::post('updateuser/{id}', 'Api\V1\UserController@updateuser');
       });
 
   });

@@ -119,6 +119,8 @@ class AuthController extends Controller
             'Username' => 'required|string|unique:users|max:50',
             'Password' => 'min:6|required|string|required_with:ConfirmPassword|same:ConfirmPassword',
             'Category'=>'required|string',
+            'YearsOld' => 'required|integer|gt:0',
+            
         ]);
         if(isset($request->two_factor)){
             if($request->two_factor == 'Yes'){
@@ -129,10 +131,11 @@ class AuthController extends Controller
         }else{
             $twoFactor = 1;
         }
+        if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         $user =  new User([
     		'first_name' => $request->FirstName,
     		'last_name' => $request->LastName,
-    		'display_name' => $request->DisplayName,
+    		'display_name' => $dpName,
     		'username' => $request->Username,
     		'email' => $request->Email,
     		'password' => bcrypt($request->Password),
@@ -243,45 +246,7 @@ class AuthController extends Controller
 
     }
 
-    /**
-     * @OA\Post(
-     *          path="/api/v1/alluser",
-     *          operationId="Users",
-     *          tags={"Users"},
-     *      
-     *      summary="Get list of users",
-     *      description="Returns list of users",
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\MediaType(
-     *           mediaType="application/json",
-     *      )
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="not found"
-     *      ),
-     *      security={ {"passport": {}} },
-     *  )
-     */
-    public function alluser(Request $request){
-        //echo '<pre>'; print_r($request->request->all()); exit;
-        return response()->json(User::all());
-    	//return response()->json($request->user());
-    }
+    
 
 
 }
