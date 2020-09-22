@@ -248,7 +248,7 @@ class AuthController extends Controller
      *          path="/api/v1/alluser",
      *          operationId="Users",
      *          tags={"Users"},
-     *      },
+     *      
      *      summary="Get list of users",
      *      description="Returns list of users",
      *      @OA\Response(

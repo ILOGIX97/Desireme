@@ -172,7 +172,7 @@
                 ],
                 "summary": "Get list of users",
                 "description": "Returns list of users",
-                "operationId": "getUserList",
+                "operationId": "Users",
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -198,24 +198,6 @@
                         "passport": []
                     }
                 ]
-            }
-        }
-    },
-    "components": {
-        "securitySchemes": {
-            "passport": {
-                "type": "oauth2",
-                "description": "Laravel passport oauth2 security.",
-                "in": "header",
-                "scheme": "https",
-                "flows": {
-                    "password": {
-                        "authorizationUrl": "http://127.0.0.1:8000/oauth/authorize",
-                        "tokenUrl": "http://127.0.0.1:8000/oauth/token",
-                        "refreshUrl": "http://127.0.0.1:8000/token/refresh",
-                        "scopes": []
-                    }
-                }
             }
         }
     },
