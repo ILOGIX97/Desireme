@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendMailable;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Validator;
+
 
 
 class AuthController extends Controller
@@ -26,13 +29,13 @@ class AuthController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"FirstName","LastName","Email","Password","Category","AgreeTerms","YearsOld","ConfirmPassword","Username"},
+     *               required={"Forename","Surname","Email","Password","Category","AgreeTerms","YearsOld","ConfirmPassword","Username"},
      *               @OA\Property(
-     *                  property="FirstName",
+     *                  property="Forename",
      *                  type="string"
      *               ),
      *               @OA\Property(
-     *                  property="LastName",
+     *                  property="Surname",
      *                  type="string"
      *               ),
      *               @OA\Property(
@@ -63,6 +66,10 @@ class AuthController extends Controller
      *                  enum={"-" ,"Male", "Female", "Trans"}
      *               ),
      *               @OA\Property(
+     *                  property="PhoneNumber",
+     *                  type="string",
+     *               ),
+     *               @OA\Property(
      *                  property="TwoFactor",
      *                  type="string",
      *                  enum={"Yes", "No"}
@@ -76,7 +83,7 @@ class AuthController extends Controller
      *                  property="YearsOld",
      *                  type="string",
      *               ),
-     *               
+     *
      *           )
      *       ),
      *   ),
@@ -112,15 +119,23 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        
+        
+        if(isset($request->AgreeTerms)){
+            if($request->AgreeTerms == 'No'){
+                return response()->json(['error'=>'Please agree terms'], 422);
+            }
+        }
         $validator = $request->validate([
-            'FirstName' => 'required|string',
-            'LastName' => 'required|string',
+            'Forename' => 'required|string',
+            'Surname' => 'required|string',
             'Email' => 'required|string|email|unique:users',
             'Username' => 'required|string|unique:users|max:50',
             'Password' => 'min:6|required|string|required_with:ConfirmPassword|same:ConfirmPassword',
             'Category'=>'required|string',
-            'YearsOld' => 'required|integer|gt:0',
-            
+            'YearsOld' => 'required|integer|gte:18',
+            'PhoneNumber'=>'min:10'
+
         ]);
         if(isset($request->two_factor)){
             if($request->two_factor == 'Yes'){
@@ -133,18 +148,22 @@ class AuthController extends Controller
         }
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         $user =  new User([
-    		'first_name' => $request->FirstName,
-    		'last_name' => $request->LastName,
+    		'first_name' => $request->Forename,
+    		'last_name' => $request->Surname,
     		'display_name' => $dpName,
-    		'username' => $request->Username,
+            'username' => $request->Username,
+            'contact' => $request->PhoneNumber,
     		'email' => $request->Email,
     		'password' => bcrypt($request->Password),
     		'category' => $request->Category,
     		'year_old' => $request->YearsOld,
-    		'two_factor' => $twoFactor  
+    		'two_factor' => $twoFactor
     	]);
          // echo '<pre>';  print_r($user); exit;
     	 if($user->save()){
+            $data['name'] = $request->Forename.' '.$request->Surname;
+            
+            Mail::to($request->Email)->send(new SendMailable($data));
                 return response()->json([
                     'message' => 'Successfully created user!'
                 ], 201);
@@ -152,7 +171,7 @@ class AuthController extends Controller
                 return response()->json(['error'=>'Provide proper details']);
             }
     }
-    
+
     /**
      * @OA\Post(
      ** path="/api/v1/login",
@@ -213,14 +232,14 @@ class AuthController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function login(Request $request){
-    	
+
         //echo '<pre>'; print_r($request->request->all()); exit;
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
             'remember_me' => 'string'
         ]);
-        
+
         $credentials = request(['email', 'password']);
         //echo '<pre>'; print_r($credentials); exit;
         if(!Auth::attempt($credentials))
@@ -246,7 +265,7 @@ class AuthController extends Controller
 
     }
 
-    
+
 
 
 }

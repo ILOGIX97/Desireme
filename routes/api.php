@@ -40,8 +40,10 @@ use Illuminate\Support\Facades\Route;
         'middleware' => 'auth:api'
       ], function() {
           Route::post('alluser', 'Api\V1\UserController@alluser');
-          Route::post('getuser', 'Api\V1\UserController@getuser');
-          Route::post('updateuser/{id}', 'Api\V1\UserController@updateuser');
+          Route::post('getDetails', 'Api\V1\UserController@getDetails');
+          Route::post('verifyId/{id}', 'Api\V1\UserController@verifyId');
+          Route::post('varifyemail/{id}', 'Api\V1\UserController@varifyemail');
+          Route::post('updateProfile/{id}', 'Api\V1\UserController@updateProfile');
       });
 
   });

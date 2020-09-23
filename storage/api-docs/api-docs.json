@@ -25,8 +25,8 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "FirstName",
-                                    "LastName",
+                                    "Forename",
+                                    "Surname",
                                     "Email",
                                     "Password",
                                     "Category",
@@ -36,10 +36,10 @@
                                     "Username"
                                 ],
                                 "properties": {
-                                    "FirstName": {
+                                    "Forename": {
                                         "type": "string"
                                     },
-                                    "LastName": {
+                                    "Surname": {
                                         "type": "string"
                                     },
                                     "DisplayName": {
@@ -67,6 +67,9 @@
                                             "Female",
                                             "Trans"
                                         ]
+                                    },
+                                    "PhoneNumber": {
+                                        "type": "string"
                                     },
                                     "TwoFactor": {
                                         "type": "string",
@@ -208,7 +211,7 @@
                 ]
             }
         },
-        "/api/v1/getuser": {
+        "/api/v1/getDetails": {
             "post": {
                 "tags": [
                     "Users"
@@ -243,14 +246,14 @@
                 ]
             }
         },
-        "/api/v1/updateuser/{id}": {
+        "/api/v1/verifyId/{id}": {
             "post": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "update users",
+                "summary": "Update User Ids",
                 "description": "data of users",
-                "operationId": "Update User",
+                "operationId": "Update User Ids",
                 "parameters": [
                     {
                         "name": "id",
@@ -310,23 +313,133 @@
                     }
                 ]
             }
+        },
+        "/api/v1/varifyemail/{id}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Varify User",
+                "description": "data of users",
+                "operationId": "Varify User",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/updateProfile/{id}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "update users",
+                "description": "data of users",
+                "operationId": "Update User Profle",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "Profile Pic": {
+                                        "type": "file"
+                                    },
+                                    "Profile Video": {
+                                        "type": "file"
+                                    },
+                                    "Profile Banner": {
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
         }
     },
     "components": {
         "securitySchemes": {
             "passport": {
                 "type": "oauth2",
-                "description": "Laravel passport oauth2 security.",
+                "description": "Laravel passport oauth2 security",
                 "in": "header",
-                "scheme": "https",
                 "flows": {
                     "password": {
                         "authorizationUrl": "http://127.0.0.1:8000/oauth/authorize",
                         "tokenUrl": "http://127.0.0.1:8000/oauth/token",
-                        "refreshUrl": "http://127.0.0.1:8000/token/refresh",
-                        "scopes": []
+                        "refreshUrl": "http://127.0.0.1:8000/oauth/token/refresh",
+                        "scopes": {}
                     }
-                }
+                },
+                "scheme": "https"
             }
         }
     },

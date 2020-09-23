@@ -26,5 +26,22 @@ class Controller extends BaseController
      *
      *
      */
+     /**
+     * @OA\SecurityScheme(
+     *     type="oauth2",
+     *     description="Laravel passport oauth2 security",
+     *     name="Password Based",
+     *     in="header",
+     *     scheme="https",
+     *     securityScheme="passport",
+     *     @OA\Flow(
+     *         flow="password",
+     *         authorizationUrl="http://127.0.0.1:8000/oauth/authorize",
+     *         tokenUrl="http://127.0.0.1:8000/oauth/token",
+     *         refreshUrl="http://127.0.0.1:8000/oauth/token/refresh",
+     *         scopes={}
+     *     )
+     * )
+     */
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }

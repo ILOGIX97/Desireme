@@ -165,9 +165,9 @@ return [
             'scheme' => 'https',
             'flows' => [
                 "password" => [
-                    "authorizationUrl" => 'http://127.0.0.1:8000/oauth/authorize',
-                    "tokenUrl" => 'http://127.0.0.1:8000/oauth/token',
-                    "refreshUrl" => 'http://127.0.0.1:8000/token/refresh',
+                    "authorizationUrl" => env('APP_URL').'/oauth/authorize',
+                    "tokenUrl" => env('APP_URL').'/oauth/token',
+                    "refreshUrl" => env('APP_URL').'/token/refresh',
                     "scopes" => []
                 ],
             ],
