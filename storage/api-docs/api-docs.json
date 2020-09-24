@@ -381,15 +381,185 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
+                                "required": [
+                                    "ProfilePic",
+                                    "ProfileBanner"
+                                ],
                                 "properties": {
-                                    "Profile Pic": {
+                                    "ProfilePic": {
                                         "type": "file"
                                     },
-                                    "Profile Video": {
+                                    "ProfileVideo": {
                                         "type": "file"
                                     },
-                                    "Profile Banner": {
+                                    "ProfileBanner": {
                                         "type": "file"
+                                    },
+                                    "Location": {
+                                        "type": "string"
+                                    },
+                                    "SubscriptionPrice": {
+                                        "type": "string"
+                                    },
+                                    "TwitterURL": {
+                                        "type": "string"
+                                    },
+                                    "AmazonURL": {
+                                        "type": "string"
+                                    },
+                                    "Bio": {
+                                        "type": "string"
+                                    },
+                                    "Tags": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/deleteUser/{id}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete User",
+                "description": "delete user details",
+                "operationId": "Delete User",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/getCountries": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get Countries",
+                "description": "name of all countries",
+                "operationId": "Get country list",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/addPaymentDetails/{id}": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Add User Payment Details",
+                "description": "data of users account",
+                "operationId": "Add User Payment Details",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "Country": {
+                                        "type": "string"
+                                    },
+                                    "AccountName": {
+                                        "type": "string"
+                                    },
+                                    "SortCode": {
+                                        "type": "number"
+                                    },
+                                    "AccountNumber": {
+                                        "type": "number"
                                     }
                                 },
                                 "type": "object"
