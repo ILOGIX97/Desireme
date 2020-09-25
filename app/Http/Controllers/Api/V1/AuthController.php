@@ -29,7 +29,7 @@ class AuthController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Forename","Surname","Email","Password","Category","AgreeTerms","YearsOld","ConfirmPassword","Username"},
+     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username"},
      *               @OA\Property(
      *                  property="Forename",
      *                  type="string"
@@ -72,16 +72,19 @@ class AuthController extends Controller
      *               @OA\Property(
      *                  property="TwoFactor",
      *                  type="string",
+     *                  default="No",
      *                  enum={"Yes", "No"}
      *               ),
      *               @OA\Property(
      *                  property="AgreeTerms",
      *                  type="string",
-     *                  enum={"-" , "Yes", "No"}
+     *                  default="Yes",
+     *                  enum={"Yes", "No"}
      *               ),
      *               @OA\Property(
      *                  property="YearsOld",
      *                  type="string",
+     *                  default="Yes",
      *                  enum={"Yes", "No"}
      *               ),
      *

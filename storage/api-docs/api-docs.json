@@ -30,8 +30,6 @@
                                     "Email",
                                     "Password",
                                     "Category",
-                                    "AgreeTerms",
-                                    "YearsOld",
                                     "ConfirmPassword",
                                     "Username"
                                 ],
@@ -73,6 +71,7 @@
                                     },
                                     "TwoFactor": {
                                         "type": "string",
+                                        "default": "No",
                                         "enum": [
                                             "Yes",
                                             "No"
@@ -80,14 +79,15 @@
                                     },
                                     "AgreeTerms": {
                                         "type": "string",
+                                        "default": "Yes",
                                         "enum": [
-                                            "-",
                                             "Yes",
                                             "No"
                                         ]
                                     },
                                     "YearsOld": {
                                         "type": "string",
+                                        "default": "Yes",
                                         "enum": [
                                             "Yes",
                                             "No"
