@@ -7,11 +7,11 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use App\Mail\SendMailable;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Validator;
 
 
 
@@ -136,7 +136,7 @@ class AuthController extends Controller
         }else{
             $YearsOld = 1;
         }
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(),[
             'Forename' => 'required|string',
             'Surname' => 'required|string',
             'Email' => 'required|string|email|unique:users',
@@ -145,6 +145,11 @@ class AuthController extends Controller
             'Category'=>'required|string',
             'PhoneNumber'=>'nullable:min:10'
         ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
         
         if(isset($request->two_factor)){
             if($request->two_factor == 'Yes'){
