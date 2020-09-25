@@ -11,7 +11,7 @@
 			<p>Please varify your registration by click on below link</p>
         </div>
         <div style="width:50%;float: center;">
-            <a href="http://127.0.0.1:8000/">Click Me</a>
+            <a href="{{ $data['url'] }}">Click Me</a>
 		</div>
 	</div>
 </body>

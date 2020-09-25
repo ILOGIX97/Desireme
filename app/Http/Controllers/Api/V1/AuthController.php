@@ -82,6 +82,7 @@ class AuthController extends Controller
      *               @OA\Property(
      *                  property="YearsOld",
      *                  type="string",
+     *                  enum={"Yes", "No"}
      *               ),
      *
      *           )
@@ -123,20 +124,28 @@ class AuthController extends Controller
         
         if(isset($request->AgreeTerms)){
             if($request->AgreeTerms == 'No'){
-                return response()->json(['error'=>'Please agree terms'], 422);
+                return response()->json(['error'=>'Please agree terms','isError' => true], 422);
             }
+        }
+        if(isset($request->YearsOld)){
+            if($request->YearsOld == 'Yes'){
+                $YearsOld = 1;
+            }else{
+                $YearsOld = 0;
+            }
+        }else{
+            $YearsOld = 1;
         }
         $validator = $request->validate([
             'Forename' => 'required|string',
             'Surname' => 'required|string',
             'Email' => 'required|string|email|unique:users',
             'Username' => 'required|string|unique:users|max:50',
-            'Password' => 'min:6|required|string|required_with:ConfirmPassword|same:ConfirmPassword',
+            'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
             'Category'=>'required|string',
-            'YearsOld' => 'required|integer|gte:18',
-            'PhoneNumber'=>'min:10'
-
+            'PhoneNumber'=>'nullable:min:10'
         ]);
+        
         if(isset($request->two_factor)){
             if($request->two_factor == 'Yes'){
                 $twoFactor = 1;
@@ -146,6 +155,7 @@ class AuthController extends Controller
         }else{
             $twoFactor = 1;
         }
+        
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         $user =  new User([
     		'first_name' => $request->Forename,
@@ -156,19 +166,22 @@ class AuthController extends Controller
     		'email' => $request->Email,
     		'password' => bcrypt($request->Password),
     		'category' => $request->Category,
-    		'year_old' => $request->YearsOld,
+    		'year_old' => $YearsOld,
     		'two_factor' => $twoFactor
     	]);
          // echo '<pre>';  print_r($user); exit;
     	 if($user->save()){
             $data['name'] = $request->Forename.' '.$request->Surname;
-            
-            Mail::to($request->Email)->send(new SendMailable($data));
+            $data['user_id'] = $user->id;
+            $data['url'] = config('app.url').'/verifyemail/'.$data['user_id'];
+                
+                Mail::to($request->Email)->send(new SendMailable($data)); 
                 return response()->json([
-                    'message' => 'Successfully created user!'
+                    'message' => 'Successfully created user!',
+                    'isError' => false
                 ], 201);
             }else{
-                return response()->json(['error'=>'Provide proper details']);
+                return response()->json(['error'=>'Provide proper details','isError' => true]);
             }
     }
 

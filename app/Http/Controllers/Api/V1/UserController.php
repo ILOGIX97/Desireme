@@ -160,7 +160,6 @@ class UserController extends Controller
 
     public function verifyId(Request $request,$id){
         
-        //echo '<pre>'; print_r($request->request->all());
         $photo_id = $request->file('Photo_Id')->store('public/documents'); 
         $photo_with_id = $request->file('Photo_with_Id')->store('public/documents');
         $UpdateDetails = User::where('id', $id)->update([
@@ -174,8 +173,8 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/varifyemail/{id}",
-     *          operationId="Varify User",
+     *          path="/api/v1/verifyemail/{id}",
+     *          operationId="Verify User",
      *          tags={"Users"},
      *      @OA\Parameter(
      *          name="id",
@@ -186,7 +185,7 @@ class UserController extends Controller
      *          )
      *      ),
      *      
-     *      summary="Varify User",
+     *      summary="Verify User",
      *      description="data of users",
      *      @OA\Response(
      *          response=200,
@@ -215,7 +214,7 @@ class UserController extends Controller
      *  )
      */
 
-    public function varifyemail(Request $request,$id){
+    public function verifyemail(Request $request,$id){
         
         $UpdateDetails = User::where('id', $id)->update([
             'email_verified' => now()

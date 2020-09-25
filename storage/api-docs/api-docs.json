@@ -87,7 +87,11 @@
                                         ]
                                     },
                                     "YearsOld": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "enum": [
+                                            "Yes",
+                                            "No"
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -314,14 +318,14 @@
                 ]
             }
         },
-        "/api/v1/varifyemail/{id}": {
+        "/api/v1/verifyemail/{id}": {
             "post": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "Varify User",
+                "summary": "Verify User",
                 "description": "data of users",
-                "operationId": "Varify User",
+                "operationId": "Verify User",
                 "parameters": [
                     {
                         "name": "id",
