@@ -17,6 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/verifyemail/{id}', function () {
-    //return view('verifyemail');
-});
+/*Route::get('/verifyemail/{id}', function () {
+    return view('verifyemail');
+});*/
+
+Route::get('/verifyemail/{id}', 'UserController@verifyemail');

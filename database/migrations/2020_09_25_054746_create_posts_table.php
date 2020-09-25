@@ -15,7 +15,12 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
+            $table->text('comment');
+            $table->string('tags');
+            $table->enum('publish', ['new', 'draft', 'schedule']);
+            $table->integer('add_to_album');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

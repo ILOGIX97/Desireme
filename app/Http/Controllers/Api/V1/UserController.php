@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\IdVerification;
 use Carbon\Carbon;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -160,12 +162,35 @@ class UserController extends Controller
 
     public function verifyId(Request $request,$id){
         
+        $admin = User::where('type',2)->get();
+        $userDetails = User::where('id',$id)->get();
+        //echo '<pre>'; print_r($userDetails); exit;
+        $data['email'] = $admin[0]->email;
+        $data['username'] = ucfirst($userDetails[0]->first_name).' '.ucfirst($userDetails[0]->last_name);
+        
+        if(isset($request->FirstName) && $request->FirstName != ''){
+            $firstName = $request->FirstName;
+        }else{
+            $firstName = $userDetails[0]->first_name;
+        }
+
+        if(isset($request->LastName) && $request->LastName != ''){
+            $lastName = $request->LastName;
+        }else{
+            $lastName = $userDetails[0]->last_name;
+        }
+
         $photo_id = $request->file('Photo_Id')->store('public/documents'); 
         $photo_with_id = $request->file('Photo_with_Id')->store('public/documents');
         $UpdateDetails = User::where('id', $id)->update([
             'photo_id' => $photo_id,
-            'photo_id_1' => $photo_with_id
+            'photo_id_1' => $photo_with_id,
+            'first_name' => $firstName,
+            'last_name' => $lastName
          ]);
+         //echo '<pre>'; print_r($data); exit();
+        
+         Mail::to($admin[0]->email)->send(new IdVerification($data));
         
         return response()->json(User::find($id));
     	
@@ -315,13 +340,18 @@ class UserController extends Controller
     public function updateProfile(Request $request,$id){
         
         $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(),[
             'TwitterURL' => 'nullable:regex:'.$regex,
             'AmazonURL' => 'nullable:regex:'.$regex,
             'Bio' => 'nullable:min:20|max:200',
             'SubscriptionPrice' => 'nullable:integer|between:3,100',
             'ProfileVideo' => 'mimes:gif'
         ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
         
         $profile_pic = $request->file('ProfilePic')->store('public/documents'); 
         $Profile_Banner = $request->file('ProfileBanner')->store('public/documents');
@@ -510,11 +540,16 @@ class UserController extends Controller
 
     public function addPaymentDetails(Request $request,$id){
         
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(),[
             'SortCode' => 'numeric|digits:6',
             'AccountNumber' => 'numeric|digits:8',
             
         ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
 
         $UpdateDetails = User::where('id', $id)->update([
             'country' => $request->Country,

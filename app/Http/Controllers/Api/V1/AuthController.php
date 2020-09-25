@@ -217,7 +217,8 @@ class AuthController extends Controller
      *               @OA\Property(
      *                  property="remember_me",
      *                  type="string",
-     *                  enum={"-" , "Yes", "No"}
+     *                  default = "Yes",
+     *                  enum={"Yes", "No"}
      *               ),
      *           )
      *       ),
@@ -255,11 +256,15 @@ class AuthController extends Controller
     public function login(Request $request){
 
         //echo '<pre>'; print_r($request->request->all()); exit;
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'email' => 'required|string|email',
             'password' => 'required|string',
-            'remember_me' => 'string'
         ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
 
         $credentials = request(['email', 'password']);
         //echo '<pre>'; print_r($credentials); exit;

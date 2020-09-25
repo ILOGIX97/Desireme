@@ -146,8 +146,8 @@
                                     },
                                     "remember_me": {
                                         "type": "string",
+                                        "default": "Yes",
                                         "enum": [
-                                            "-",
                                             "Yes",
                                             "No"
                                         ]

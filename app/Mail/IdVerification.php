@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class SendMailable extends Mailable
+class IdVerification extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -28,6 +28,6 @@ class SendMailable extends Mailable
      */
     public function build()
     {
-        return $this->subject('Varification Mail')->view('mail.registration')->with('data', $this->data);
+        return $this->subject('Id approval mail')->view('mail.idVerification')->with('data', $this->data);;
     }
 }
