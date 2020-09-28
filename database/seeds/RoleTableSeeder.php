@@ -15,20 +15,20 @@ class RoleTableSeeder extends Seeder
         $role =[
             [
                 'name'=>'Admin',
-                'guard_name'=>'admin',
+                'guard_name'=>'api',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
 
             ],
             [
-                'name'=>'Content Creator',
-                'guard_name'=>'content_creator',
+                'name'=>'ContentCreator',
+                'guard_name'=>'api',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ],
             [
                 'name'=>'Desirer',
-                'guard_name' => 'desirer',
+                'guard_name' => 'api',
                 'created_at'=> date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ]

@@ -183,6 +183,121 @@
                 }
             }
         },
+        "/api/v1/desirerRegister": {
+            "post": {
+                "tags": [
+                    "Register"
+                ],
+                "summary": "Desirer Register",
+                "operationId": "desirerRegister",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "Forename",
+                                    "Surname",
+                                    "Email",
+                                    "Password",
+                                    "Category",
+                                    "ConfirmPassword",
+                                    "Username",
+                                    "ProfilePic"
+                                ],
+                                "properties": {
+                                    "Forename": {
+                                        "type": "string"
+                                    },
+                                    "Surname": {
+                                        "type": "string"
+                                    },
+                                    "UserId": {
+                                        "type": "integer"
+                                    },
+                                    "DisplayName": {
+                                        "type": "string"
+                                    },
+                                    "Username": {
+                                        "type": "string"
+                                    },
+                                    "Email": {
+                                        "type": "string"
+                                    },
+                                    "Password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "ConfirmPassword": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "ProfilePic": {
+                                        "type": "file"
+                                    },
+                                    "Category": {
+                                        "type": "string",
+                                        "enum": [
+                                            "-",
+                                            "Male",
+                                            "Female",
+                                            "Trans"
+                                        ]
+                                    },
+                                    "PhoneNumber": {
+                                        "type": "string"
+                                    },
+                                    "TwoFactor": {
+                                        "type": "string",
+                                        "default": "No",
+                                        "enum": [
+                                            "Yes",
+                                            "No"
+                                        ]
+                                    },
+                                    "AgreeTerms": {
+                                        "type": "string",
+                                        "default": "Yes",
+                                        "enum": [
+                                            "Yes",
+                                            "No"
+                                        ]
+                                    },
+                                    "YearsOld": {
+                                        "type": "string",
+                                        "default": "Yes",
+                                        "enum": [
+                                            "Yes",
+                                            "No"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
         "/api/v1/forgotPassword": {
             "post": {
                 "tags": [
@@ -454,16 +569,16 @@
                         "multipart/form-data": {
                             "schema": {
                                 "properties": {
-                                    "FirstName": {
+                                    "ForeName": {
                                         "type": "string"
                                     },
                                     "LastName": {
                                         "type": "string"
                                     },
-                                    "Photo Id": {
+                                    "PhotoId": {
                                         "type": "file"
                                     },
-                                    "Photo with Id": {
+                                    "PhotowithId": {
                                         "type": "file"
                                     }
                                 },

@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Route;
   ], function () {
     Route::post('login', 'Api\V1\AuthController@login');
     Route::post('register', 'Api\V1\AuthController@register');
+    Route::post('/desirerRegister', 'Api\V1\AuthController@desirerRegister');
 
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
     Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
