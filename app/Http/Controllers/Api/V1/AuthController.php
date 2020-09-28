@@ -198,7 +198,7 @@ class AuthController extends Controller
             if($user->save()){
                 $data['name'] = $request->Forename.' '.$request->Surname;
                 $data['user_id'] = $user->id;
-                $data['url'] = config('app.url').'/verifyemail/'.$data['user_id'];
+                $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
                     
                     Mail::to($request->Email)->send(new SendMailable($data)); 
                     return response()->json([
