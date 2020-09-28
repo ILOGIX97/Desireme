@@ -10,10 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Lang;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens,SoftDeletes;
+    use Notifiable, HasApiTokens,SoftDeletes,HasRoles;
 
     protected $dates = ['deleted_at'];
 
