@@ -226,8 +226,8 @@ class UserController extends Controller
         $data['email'] = $admin[0]->email;
         $data['username'] = ucfirst($userDetails[0]->first_name).' '.ucfirst($userDetails[0]->last_name);
         
-        if(isset($request->FirstName) && $request->FirstName != ''){
-            $firstName = $request->FirstName;
+        if(isset($request->ForeName) && $request->ForeName != ''){
+            $firstName = $request->ForeName;
         }else{
             $firstName = $userDetails[0]->first_name;
         }
@@ -249,8 +249,37 @@ class UserController extends Controller
          //echo '<pre>'; print_r($data); exit();
         
          Mail::to($admin[0]->email)->send(new IdVerification($data));
+
+         $user = User::find($id);
         
-        return response()->json(User::find($id));
+         $userData['Forename'] = $user['first_name'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = $user['profile'];
+         $userData['ProfileBanner'] = $user['cover'];
+         $userData['ProfileVideo'] = $user['profile_video'];
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = $user['photo_id'];
+         $userData['PhotowithId'] = $user['photo_id_1'];
+         $userData['Category'] = $user['category'];
+    
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);    
+        //return response()->json(User::find($id));
     	
     }
 
@@ -302,8 +331,38 @@ class UserController extends Controller
         $UpdateDetails = User::where('id', $id)->update([
             'email_verified' => now()
          ]);
+
+         $user = User::find($id);
         
-        return response()->json(User::find($id));
+         $userData['Forename'] = $user['first_name'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = $user['profile'];
+         $userData['ProfileBanner'] = $user['cover'];
+         $userData['ProfileVideo'] = $user['profile_video'];
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = $user['photo_id'];
+         $userData['PhotowithId'] = $user['photo_id_1'];
+         $userData['Category'] = $user['category'];
+    
+     return response()->json([
+         'data' => $userData,
+         'isError' => false
+     ]);    
+        
+       // return response()->json(User::find($id));
     	
     }
 
