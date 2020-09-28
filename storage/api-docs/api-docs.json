@@ -40,6 +40,9 @@
                                     "Surname": {
                                         "type": "string"
                                     },
+                                    "UserId": {
+                                        "type": "integer"
+                                    },
                                     "DisplayName": {
                                         "type": "string"
                                     },
