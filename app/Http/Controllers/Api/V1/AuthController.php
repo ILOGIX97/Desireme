@@ -196,23 +196,34 @@ class AuthController extends Controller
     	]);
         if(empty($request->UserId)){
             if($user->save()){
+                $tokenResult = $user->createToken('Personal Access Token');
+                $token = $tokenResult->token;
+                $token->expires_at = Carbon::now()->addWeeks(1);
+                $token->save();
                 $data['name'] = $request->Forename.' '.$request->Surname;
                 $data['user_id'] = $user->id;
-                $data['url'] = config('app.url').'/verifyemail/'.$data['user_id'];
+                $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
                     
                     Mail::to($request->Email)->send(new SendMailable($data)); 
                     return response()->json([
                         'message' => 'Successfully created user!',
                         'user_id' => $data['user_id'],
+                        'access_token' => $tokenResult->accessToken,
                         'isError' => false
                     ], 201);
                 }else{
                     return response()->json(['error'=>'Provide proper details','isError' => true]);
                 }
         }else{
+            $user = User::find($request->UserId);
+            $tokenResult = $user->createToken('Personal Access Token');
+                $token = $tokenResult->token;
+                $token->expires_at = Carbon::now()->addWeeks(1);
+                $token->save();
             return response()->json([
                 'message' => 'Successfully created user!',
                 'user_id' => $request->UserId,
+                'access_token' => $tokenResult->accessToken,
                 'isError' => false
             ], 201);
         }
@@ -305,7 +316,7 @@ class AuthController extends Controller
 
         if (isset($request->remember_me) && $request->remember_me == 'Yes')
             $token->expires_at = Carbon::now()->addWeeks(1);
-        $token->save();
+            $token->save();
 
         return response()->json([
             'access_token' => $tokenResult->accessToken,
