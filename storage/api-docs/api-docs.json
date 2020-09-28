@@ -183,14 +183,119 @@
                 }
             }
         },
-        "/api/v1/addPost/{id}": {
+        "/api/v1/forgotPassword": {
             "post": {
                 "tags": [
-                    "Posts"
+                    "Password"
                 ],
-                "summary": "Add User Post Details",
-                "description": "data of users post",
-                "operationId": "Add User Post Details",
+                "summary": "Forgot Password",
+                "operationId": "forgotPassword",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/v1/resetPassword": {
+            "post": {
+                "tags": [
+                    "Password"
+                ],
+                "summary": "Reset Password",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "token",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "token": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/v1/changePassword/{id}": {
+            "post": {
+                "tags": [
+                    "Password"
+                ],
+                "summary": "Change Password",
+                "operationId": "Change Password",
                 "parameters": [
                     {
                         "name": "id",
@@ -205,18 +310,23 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
+                                "required": [
+                                    "old_password",
+                                    "password",
+                                    "password_confirmation"
+                                ],
                                 "properties": {
-                                    "Country": {
-                                        "type": "string"
+                                    "old_password": {
+                                        "type": "string",
+                                        "format": "password"
                                     },
-                                    "AccountName": {
-                                        "type": "string"
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
                                     },
-                                    "SortCode": {
-                                        "type": "number"
-                                    },
-                                    "AccountNumber": {
-                                        "type": "number"
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
                                     }
                                 },
                                 "type": "object"

@@ -36,6 +36,9 @@ use Illuminate\Support\Facades\Route;
     Route::post('login', 'Api\V1\AuthController@login');
     Route::post('register', 'Api\V1\AuthController@register');
 
+    Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
+    Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
+
     Route::group([
         'middleware' => 'auth:api'
       ], function() {
@@ -47,13 +50,15 @@ use Illuminate\Support\Facades\Route;
           Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
           Route::post('addPaymentDetails/{id}', 'Api\V1\UserController@addPaymentDetails');
           Route::post('getCountries', 'Api\V1\UserController@getCountries');
+
+          Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
       });
 
   });
-  
+
   //auth routes
-  
- 
+
+
 
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
