@@ -125,6 +125,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Forgot Password URL for mail
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used to reset password using email link.
+    |
+    */
+
+    'forgotPassword' => env('FORGOT_PASSWORD',"http://localhost/password/email"),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
