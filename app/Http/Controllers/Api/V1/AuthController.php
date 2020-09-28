@@ -39,6 +39,10 @@ class AuthController extends Controller
      *                  type="string"
      *               ),
      *               @OA\Property(
+     *                  property="UserId",
+     *                  type="integer"
+     *               ),
+     *               @OA\Property(
      *                  property="DisplayName",
      *                  type="string"
      *               ),
@@ -139,15 +143,28 @@ class AuthController extends Controller
         }else{
             $YearsOld = 1;
         }
-        $validator = Validator::make($request->all(),[
-            'Forename' => 'required|string',
-            'Surname' => 'required|string',
-            'Email' => 'required|string|email|unique:users',
-            'Username' => 'required|string|unique:users|max:50',
-            'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
-            'Category'=>'required|string',
-            'PhoneNumber'=>'nullable:min:10'
-        ]);
+
+        if(isset($request->UserId) && !empty($request->UserId)){
+            $validator = Validator::make($request->all(),[
+                'Forename' => 'required|string',
+                'Surname' => 'required|string',
+                'Email' => 'required|string|email',
+                'Username' => 'required|string|max:50',
+                'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
+                'Category'=>'required|string',
+                'PhoneNumber'=>'nullable:min:10'
+            ]);
+        }else{
+            $validator = Validator::make($request->all(),[
+                'Forename' => 'required|string',
+                'Surname' => 'required|string',
+                'Email' => 'required|string|email|unique:users',
+                'Username' => 'required|string|unique:users|max:50',
+                'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
+                'Category'=>'required|string',
+                'PhoneNumber'=>'nullable:min:10'
+            ]);
+        }
 
         if ($validator->fails()) {
             $failedRules = $validator->failed();
@@ -177,21 +194,28 @@ class AuthController extends Controller
     		'year_old' => $YearsOld,
     		'two_factor' => $twoFactor
     	]);
-         // echo '<pre>';  print_r($user); exit;
-    	 if($user->save()){
-            $data['name'] = $request->Forename.' '.$request->Surname;
-            $data['user_id'] = $user->id;
-            $data['url'] = config('app.url').'/verifyemail/'.$data['user_id'];
-                
-                Mail::to($request->Email)->send(new SendMailable($data)); 
-                return response()->json([
-                    'message' => 'Successfully created user!',
-                    'user_id' => $data['user_id'],
-                    'isError' => false
-                ], 201);
-            }else{
-                return response()->json(['error'=>'Provide proper details','isError' => true]);
-            }
+        if(empty($request->UserId)){
+            if($user->save()){
+                $data['name'] = $request->Forename.' '.$request->Surname;
+                $data['user_id'] = $user->id;
+                $data['url'] = config('app.url').'/verifyemail/'.$data['user_id'];
+                    
+                    Mail::to($request->Email)->send(new SendMailable($data)); 
+                    return response()->json([
+                        'message' => 'Successfully created user!',
+                        'user_id' => $data['user_id'],
+                        'isError' => false
+                    ], 201);
+                }else{
+                    return response()->json(['error'=>'Provide proper details','isError' => true]);
+                }
+        }else{
+            return response()->json([
+                'message' => 'Successfully created user!',
+                'user_id' => $request->UserId,
+                'isError' => false
+            ], 201);
+        }
     }
 
     /**

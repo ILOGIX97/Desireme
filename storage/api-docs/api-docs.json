@@ -40,6 +40,9 @@
                                     "Surname": {
                                         "type": "string"
                                     },
+                                    "UserId": {
+                                        "type": "integer"
+                                    },
                                     "DisplayName": {
                                         "type": "string"
                                     },
@@ -178,6 +181,74 @@
                         "description": "Forbidden"
                     }
                 }
+            }
+        },
+        "/api/v1/addPost/{id}": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Add User Post Details",
+                "description": "data of users post",
+                "operationId": "Add User Post Details",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "Country": {
+                                        "type": "string"
+                                    },
+                                    "AccountName": {
+                                        "type": "string"
+                                    },
+                                    "SortCode": {
+                                        "type": "number"
+                                    },
+                                    "AccountNumber": {
+                                        "type": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
             }
         },
         "/api/v1/alluser": {
