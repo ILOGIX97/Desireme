@@ -50,7 +50,36 @@ class UserController extends Controller
      *  )
      */
     public function alluser(Request $request){
-        return response()->json(User::all());
+        $users = User::all();
+        foreach($users as $user){
+            $userid = $user['id'];
+            $userData[$userid]['Forename'] = $user['first_name'];
+            $userData[$userid]['Surname'] = $user['last_name'];
+            $userData[$userid]['DisplayName'] = $user['display_name'];
+            $userData[$userid]['Username'] = $user['username'];
+            $userData[$userid]['Email'] = $user['email'];
+            $userData[$userid]['EmailVerified'] = $user['email_verified'];
+            $userData[$userid]['PhoneNumber'] = $user['contact'];
+            $userData[$userid]['ProfilePic'] = $user['profile'];
+            $userData[$userid]['ProfileBanner'] = $user['cover'];
+            $userData[$userid]['ProfileVideo'] = $user['profile_video'];
+            $userData[$userid]['SubscriptionPrice'] = $user['subscription_price'];
+            $userData[$userid]['TwitterURL'] = $user['twitter_url'];
+            $userData[$userid]['AmazonURL'] = $user['amazon_url'];
+            $userData[$userid]['Bio'] = $user['bio'];
+            $userData[$userid]['Tags'] = $user['tags'];
+            $userData[$userid]['Country'] = $user['country'];
+            $userData[$userid]['AccountName'] = $user['account_name'];
+            $userData[$userid]['SortCode'] = $user['sort_code'];
+            $userData[$userid]['AccountNumber'] = $user['account_number'];
+            $userData[$userid]['PhotoId'] = $user['photo_id'];
+            $userData[$userid]['PhotowithId'] = $user['photo_id_1'];
+            $userData[$userid]['Category'] = $user['category'];
+        }
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);
     }
 
     /**
@@ -89,8 +118,37 @@ class UserController extends Controller
      */
 
     public function getDetails(Request $request){
+        $user = $request->user();
         
-        return response()->json($request->user());
+            $userid = $user['id'];
+            $userData['Forename'] = $user['first_name'];
+            $userData['Surname'] = $user['last_name'];
+            $userData['DisplayName'] = $user['display_name'];
+            $userData['Username'] = $user['username'];
+            $userData['Email'] = $user['email'];
+            $userData['EmailVerified'] = $user['email_verified'];
+            $userData['PhoneNumber'] = $user['contact'];
+            $userData['ProfilePic'] = $user['profile'];
+            $userData['ProfileBanner'] = $user['cover'];
+            $userData['ProfileVideo'] = $user['profile_video'];
+            $userData['SubscriptionPrice'] = $user['subscription_price'];
+            $userData['TwitterURL'] = $user['twitter_url'];
+            $userData['AmazonURL'] = $user['amazon_url'];
+            $userData['Bio'] = $user['bio'];
+            $userData['Tags'] = $user['tags'];
+            $userData['Country'] = $user['country'];
+            $userData['AccountName'] = $user['account_name'];
+            $userData['SortCode'] = $user['sort_code'];
+            $userData['AccountNumber'] = $user['account_number'];
+            $userData['PhotoId'] = $user['photo_id'];
+            $userData['PhotowithId'] = $user['photo_id_1'];
+            $userData['Category'] = $user['category'];
+       
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);    
+        //return response()->json($request->user());
     	
     }
 
@@ -115,7 +173,7 @@ class UserController extends Controller
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
      *               @OA\Property(
-     *                  property="FirstName",
+     *                  property="ForeName",
      *                  type="string"
      *               ),
      *               @OA\Property(
@@ -123,11 +181,11 @@ class UserController extends Controller
      *                  type="string"
      *               ),
      *               @OA\Property(
-     *                  property="Photo Id",
+     *                  property="PhotoId",
      *                  type="file"
      *               ),
      *               @OA\Property(
-     *                  property="Photo with Id",
+     *                  property="PhotowithId",
      *                  type="file"
      *               ),
      *           )
@@ -180,8 +238,8 @@ class UserController extends Controller
             $lastName = $userDetails[0]->last_name;
         }
 
-        $photo_id = $request->file('Photo_Id')->store('public/documents'); 
-        $photo_with_id = $request->file('Photo_with_Id')->store('public/documents');
+        $photo_id = $request->file('PhotoId')->store('public/documents'); 
+        $photo_with_id = $request->file('PhotowithId')->store('public/documents');
         $UpdateDetails = User::where('id', $id)->update([
             'photo_id' => $photo_id,
             'photo_id_1' => $photo_with_id,
