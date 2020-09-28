@@ -186,6 +186,7 @@ class AuthController extends Controller
                 Mail::to($request->Email)->send(new SendMailable($data)); 
                 return response()->json([
                     'message' => 'Successfully created user!',
+                    'user_id' => $data['user_id'],
                     'isError' => false
                 ], 201);
             }else{
@@ -270,7 +271,8 @@ class AuthController extends Controller
         //echo '<pre>'; print_r($credentials); exit;
         if(!Auth::attempt($credentials))
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
+                'isError' => true
             ], 401);
 
         $user = $request->user();
@@ -286,7 +288,8 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
-            )->toDateTimeString()
+            )->toDateTimeString(),
+            'isError' => false
         ]);
 
     }
