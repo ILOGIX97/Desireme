@@ -547,10 +547,10 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Get(
      *          path="/api/v1/getCountries",
      *          operationId="Get country list",
-     *          tags={"Users"},
+     *          tags={"General"},
      *      summary="Get Countries",
      *      description="name of all countries",
     
@@ -577,7 +577,6 @@ class UserController extends Controller
      *          response=404,
      *          description="not found"
      *      ),
-     *      security={ {"passport": {}} },
      *  )
      */
 
