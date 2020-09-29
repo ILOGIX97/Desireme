@@ -156,7 +156,7 @@ class UserController extends Controller
      * @OA\Post(
      *          path="/api/v1/verifyId/{id}",
      *          operationId="Update User Ids",
-     *          tags={"Users"},
+     *          tags={"Registration"},
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -214,7 +214,6 @@ class UserController extends Controller
      *          response=404,
      *          description="not found"
      *      ),
-     *      security={ {"passport": {}} },
      *  )
      */
 
@@ -287,7 +286,7 @@ class UserController extends Controller
      * @OA\Post(
      *          path="/api/v1/verifyemail/{id}",
      *          operationId="Verify User",
-     *          tags={"Users"},
+     *          tags={"Registration"},
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -322,7 +321,6 @@ class UserController extends Controller
      *          response=404,
      *          description="not found"
      *      ),
-     *      security={ {"passport": {}} },
      *  )
      */
 
@@ -585,6 +583,7 @@ class UserController extends Controller
         $json = file_get_contents($path);
         return response()->json([
             'list' => $json,
+            'isError' => false
         ]);
     }
 
