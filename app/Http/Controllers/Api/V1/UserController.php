@@ -5,13 +5,17 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\IdVerification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -20,7 +24,7 @@ class UserController extends Controller
      *          path="/api/v1/alluser",
      *          operationId="Users",
      *          tags={"Users"},
-     *      
+     *
      *      summary="Get list of users",
      *      description="Returns list of users",
      *      @OA\Response(
@@ -88,7 +92,7 @@ class UserController extends Controller
      *          path="/api/v1/getDetails",
      *          operationId="Get User",
      *          tags={"Users"},
-     *      
+     *
      *      summary="get user data",
      *      description="data of user",
      *      @OA\Response(
@@ -120,7 +124,7 @@ class UserController extends Controller
 
     public function getDetails(Request $request){
         $user = $request->user();
-        
+
             $userid = $user['id'];
             $userData['Forename'] = $user['first_name'];
             $userData['Surname'] = $user['last_name'];
@@ -145,13 +149,13 @@ class UserController extends Controller
             $userData['PhotowithId'] = $user['photo_id_1'];
             $userData['Category'] = $user['category'];
             $userData['YearsOld'] = $user['year_old'];
-       
+
         return response()->json([
             'data' => $userData,
             'isError' => false
-        ]);    
+        ]);
         //return response()->json($request->user());
-    	
+
     }
 
     /**
@@ -167,7 +171,7 @@ class UserController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Update User Ids",
      *      description="data of users",
      *      @OA\RequestBody(
@@ -184,11 +188,11 @@ class UserController extends Controller
      *               ),
      *               @OA\Property(
      *                  property="PhotoId",
-     *                  type="file"
+     *                  type="string"
      *               ),
      *               @OA\Property(
      *                  property="PhotowithId",
-     *                  type="file"
+     *                  type="string"
      *               ),
      *           )
      *       ),
@@ -220,13 +224,11 @@ class UserController extends Controller
      */
 
     public function verifyId(Request $request,$id){
-        
         $admin = User::where('type',2)->get();
         $userDetails = User::where('id',$id)->get();
-        //echo '<pre>'; print_r($userDetails); exit;
         $data['email'] = $admin[0]->email;
         $data['username'] = ucfirst($userDetails[0]->first_name).' '.ucfirst($userDetails[0]->last_name);
-        
+
         if(isset($request->ForeName) && $request->ForeName != ''){
             $firstName = $request->ForeName;
         }else{
@@ -240,11 +242,17 @@ class UserController extends Controller
         }
         $photo_id = '';
         $photo_with_id = '';
-        if(null !== $request->file('PhotoId')){
-            $photo_id = $request->file('PhotoId')->store('public/documents');
-        } 
-        if(null !== $request->file('PhotowithId'))
-            $photo_with_id = $request->file('PhotowithId')->store('public/documents');
+        if(null !== $request->PhotoId){
+            $image = $request->PhotoId;
+            $path = 'public/documents/';
+            $photo_id = $this->createImage($image,$path);
+        }
+        if(null !== $request->PhotowithId){
+            $image1 = $request->PhotowithId;  // your base64 encoded
+            $$path = 'public/documents/';
+            $photo_with_id = $this->createImage($image1,$path);
+            
+        }
         $UpdateDetails = User::where('id', $id)->update([
             'photo_id' => $photo_id,
             'photo_id_1' => $photo_with_id,
@@ -252,11 +260,11 @@ class UserController extends Controller
             'last_name' => $lastName
          ]);
          //echo '<pre>'; print_r($data); exit();
-        
+
          Mail::to($admin[0]->email)->send(new IdVerification($data));
 
          $user = User::find($id);
-        
+
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
@@ -280,13 +288,13 @@ class UserController extends Controller
          $userData['PhotowithId'] = $user['photo_id_1'];
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
-    
+
         return response()->json([
             'data' => $userData,
             'isError' => false
-        ]);    
+        ]);
         //return response()->json(User::find($id));
-    	
+
     }
 
     /**
@@ -302,7 +310,7 @@ class UserController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Verify User",
      *      description="data of users",
      *      @OA\Response(
@@ -332,13 +340,13 @@ class UserController extends Controller
      */
 
     public function verifyemail(Request $request,$id){
-        
+
         $UpdateDetails = User::where('id', $id)->update([
             'email_verified' => now()
          ]);
 
          $user = User::find($id);
-        
+
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
@@ -362,14 +370,14 @@ class UserController extends Controller
          $userData['PhotowithId'] = $user['photo_id_1'];
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
-    
+
      return response()->json([
          'data' => $userData,
          'isError' => false
-     ]);    
-        
+     ]);
+
        // return response()->json(User::find($id));
-    	
+
     }
 
     /**
@@ -385,7 +393,7 @@ class UserController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="update users",
      *      description="data of users",
      *      @OA\RequestBody(
@@ -395,15 +403,15 @@ class UserController extends Controller
      *               required={"ProfilePic","ProfileBanner"},
      *               @OA\Property(
      *                  property="ProfilePic",
-     *                  type="file"
+     *                  type="string"
      *               ),
      *               @OA\Property(
      *                  property="ProfileVideo",
-     *                  type="file"
+     *                  type="string"
      *               ),
      *               @OA\Property(
      *                  property="ProfileBanner",
-     *                  type="file"
+     *                  type="string"
      *               ),
      *               @OA\Property(
      *                  property="Location",
@@ -429,7 +437,7 @@ class UserController extends Controller
      *                  property="Tags",
      *                  type="string"
      *               ),
-     *               
+     *
      *           )
      *       ),
      *   ),
@@ -461,24 +469,45 @@ class UserController extends Controller
      */
 
     public function updateProfile(Request $request,$id){
-        
+
         $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
         $validator = Validator::make($request->all(),[
             'TwitterURL' => 'nullable:regex:'.$regex,
             'AmazonURL' => 'nullable:regex:'.$regex,
             'Bio' => 'nullable:min:20|max:200',
             'SubscriptionPrice' => 'nullable:integer|between:3,100',
-            'ProfileVideo' => 'mimes:gif'
         ]);
 
         if ($validator->fails()) {
             $failedRules = $validator->failed();
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
-        
-        $profile_pic = $request->file('ProfilePic')->store('public/documents'); 
-        $Profile_Banner = $request->file('ProfileBanner')->store('public/documents');
-        $Profile_Video = $request->file('ProfileVideo')->store('public/documents/video');
+
+        if(null !== $request->ProfilePic){
+            $image = $request->ProfilePic;
+            $path = 'public/documents/';
+            $profile_pic = $this->createImage($image,$path);
+        }
+
+        if(null !== $request->ProfileBanner){
+            $image = $request->ProfileBanner;
+            $path = 'public/documents/';
+            $Profile_Banner = $this->createImage($image,$path);
+        }
+
+        if(null !== $request->ProfileVideo){
+            $image = $request->ProfileVideo;
+            $ext = explode(';base64',$image);
+            $ext = explode('/',$ext[0]);			
+            $ext = $ext[1];
+            $ext = strtolower($ext);
+            if($ext != 'gif'){
+                return response()->json(['error'=>'The profile video must be a file of type: gif.','isError' => true], 422);
+            }
+            $path = 'public/documents/video/';
+            $Profile_Video = $this->createImage($image,$path);
+        }
+
         $UpdateDetails = User::where('id', $id)->update([
             'profile' => $profile_pic,
             'cover' => $Profile_Banner,
@@ -490,9 +519,9 @@ class UserController extends Controller
             'tags'=>$request->Tags,
             'location'=>$request->Location
          ]);
-        
+
          $user = User::find($id);
-        
+
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
@@ -516,14 +545,14 @@ class UserController extends Controller
          $userData['PhotowithId'] = $user['photo_id_1'];
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
-    
+
         return response()->json([
             'data' => $userData,
             'isError' => false
-        ]);    
+        ]);
 
         //return response()->json(User::find($id));
-    	
+
     }
 
     /**
@@ -539,7 +568,7 @@ class UserController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Delete User",
      *      description="delete user details",
      *      @OA\Response(
@@ -570,7 +599,7 @@ class UserController extends Controller
      */
 
     public function deleteUser(Request $request,$id){
-        
+
         if(User::find($id)->delete()){
             return response()->json([
                 'message' => 'Successfully deleted user!'
@@ -578,7 +607,7 @@ class UserController extends Controller
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => false]);
         }
-    	
+
     }
 
     /**
@@ -588,7 +617,7 @@ class UserController extends Controller
      *          tags={"General"},
      *      summary="Get Countries",
      *      description="name of all countries",
-    
+
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -616,8 +645,8 @@ class UserController extends Controller
      */
 
     public function getCountries(){
-        
-        $path =  storage_path('app/public').'/countries.json'; 
+
+        $path =  storage_path('app/public').'/countries.json';
         $json = file_get_contents($path);
         $newJson = json_decode($json);
         $i = 0;
@@ -647,7 +676,7 @@ class UserController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Add User Payment Details",
      *      description="data of users account",
      *      @OA\RequestBody(
@@ -701,11 +730,11 @@ class UserController extends Controller
      */
 
     public function addPaymentDetails(Request $request,$id){
-        
+
         $validator = Validator::make($request->all(),[
             'SortCode' => 'numeric|digits:6',
             'AccountNumber' => 'numeric|digits:8',
-            
+
         ]);
 
         if ($validator->fails()) {
@@ -721,7 +750,7 @@ class UserController extends Controller
          ]);
 
          $user = User::find($id);
-        
+
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
@@ -745,14 +774,29 @@ class UserController extends Controller
          $userData['PhotowithId'] = $user['photo_id_1'];
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
-    
+
         return response()->json([
             'data' => $userData,
             'isError' => false
-        ]);    
-        
+        ]);
+
         //return response()->json(User::find($id));
-    	
+
     }
+
+    function createImage($image,$path){
+        
+            $ext = explode(';base64',$image);
+            $ext = explode('/',$ext[0]);			
+            $ext = $ext[1];
+            $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10).'.'.$ext;
+            $full_path = $path . $imageName;
+            Storage::put($full_path, base64_decode($image));
+            return $full_path;
+    }
+
+
 
 }
