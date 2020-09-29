@@ -64,9 +64,9 @@ class UserController extends Controller
             $userData[$userid]['Email'] = $user['email'];
             $userData[$userid]['EmailVerified'] = $user['email_verified'];
             $userData[$userid]['PhoneNumber'] = $user['contact'];
-            $userData[$userid]['ProfilePic'] = $user['profile'];
-            $userData[$userid]['ProfileBanner'] = $user['cover'];
-            $userData[$userid]['ProfileVideo'] = $user['profile_video'];
+            $userData[$userid]['ProfilePic'] = url('storage/'.$user['profile']);
+            $userData[$userid]['ProfileBanner'] = url('storage/'.$user['cover']);
+            $userData[$userid]['ProfileVideo'] = url('storage/'.$user['profile_video']);
             $userData[$userid]['SubscriptionPrice'] = $user['subscription_price'];
             $userData[$userid]['TwitterURL'] = $user['twitter_url'];
             $userData[$userid]['AmazonURL'] = $user['amazon_url'];
@@ -76,8 +76,8 @@ class UserController extends Controller
             $userData[$userid]['AccountName'] = $user['account_name'];
             $userData[$userid]['SortCode'] = $user['sort_code'];
             $userData[$userid]['AccountNumber'] = $user['account_number'];
-            $userData[$userid]['PhotoId'] = $user['photo_id'];
-            $userData[$userid]['PhotowithId'] = $user['photo_id_1'];
+            $userData[$userid]['PhotoId'] = url('storage/'.$user['photo_id']);
+            $userData[$userid]['PhotowithId'] = url('storage/'.$user['photo_id_1']);
             $userData[$userid]['Category'] = $user['category'];
             $userData[$userid]['YearsOld'] = $user['year_old'];
         }
@@ -125,6 +125,8 @@ class UserController extends Controller
     public function getDetails(Request $request){
         $user = $request->user();
 
+            
+            //$url = File::get($user['profile']);
             $userid = $user['id'];
             $userData['Forename'] = $user['first_name'];
             $userData['Surname'] = $user['last_name'];
@@ -133,10 +135,9 @@ class UserController extends Controller
             $userData['Email'] = $user['email'];
             $userData['EmailVerified'] = $user['email_verified'];
             $userData['PhoneNumber'] = $user['contact'];
-            $userData['ProfilePic'] = $user['profile'];
-            $userData['ProfileBanner'] = $user['cover'];
-            $userData['ProfileVideo'] = $user['profile_video'];
-            $userData['SubscriptionPrice'] = $user['subscription_price'];
+            $userData['ProfilePic'] = url('storage/'.$user['profile']);
+            $userData['ProfileBanner'] = url('storage/'.$user['cover']);
+            $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
             $userData['TwitterURL'] = $user['twitter_url'];
             $userData['AmazonURL'] = $user['amazon_url'];
             $userData['Bio'] = $user['bio'];
@@ -145,8 +146,8 @@ class UserController extends Controller
             $userData['AccountName'] = $user['account_name'];
             $userData['SortCode'] = $user['sort_code'];
             $userData['AccountNumber'] = $user['account_number'];
-            $userData['PhotoId'] = $user['photo_id'];
-            $userData['PhotowithId'] = $user['photo_id_1'];
+            $userData['PhotoId'] = url('storage/'.$user['photo_id']);
+            $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
             $userData['Category'] = $user['category'];
             $userData['YearsOld'] = $user['year_old'];
 
@@ -224,6 +225,7 @@ class UserController extends Controller
      */
 
     public function verifyId(Request $request,$id){
+        Log::info($request);
         $admin = User::where('type',2)->get();
         $userDetails = User::where('id',$id)->get();
         $data['email'] = $admin[0]->email;
@@ -249,7 +251,7 @@ class UserController extends Controller
         }
         if(null !== $request->PhotowithId){
             $image1 = $request->PhotowithId;  // your base64 encoded
-            $$path = 'public/documents/';
+            $path = 'public/documents/';
             $photo_with_id = $this->createImage($image1,$path);
             
         }
@@ -265,29 +267,28 @@ class UserController extends Controller
 
          $user = User::find($id);
 
-         $userData['Forename'] = $user['first_name'];
-         $userData['Surname'] = $user['last_name'];
-         $userData['DisplayName'] = $user['display_name'];
-         $userData['Username'] = $user['username'];
-         $userData['Email'] = $user['email'];
-         $userData['EmailVerified'] = $user['email_verified'];
-         $userData['PhoneNumber'] = $user['contact'];
-         $userData['ProfilePic'] = $user['profile'];
-         $userData['ProfileBanner'] = $user['cover'];
-         $userData['ProfileVideo'] = $user['profile_video'];
-         $userData['SubscriptionPrice'] = $user['subscription_price'];
-         $userData['TwitterURL'] = $user['twitter_url'];
-         $userData['AmazonURL'] = $user['amazon_url'];
-         $userData['Bio'] = $user['bio'];
-         $userData['Tags'] = $user['tags'];
-         $userData['Country'] = $user['country'];
-         $userData['AccountName'] = $user['account_name'];
-         $userData['SortCode'] = $user['sort_code'];
-         $userData['AccountNumber'] = $user['account_number'];
-         $userData['PhotoId'] = $user['photo_id'];
-         $userData['PhotowithId'] = $user['photo_id_1'];
-         $userData['Category'] = $user['category'];
-         $userData['YearsOld'] = $user['year_old'];
+        $userData['Forename'] = $user['first_name'];
+        $userData['Surname'] = $user['last_name'];
+        $userData['DisplayName'] = $user['display_name'];
+        $userData['Username'] = $user['username'];
+        $userData['Email'] = $user['email'];
+        $userData['EmailVerified'] = $user['email_verified'];
+        $userData['PhoneNumber'] = $user['contact'];
+        $userData['ProfilePic'] = url('storage/'.$user['profile']);
+        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
+        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
+        $userData['TwitterURL'] = $user['twitter_url'];
+        $userData['AmazonURL'] = $user['amazon_url'];
+        $userData['Bio'] = $user['bio'];
+        $userData['Tags'] = $user['tags'];
+        $userData['Country'] = $user['country'];
+        $userData['AccountName'] = $user['account_name'];
+        $userData['SortCode'] = $user['sort_code'];
+        $userData['AccountNumber'] = $user['account_number'];
+        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
+        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
+        $userData['Category'] = $user['category'];
+        $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
             'data' => $userData,
@@ -348,28 +349,27 @@ class UserController extends Controller
          $user = User::find($id);
 
          $userData['Forename'] = $user['first_name'];
-         $userData['Surname'] = $user['last_name'];
-         $userData['DisplayName'] = $user['display_name'];
-         $userData['Username'] = $user['username'];
-         $userData['Email'] = $user['email'];
-         $userData['EmailVerified'] = $user['email_verified'];
-         $userData['PhoneNumber'] = $user['contact'];
-         $userData['ProfilePic'] = $user['profile'];
-         $userData['ProfileBanner'] = $user['cover'];
-         $userData['ProfileVideo'] = $user['profile_video'];
-         $userData['SubscriptionPrice'] = $user['subscription_price'];
-         $userData['TwitterURL'] = $user['twitter_url'];
-         $userData['AmazonURL'] = $user['amazon_url'];
-         $userData['Bio'] = $user['bio'];
-         $userData['Tags'] = $user['tags'];
-         $userData['Country'] = $user['country'];
-         $userData['AccountName'] = $user['account_name'];
-         $userData['SortCode'] = $user['sort_code'];
-         $userData['AccountNumber'] = $user['account_number'];
-         $userData['PhotoId'] = $user['photo_id'];
-         $userData['PhotowithId'] = $user['photo_id_1'];
-         $userData['Category'] = $user['category'];
-         $userData['YearsOld'] = $user['year_old'];
+        $userData['Surname'] = $user['last_name'];
+        $userData['DisplayName'] = $user['display_name'];
+        $userData['Username'] = $user['username'];
+        $userData['Email'] = $user['email'];
+        $userData['EmailVerified'] = $user['email_verified'];
+        $userData['PhoneNumber'] = $user['contact'];
+        $userData['ProfilePic'] = url('storage/'.$user['profile']);
+        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
+        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
+        $userData['TwitterURL'] = $user['twitter_url'];
+        $userData['AmazonURL'] = $user['amazon_url'];
+        $userData['Bio'] = $user['bio'];
+        $userData['Tags'] = $user['tags'];
+        $userData['Country'] = $user['country'];
+        $userData['AccountName'] = $user['account_name'];
+        $userData['SortCode'] = $user['sort_code'];
+        $userData['AccountNumber'] = $user['account_number'];
+        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
+        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
+        $userData['Category'] = $user['category'];
+        $userData['YearsOld'] = $user['year_old'];
 
      return response()->json([
          'data' => $userData,
@@ -523,28 +523,27 @@ class UserController extends Controller
          $user = User::find($id);
 
          $userData['Forename'] = $user['first_name'];
-         $userData['Surname'] = $user['last_name'];
-         $userData['DisplayName'] = $user['display_name'];
-         $userData['Username'] = $user['username'];
-         $userData['Email'] = $user['email'];
-         $userData['EmailVerified'] = $user['email_verified'];
-         $userData['PhoneNumber'] = $user['contact'];
-         $userData['ProfilePic'] = $user['profile'];
-         $userData['ProfileBanner'] = $user['cover'];
-         $userData['ProfileVideo'] = $user['profile_video'];
-         $userData['SubscriptionPrice'] = $user['subscription_price'];
-         $userData['TwitterURL'] = $user['twitter_url'];
-         $userData['AmazonURL'] = $user['amazon_url'];
-         $userData['Bio'] = $user['bio'];
-         $userData['Tags'] = $user['tags'];
-         $userData['Country'] = $user['country'];
-         $userData['AccountName'] = $user['account_name'];
-         $userData['SortCode'] = $user['sort_code'];
-         $userData['AccountNumber'] = $user['account_number'];
-         $userData['PhotoId'] = $user['photo_id'];
-         $userData['PhotowithId'] = $user['photo_id_1'];
-         $userData['Category'] = $user['category'];
-         $userData['YearsOld'] = $user['year_old'];
+        $userData['Surname'] = $user['last_name'];
+        $userData['DisplayName'] = $user['display_name'];
+        $userData['Username'] = $user['username'];
+        $userData['Email'] = $user['email'];
+        $userData['EmailVerified'] = $user['email_verified'];
+        $userData['PhoneNumber'] = $user['contact'];
+        $userData['ProfilePic'] = url('storage/'.$user['profile']);
+        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
+        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
+        $userData['TwitterURL'] = $user['twitter_url'];
+        $userData['AmazonURL'] = $user['amazon_url'];
+        $userData['Bio'] = $user['bio'];
+        $userData['Tags'] = $user['tags'];
+        $userData['Country'] = $user['country'];
+        $userData['AccountName'] = $user['account_name'];
+        $userData['SortCode'] = $user['sort_code'];
+        $userData['AccountNumber'] = $user['account_number'];
+        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
+        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
+        $userData['Category'] = $user['category'];
+        $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
             'data' => $userData,
@@ -752,28 +751,27 @@ class UserController extends Controller
          $user = User::find($id);
 
          $userData['Forename'] = $user['first_name'];
-         $userData['Surname'] = $user['last_name'];
-         $userData['DisplayName'] = $user['display_name'];
-         $userData['Username'] = $user['username'];
-         $userData['Email'] = $user['email'];
-         $userData['EmailVerified'] = $user['email_verified'];
-         $userData['PhoneNumber'] = $user['contact'];
-         $userData['ProfilePic'] = $user['profile'];
-         $userData['ProfileBanner'] = $user['cover'];
-         $userData['ProfileVideo'] = $user['profile_video'];
-         $userData['SubscriptionPrice'] = $user['subscription_price'];
-         $userData['TwitterURL'] = $user['twitter_url'];
-         $userData['AmazonURL'] = $user['amazon_url'];
-         $userData['Bio'] = $user['bio'];
-         $userData['Tags'] = $user['tags'];
-         $userData['Country'] = $user['country'];
-         $userData['AccountName'] = $user['account_name'];
-         $userData['SortCode'] = $user['sort_code'];
-         $userData['AccountNumber'] = $user['account_number'];
-         $userData['PhotoId'] = $user['photo_id'];
-         $userData['PhotowithId'] = $user['photo_id_1'];
-         $userData['Category'] = $user['category'];
-         $userData['YearsOld'] = $user['year_old'];
+        $userData['Surname'] = $user['last_name'];
+        $userData['DisplayName'] = $user['display_name'];
+        $userData['Username'] = $user['username'];
+        $userData['Email'] = $user['email'];
+        $userData['EmailVerified'] = $user['email_verified'];
+        $userData['PhoneNumber'] = $user['contact'];
+        $userData['ProfilePic'] = url('storage/'.$user['profile']);
+        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
+        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
+        $userData['TwitterURL'] = $user['twitter_url'];
+        $userData['AmazonURL'] = $user['amazon_url'];
+        $userData['Bio'] = $user['bio'];
+        $userData['Tags'] = $user['tags'];
+        $userData['Country'] = $user['country'];
+        $userData['AccountName'] = $user['account_name'];
+        $userData['SortCode'] = $user['sort_code'];
+        $userData['AccountNumber'] = $user['account_number'];
+        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
+        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
+        $userData['Category'] = $user['category'];
+        $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
             'data' => $userData,
@@ -794,7 +792,8 @@ class UserController extends Controller
             $imageName = Str::random(10).'.'.$ext;
             $full_path = $path . $imageName;
             Storage::put($full_path, base64_decode($image));
-            return $full_path;
+            $returnpath = str_replace("public/","",$path).$imageName;
+            return $returnpath;
     }
 
 
