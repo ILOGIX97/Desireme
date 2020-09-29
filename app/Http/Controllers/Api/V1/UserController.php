@@ -75,6 +75,7 @@ class UserController extends Controller
             $userData[$userid]['PhotoId'] = $user['photo_id'];
             $userData[$userid]['PhotowithId'] = $user['photo_id_1'];
             $userData[$userid]['Category'] = $user['category'];
+            $userData[$userid]['YearsOld'] = $user['year_old'];
         }
         return response()->json([
             'data' => $userData,
@@ -143,6 +144,7 @@ class UserController extends Controller
             $userData['PhotoId'] = $user['photo_id'];
             $userData['PhotowithId'] = $user['photo_id_1'];
             $userData['Category'] = $user['category'];
+            $userData['YearsOld'] = $user['year_old'];
        
         return response()->json([
             'data' => $userData,
@@ -277,6 +279,7 @@ class UserController extends Controller
          $userData['PhotoId'] = $user['photo_id'];
          $userData['PhotowithId'] = $user['photo_id_1'];
          $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
     
         return response()->json([
             'data' => $userData,
@@ -358,6 +361,7 @@ class UserController extends Controller
          $userData['PhotoId'] = $user['photo_id'];
          $userData['PhotowithId'] = $user['photo_id_1'];
          $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
     
      return response()->json([
          'data' => $userData,
@@ -487,7 +491,38 @@ class UserController extends Controller
             'location'=>$request->Location
          ]);
         
-        return response()->json(User::find($id));
+         $user = User::find($id);
+        
+         $userData['Forename'] = $user['first_name'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = $user['profile'];
+         $userData['ProfileBanner'] = $user['cover'];
+         $userData['ProfileVideo'] = $user['profile_video'];
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = $user['photo_id'];
+         $userData['PhotowithId'] = $user['photo_id_1'];
+         $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
+    
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);    
+
+        //return response()->json(User::find($id));
     	
     }
 
@@ -541,7 +576,7 @@ class UserController extends Controller
                 'message' => 'Successfully deleted user!'
             ], 201);
         }else{
-            return response()->json(['error'=>'Provide proper details']);
+            return response()->json(['error'=>'Provide proper details','isError' => false]);
         }
     	
     }
@@ -584,8 +619,16 @@ class UserController extends Controller
         
         $path =  storage_path('app/public').'/countries.json'; 
         $json = file_get_contents($path);
+        $newJson = json_decode($json);
+        $i = 0;
+        foreach($newJson as $json1){
+            $jsonC[$i]['id'] = $json1->id;
+            $jsonC[$i]['name'] = $json1->name;
+            $jsonC[$i]['code'] = $json1->alpha3;
+            $i++;
+        }
         return response()->json([
-            'list' => $json,
+            'list' => $jsonC,
             'isError' => false
         ]);
     }
@@ -676,8 +719,39 @@ class UserController extends Controller
             'sort_code'=> $request->SortCode,
             'account_number'=>$request->AccountNumber,
          ]);
+
+         $user = User::find($id);
         
-        return response()->json(User::find($id));
+         $userData['Forename'] = $user['first_name'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = $user['profile'];
+         $userData['ProfileBanner'] = $user['cover'];
+         $userData['ProfileVideo'] = $user['profile_video'];
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = $user['photo_id'];
+         $userData['PhotowithId'] = $user['photo_id_1'];
+         $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
+    
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);    
+        
+        //return response()->json(User::find($id));
     	
     }
 
