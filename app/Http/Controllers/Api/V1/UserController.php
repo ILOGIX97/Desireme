@@ -384,7 +384,7 @@ class UserController extends Controller
      * @OA\Post(
      *          path="/api/v1/updateProfile/{id}",
      *          operationId="Update User Profle",
-     *          tags={"Users"},
+     *          tags={"Register"},
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -464,7 +464,6 @@ class UserController extends Controller
      *          response=404,
      *          description="not found"
      *      ),
-     *      security={ {"passport": {}} },
      *  )
      */
 
@@ -666,7 +665,7 @@ class UserController extends Controller
      * @OA\Post(
      *          path="/api/v1/addPaymentDetails/{id}",
      *          operationId="Add User Payment Details",
-     *          tags={"Users"},
+     *          tags={"Register"},
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -724,7 +723,6 @@ class UserController extends Controller
      *          response=404,
      *          description="not found"
      *      ),
-     *      security={ {"passport": {}} },
      *  )
      */
 

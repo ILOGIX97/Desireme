@@ -17,6 +17,13 @@ class Post extends Model
      * @var array
     */
     protected $fillable = [
-        'comment', 'tags', 'display_name', 'username', 'email', 'password', 'profile', 'cover', 'photo_id','photo_id_1', 'location', 'category', 'term', 'year_old', 'two_factor'
+        'comment', 'tags', 'publish', 'schedule_at', 'add_to_album'
     ];
+
+    public function user()
+    {
+        return $this->belongsToMany('App\User');
+    }
+
+    
 }
