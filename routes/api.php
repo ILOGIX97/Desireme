@@ -52,6 +52,8 @@ use Illuminate\Support\Facades\Route;
           Route::post('getCountries', 'Api\V1\UserController@getCountries');
 
           Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
+
+          Route::post('addPost/{id}', 'Api\V1\PostController@addPost');
       });
 
   });

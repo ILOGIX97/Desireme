@@ -361,6 +361,94 @@
                 ]
             }
         },
+        "/api/v1/addPost/{id}": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Add User Post Details",
+                "description": "data of users post",
+                "operationId": "Add User Post Details",
+                "parameters": [
+                    {
+                        "name": "Userid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "Comment",
+                                    "ProfileBanner"
+                                ],
+                                "properties": {
+                                    "Comment": {
+                                        "type": "string"
+                                    },
+                                    "Tags": {
+                                        "type": "string"
+                                    },
+                                    "Publish": {
+                                        "type": "string",
+                                        "default": "new",
+                                        "enum": [
+                                            "new",
+                                            "draft",
+                                            "schedule"
+                                        ]
+                                    },
+                                    "ScheduleDateTime": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2020-09-23 08:12:21"
+                                    },
+                                    "AddtoAlbum": {
+                                        "type": "string",
+                                        "default": "No",
+                                        "enum": [
+                                            "No",
+                                            "Yes"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
         "/api/v1/alluser": {
             "post": {
                 "tags": [
@@ -434,7 +522,7 @@
         "/api/v1/verifyId/{id}": {
             "post": {
                 "tags": [
-                    "Users"
+                    "Registration"
                 ],
                 "summary": "Update User Ids",
                 "description": "data of users",
@@ -454,16 +542,16 @@
                         "multipart/form-data": {
                             "schema": {
                                 "properties": {
-                                    "FirstName": {
+                                    "ForeName": {
                                         "type": "string"
                                     },
                                     "LastName": {
                                         "type": "string"
                                     },
-                                    "Photo Id": {
+                                    "PhotoId": {
                                         "type": "file"
                                     },
-                                    "Photo with Id": {
+                                    "PhotowithId": {
                                         "type": "file"
                                     }
                                 },
@@ -491,18 +579,13 @@
                     "404": {
                         "description": "not found"
                     }
-                },
-                "security": [
-                    {
-                        "passport": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/verifyemail/{id}": {
             "post": {
                 "tags": [
-                    "Users"
+                    "Registration"
                 ],
                 "summary": "Verify User",
                 "description": "data of users",
@@ -536,12 +619,7 @@
                     "404": {
                         "description": "not found"
                     }
-                },
-                "security": [
-                    {
-                        "passport": []
-                    }
-                ]
+                }
             }
         },
         "/api/v1/updateProfile/{id}": {

@@ -65,4 +65,9 @@ class User extends Authenticatable
         // Then you pass the notification
         $this->notify($notification);
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }
