@@ -35,6 +35,8 @@ use Illuminate\Support\Facades\Route;
   ], function () {
     Route::post('login', 'Api\V1\AuthController@login');
     Route::post('register', 'Api\V1\AuthController@register');
+    Route::post('verifyId/{id}', 'Api\V1\UserController@verifyId');
+    Route::post('verifyemail/{id}', 'Api\V1\UserController@verifyemail');
     Route::post('/desirerRegister', 'Api\V1\AuthController@desirerRegister');
 
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
@@ -45,8 +47,7 @@ use Illuminate\Support\Facades\Route;
       ], function() {
           Route::post('alluser', 'Api\V1\UserController@alluser');
           Route::post('getDetails', 'Api\V1\UserController@getDetails');
-          Route::post('verifyId/{id}', 'Api\V1\UserController@verifyId');
-          Route::post('verifyemail/{id}', 'Api\V1\UserController@verifyemail');
+          
           Route::post('updateProfile/{id}', 'Api\V1\UserController@updateProfile');
           Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
           Route::post('addPaymentDetails/{id}', 'Api\V1\UserController@addPaymentDetails');

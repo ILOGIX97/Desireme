@@ -156,7 +156,7 @@ class UserController extends Controller
      * @OA\Post(
      *          path="/api/v1/verifyId/{id}",
      *          operationId="Update User Ids",
-     *          tags={"Registration"},
+     *          tags={"Register"},
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -236,9 +236,13 @@ class UserController extends Controller
         }else{
             $lastName = $userDetails[0]->last_name;
         }
-
-        $photo_id = $request->file('PhotoId')->store('public/documents'); 
-        $photo_with_id = $request->file('PhotowithId')->store('public/documents');
+        $photo_id = '';
+        $photo_with_id = '';
+        if(null !== $request->file('PhotoId')){
+            $photo_id = $request->file('PhotoId')->store('public/documents');
+        } 
+        if(null !== $request->file('PhotowithId'))
+            $photo_with_id = $request->file('PhotowithId')->store('public/documents');
         $UpdateDetails = User::where('id', $id)->update([
             'photo_id' => $photo_id,
             'photo_id_1' => $photo_with_id,
@@ -286,7 +290,7 @@ class UserController extends Controller
      * @OA\Post(
      *          path="/api/v1/verifyemail/{id}",
      *          operationId="Verify User",
-     *          tags={"Registration"},
+     *          tags={"Register"},
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
