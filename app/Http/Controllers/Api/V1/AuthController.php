@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\SendMailable;
+use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -127,8 +128,8 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        
-        
+
+
         if(isset($request->AgreeTerms)){
             if($request->AgreeTerms == 'No'){
                 return response()->json(['error'=>'Please agree terms','isError' => true], 422);
@@ -170,7 +171,7 @@ class AuthController extends Controller
             $failedRules = $validator->failed();
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
-        
+
         if(isset($request->two_factor)){
             if($request->two_factor == 'Yes'){
                 $twoFactor = 1;
@@ -180,7 +181,7 @@ class AuthController extends Controller
         }else{
             $twoFactor = 1;
         }
-        
+
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         $user =  new User([
     		'first_name' => $request->Forename,
@@ -199,8 +200,8 @@ class AuthController extends Controller
                 $data['name'] = $request->Forename.' '.$request->Surname;
                 $data['user_id'] = $user->id;
                 $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
-                    
-                    Mail::to($request->Email)->send(new SendMailable($data)); 
+
+                    Mail::to($request->Email)->send(new SendMailable($data));
                     return response()->json([
                         'message' => 'Successfully created user!',
                         'user_id' => $data['user_id'],
@@ -317,6 +318,227 @@ class AuthController extends Controller
             'isError' => false
         ]);
 
+    }
+
+    /**
+     * @OA\Post(
+     ** path="/api/v1/desirerRegister",
+     *   tags={"Register"},
+     *   summary="Desirer Register",
+     *   operationId="desirerRegister",
+     *
+     *   @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","ProfilePic"},
+     *               @OA\Property(
+     *                  property="Forename",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Surname",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="UserId",
+     *                  type="integer"
+     *               ),
+     *               @OA\Property(
+     *                  property="DisplayName",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Username",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Email",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Password",
+     *                  format = "password",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="ConfirmPassword",
+     *                  format = "password",
+     *                  type="string"
+     *               ),
+     *              @OA\Property(
+     *                  property="ProfilePic",
+     *                  type="file"
+     *               ),
+     *              @OA\Property(
+     *                  property="Category",
+     *                  type="string",
+     *                  enum={"-" ,"Male", "Female", "Trans"}
+     *               ),
+     *               @OA\Property(
+     *                  property="PhoneNumber",
+     *                  type="string",
+     *               ),
+     *               @OA\Property(
+     *                  property="TwoFactor",
+     *                  type="string",
+     *                  default="No",
+     *                  enum={"Yes", "No"}
+     *               ),
+     *               @OA\Property(
+     *                  property="AgreeTerms",
+     *                  type="string",
+     *                  default="Yes",
+     *                  enum={"Yes", "No"}
+     *               ),
+     *               @OA\Property(
+     *                  property="YearsOld",
+     *                  type="string",
+     *                  default="Yes",
+     *                  enum={"Yes", "No"}
+     *               ),
+     *
+     *           )
+     *       ),
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function desirerRegister(Request $request)
+    {
+        if(isset($request->AgreeTerms)){
+            if($request->AgreeTerms == 'No'){
+                return response()->json(['error'=>'Please agree terms','isError' => true], 422);
+            }
+        }
+        if(isset($request->YearsOld)){
+            if($request->YearsOld == 'Yes'){
+                $YearsOld = 1;
+            }else{
+                $YearsOld = 0;
+            }
+        }else{
+            $YearsOld = 1;
+        }
+
+        if(isset($request->UserId) && !empty($request->UserId)){
+            $validator = Validator::make($request->all(),[
+                'Forename' => 'required|string',
+                'Surname' => 'required|string',
+                'Email' => 'required|string|email',
+                'Username' => 'required|alpha_num|max:50',
+                'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
+                'Category'=>'required|string',
+                'PhoneNumber'=>'nullable:min:10'
+            ]);
+        }else{
+            $validator = Validator::make($request->all(),[
+                'Forename' => 'required|string',
+                'Surname' => 'required|string',
+                'Email' => 'required|string|email|unique:users,email',
+                'Username' => 'required|alpha_num|unique:users,username|max:50',
+                'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
+                'Category'=>'required|string',
+                'PhoneNumber'=>'nullable:min:10'
+            ]);
+        }
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+
+        if(isset($request->two_factor)){
+            if($request->two_factor == 'Yes'){
+                $twoFactor = 1;
+            }else{
+                $twoFactor = 0;
+            }
+        }else{
+            $twoFactor = 1;
+        }
+        if (isset($request->ProfilePic)){
+            $profile_pic = $request->file('ProfilePic')->store('public/documents');
+        }else{
+            $profile_pic = null;
+        }
+
+
+        if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
+        $user =  new User([
+            'first_name' => $request->Forename,
+            'last_name' => $request->Surname,
+            'display_name' => $dpName,
+            'username' => $request->Username,
+            'contact' => $request->PhoneNumber,
+            'profile' => $profile_pic,
+            'email' => $request->Email,
+            'password' => bcrypt($request->Password),
+            'category' => $request->Category,
+            'year_old' => $YearsOld,
+            'two_factor' => $twoFactor
+        ]);
+        if(empty($request->UserId)){
+            if($user->save()){
+                $user->assignRole(['Desirer']);
+                $tokenResult = $user->createToken('Personal Access Token');
+                $token = $tokenResult->token;
+                $token->expires_at = Carbon::now()->addWeeks(1);
+                $token->save();
+                $data['name'] = $request->Forename.' '.$request->Surname;
+                $data['user_id'] = $user->id;
+                $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
+
+                Mail::to($request->Email)->send(new SendMailable($data));
+                return response()->json([
+                    'message' => 'Successfully created user!',
+                    'user_id' => $data['user_id'],
+                    'access_token' => $tokenResult->accessToken,
+                    'isError' => false
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => true]);
+            }
+        }else{
+            $user = User::find($request->UserId);
+            $tokenResult = $user->createToken('Personal Access Token');
+            $token = $tokenResult->token;
+            $token->expires_at = Carbon::now()->addWeeks(1);
+            $token->save();
+            return response()->json([
+                'message' => 'Successfully created user!',
+                'user_id' => $request->UserId,
+                'access_token' => $tokenResult->accessToken,
+                'isError' => false
+            ], 201);
+        }
     }
 
 
