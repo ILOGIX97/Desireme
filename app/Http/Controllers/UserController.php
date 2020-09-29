@@ -13,6 +13,6 @@ class UserController extends Controller
              'email_verified' => now()
           ]);
         
-          return redirect('http://localhost:3000/profile/'.$id);
+          return redirect('http://localhost:3000/verify/'.$id);
     }
 }
