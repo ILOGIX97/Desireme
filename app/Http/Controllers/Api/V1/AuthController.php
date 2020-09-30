@@ -82,15 +82,15 @@ class AuthController extends Controller
      *               ),
      *               @OA\Property(
      *                  property="AgreeTerms",
-     *                  type="string",
-     *                  default="Yes",
-     *                  enum={"Yes", "No"}
+     *                  type="integer",
+     *                  default="1",
+     *                  enum={"1", "0"}
      *               ),
      *               @OA\Property(
      *                  property="YearsOld",
-     *                  type="string",
-     *                  default="Yes",
-     *                  enum={"Yes", "No"}
+     *                  type="integer",
+     *                  default="1",
+     *                  enum={"1", "0"}
      *               ),
      *
      *           )
@@ -154,11 +154,6 @@ class AuthController extends Controller
             }
         }
 
-        if($YearsOld == 0){
-            return response()->json(['error'=>'The years old must be greater than 0 characters','isError' => true]);
-        }
-        
-
         if(isset($request->UserId) && !empty($request->UserId)){
             $validator = Validator::make($request->all(),[
                 'Forename' => 'required|string',
@@ -175,8 +170,8 @@ class AuthController extends Controller
                 'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
                 'Category'=>'required|string',
                 'PhoneNumber'=>'nullable:min:10',
-                'AgreeTerms'=>'required',
-                'YearsOld'=>'required'
+                'AgreeTerms'=>'required|gt:0',
+                'YearsOld'=>'required|gt:0'
             ]);
         }
 
