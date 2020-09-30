@@ -89,10 +89,17 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getDetails",
+     *          path="/api/v1/getDetails/{id}",
      *          operationId="Get User",
      *          tags={"Users"},
-     *
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      summary="get user data",
      *      description="data of user",
      *      @OA\Response(
@@ -122,9 +129,9 @@ class UserController extends Controller
      *  )
      */
 
-    public function getDetails(Request $request){
-        $user = $request->user();
-
+    public function getDetails($id){
+        //$user = $request->user();
+            $user = User::find($id);
             
             //$url = File::get($user['profile']);
             $userid = $user['id'];
@@ -153,7 +160,7 @@ class UserController extends Controller
             $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
-            'data' => $userData,
+            'data' => $user,
             'isError' => false
         ]);
         //return response()->json($request->user());

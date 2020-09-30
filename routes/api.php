@@ -49,7 +49,7 @@ use Illuminate\Support\Facades\Route;
       ], function() {
           //User related routes
           Route::post('alluser', 'Api\V1\UserController@alluser');
-          Route::post('getDetails', 'Api\V1\UserController@getDetails');
+          Route::post('getDetails/{id}', 'Api\V1\UserController@getDetails');
           Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
           Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
           //Post related routes
