@@ -64,9 +64,9 @@ class UserController extends Controller
             $userData[$userid]['Email'] = $user['email'];
             $userData[$userid]['EmailVerified'] = $user['email_verified'];
             $userData[$userid]['PhoneNumber'] = $user['contact'];
-            $userData[$userid]['ProfilePic'] = url('storage/'.$user['profile']);
-            $userData[$userid]['ProfileBanner'] = url('storage/'.$user['cover']);
-            $userData[$userid]['ProfileVideo'] = url('storage/'.$user['profile_video']);
+            $userData[$userid]['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+            $userData[$userid]['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+            $userData[$userid]['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
             $userData[$userid]['SubscriptionPrice'] = $user['subscription_price'];
             $userData[$userid]['TwitterURL'] = $user['twitter_url'];
             $userData[$userid]['AmazonURL'] = $user['amazon_url'];
@@ -76,8 +76,8 @@ class UserController extends Controller
             $userData[$userid]['AccountName'] = $user['account_name'];
             $userData[$userid]['SortCode'] = $user['sort_code'];
             $userData[$userid]['AccountNumber'] = $user['account_number'];
-            $userData[$userid]['PhotoId'] = url('storage/'.$user['photo_id']);
-            $userData[$userid]['PhotowithId'] = url('storage/'.$user['photo_id_1']);
+            $userData[$userid]['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+            $userData[$userid]['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
             $userData[$userid]['Category'] = $user['category'];
             $userData[$userid]['YearsOld'] = $user['year_old'];
         }
@@ -135,9 +135,10 @@ class UserController extends Controller
             $userData['Email'] = $user['email'];
             $userData['EmailVerified'] = $user['email_verified'];
             $userData['PhoneNumber'] = $user['contact'];
-            $userData['ProfilePic'] = url('storage/'.$user['profile']);
-            $userData['ProfileBanner'] = url('storage/'.$user['cover']);
-            $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
+            $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+            $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+            $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+            $userData['SubscriptionPrice'] = $user['subscription_price'];
             $userData['TwitterURL'] = $user['twitter_url'];
             $userData['AmazonURL'] = $user['amazon_url'];
             $userData['Bio'] = $user['bio'];
@@ -146,8 +147,8 @@ class UserController extends Controller
             $userData['AccountName'] = $user['account_name'];
             $userData['SortCode'] = $user['sort_code'];
             $userData['AccountNumber'] = $user['account_number'];
-            $userData['PhotoId'] = url('storage/'.$user['photo_id']);
-            $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
+            $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+            $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
             $userData['Category'] = $user['category'];
             $userData['YearsOld'] = $user['year_old'];
 
@@ -179,6 +180,7 @@ class UserController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
+     *               required={"PhotoId","PhotowithId"},
      *               @OA\Property(
      *                  property="ForeName",
      *                  type="string"
@@ -267,28 +269,29 @@ class UserController extends Controller
 
          $user = User::find($id);
 
-        $userData['Forename'] = $user['first_name'];
-        $userData['Surname'] = $user['last_name'];
-        $userData['DisplayName'] = $user['display_name'];
-        $userData['Username'] = $user['username'];
-        $userData['Email'] = $user['email'];
-        $userData['EmailVerified'] = $user['email_verified'];
-        $userData['PhoneNumber'] = $user['contact'];
-        $userData['ProfilePic'] = url('storage/'.$user['profile']);
-        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
-        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
-        $userData['TwitterURL'] = $user['twitter_url'];
-        $userData['AmazonURL'] = $user['amazon_url'];
-        $userData['Bio'] = $user['bio'];
-        $userData['Tags'] = $user['tags'];
-        $userData['Country'] = $user['country'];
-        $userData['AccountName'] = $user['account_name'];
-        $userData['SortCode'] = $user['sort_code'];
-        $userData['AccountNumber'] = $user['account_number'];
-        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
-        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
-        $userData['Category'] = $user['category'];
-        $userData['YearsOld'] = $user['year_old'];
+         $userData['Forename'] = $user['first_name'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+         $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+         $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+         $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+         $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
             'data' => $userData,
@@ -349,27 +352,28 @@ class UserController extends Controller
          $user = User::find($id);
 
          $userData['Forename'] = $user['first_name'];
-        $userData['Surname'] = $user['last_name'];
-        $userData['DisplayName'] = $user['display_name'];
-        $userData['Username'] = $user['username'];
-        $userData['Email'] = $user['email'];
-        $userData['EmailVerified'] = $user['email_verified'];
-        $userData['PhoneNumber'] = $user['contact'];
-        $userData['ProfilePic'] = url('storage/'.$user['profile']);
-        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
-        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
-        $userData['TwitterURL'] = $user['twitter_url'];
-        $userData['AmazonURL'] = $user['amazon_url'];
-        $userData['Bio'] = $user['bio'];
-        $userData['Tags'] = $user['tags'];
-        $userData['Country'] = $user['country'];
-        $userData['AccountName'] = $user['account_name'];
-        $userData['SortCode'] = $user['sort_code'];
-        $userData['AccountNumber'] = $user['account_number'];
-        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
-        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
-        $userData['Category'] = $user['category'];
-        $userData['YearsOld'] = $user['year_old'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+         $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+         $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+         $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+         $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
 
      return response()->json([
          'data' => $userData,
@@ -499,7 +503,7 @@ class UserController extends Controller
             $ext = explode(';base64',$image);
             $ext = explode('/',$ext[0]);			
             $ext = $ext[1];
-            $ext = strtolower($ext);
+            $ext = trim(strtolower($ext));
             if($ext != 'gif'){
                 return response()->json(['error'=>'The profile video must be a file of type: gif.','isError' => true], 422);
             }
@@ -522,27 +526,28 @@ class UserController extends Controller
          $user = User::find($id);
 
          $userData['Forename'] = $user['first_name'];
-        $userData['Surname'] = $user['last_name'];
-        $userData['DisplayName'] = $user['display_name'];
-        $userData['Username'] = $user['username'];
-        $userData['Email'] = $user['email'];
-        $userData['EmailVerified'] = $user['email_verified'];
-        $userData['PhoneNumber'] = $user['contact'];
-        $userData['ProfilePic'] = url('storage/'.$user['profile']);
-        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
-        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
-        $userData['TwitterURL'] = $user['twitter_url'];
-        $userData['AmazonURL'] = $user['amazon_url'];
-        $userData['Bio'] = $user['bio'];
-        $userData['Tags'] = $user['tags'];
-        $userData['Country'] = $user['country'];
-        $userData['AccountName'] = $user['account_name'];
-        $userData['SortCode'] = $user['sort_code'];
-        $userData['AccountNumber'] = $user['account_number'];
-        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
-        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
-        $userData['Category'] = $user['category'];
-        $userData['YearsOld'] = $user['year_old'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+         $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+         $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+         $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+         $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
             'data' => $userData,
@@ -749,27 +754,28 @@ class UserController extends Controller
          $user = User::find($id);
 
          $userData['Forename'] = $user['first_name'];
-        $userData['Surname'] = $user['last_name'];
-        $userData['DisplayName'] = $user['display_name'];
-        $userData['Username'] = $user['username'];
-        $userData['Email'] = $user['email'];
-        $userData['EmailVerified'] = $user['email_verified'];
-        $userData['PhoneNumber'] = $user['contact'];
-        $userData['ProfilePic'] = url('storage/'.$user['profile']);
-        $userData['ProfileBanner'] = url('storage/'.$user['cover']);
-        $userData['ProfileVideo'] = url('storage/'.$user['profile_video']);$userData['SubscriptionPrice'] = $user['subscription_price'];
-        $userData['TwitterURL'] = $user['twitter_url'];
-        $userData['AmazonURL'] = $user['amazon_url'];
-        $userData['Bio'] = $user['bio'];
-        $userData['Tags'] = $user['tags'];
-        $userData['Country'] = $user['country'];
-        $userData['AccountName'] = $user['account_name'];
-        $userData['SortCode'] = $user['sort_code'];
-        $userData['AccountNumber'] = $user['account_number'];
-        $userData['PhotoId'] = url('storage/'.$user['photo_id']);
-        $userData['PhotowithId'] = url('storage/'.$user['photo_id_1']);
-        $userData['Category'] = $user['category'];
-        $userData['YearsOld'] = $user['year_old'];
+         $userData['Surname'] = $user['last_name'];
+         $userData['DisplayName'] = $user['display_name'];
+         $userData['Username'] = $user['username'];
+         $userData['Email'] = $user['email'];
+         $userData['EmailVerified'] = $user['email_verified'];
+         $userData['PhoneNumber'] = $user['contact'];
+         $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+         $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+         $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+         $userData['SubscriptionPrice'] = $user['subscription_price'];
+         $userData['TwitterURL'] = $user['twitter_url'];
+         $userData['AmazonURL'] = $user['amazon_url'];
+         $userData['Bio'] = $user['bio'];
+         $userData['Tags'] = $user['tags'];
+         $userData['Country'] = $user['country'];
+         $userData['AccountName'] = $user['account_name'];
+         $userData['SortCode'] = $user['sort_code'];
+         $userData['AccountNumber'] = $user['account_number'];
+         $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+         $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+         $userData['Category'] = $user['category'];
+         $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
             'data' => $userData,

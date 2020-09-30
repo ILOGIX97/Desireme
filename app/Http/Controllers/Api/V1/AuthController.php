@@ -149,9 +149,6 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(),[
                 'Forename' => 'required|string',
                 'Surname' => 'required|string',
-                'Email' => 'required|string|email',
-                'Username' => 'required|string|max:50',
-                'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
                 'Category'=>'required|string',
                 'PhoneNumber'=>'nullable:min:10'
             ]);
@@ -183,19 +180,20 @@ class AuthController extends Controller
         }
 
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
-        $user =  new User([
-    		'first_name' => $request->Forename,
-    		'last_name' => $request->Surname,
-    		'display_name' => $dpName,
-            'username' => $request->Username,
-            'contact' => $request->PhoneNumber,
-    		'email' => $request->Email,
-    		'password' => bcrypt($request->Password),
-    		'category' => $request->Category,
-    		'year_old' => $YearsOld,
-    		'two_factor' => $twoFactor
-    	]);
+        
         if(empty($request->UserId)){
+            $user =  new User([
+                'first_name' => $request->Forename,
+                'last_name' => $request->Surname,
+                'display_name' => $dpName,
+                'username' => $request->Username,
+                'contact' => $request->PhoneNumber,
+                'email' => $request->Email,
+                'password' => bcrypt($request->Password),
+                'category' => $request->Category,
+                'year_old' => $YearsOld,
+                'two_factor' => $twoFactor
+            ]);
             if($user->save()){
                 $data['name'] = $request->Forename.' '.$request->Surname;
                 $data['user_id'] = $user->id;
@@ -211,12 +209,23 @@ class AuthController extends Controller
                     return response()->json(['error'=>'Provide proper details','isError' => true]);
                 }
         }else{
-            
-            return response()->json([
-                'message' => 'Successfully created user!',
-                'user_id' => $request->UserId,
-                'isError' => false
-            ], 201);
+            $user = User::find($request->UserId);
+            $user->first_name = $request->Forename;
+            $user->last_name = $request->Forename;
+            $user->display_name = $dpName;
+            $user->contact = $request->PhoneNumber;
+            $user->category = $request->Category;
+            $user->year_old = $YearsOld;
+            $user->two_factor = $twoFactor;
+            if($user->save()){
+                return response()->json([
+                    'message' => 'User updated successfully!',
+                    'user_id' => $request->UserId,
+                    'isError' => false
+                ], 201);
+        }else{
+            return response()->json(['error'=>'Provide proper details','isError' => true]);
+        }
         }
     }
 
