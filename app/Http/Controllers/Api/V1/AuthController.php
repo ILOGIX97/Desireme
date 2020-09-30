@@ -203,7 +203,7 @@ class AuthController extends Controller
                     $userData['Category'] = $user['category'];
                     $userData['YearsOld'] = $user['year_old'];
                     $userData['AgreeTerms'] = $user['term'];
-                    $userData['twoFactor'] = $user['two_factor'];
+                    $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
 
                     return response()->json([
                         'message' => 'Successfully created user!',
@@ -248,7 +248,7 @@ class AuthController extends Controller
                 $userData['Category'] = $user['category'];
                 $userData['YearsOld'] = $user['year_old'];
                 $userData['AgreeTerms'] = $user['term'];
-                $userData['twoFactor'] = $user['two_factor'];
+                $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
 
                 return response()->json([
                     'message' => 'User updated successfully!',
