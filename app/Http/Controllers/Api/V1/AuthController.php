@@ -30,7 +30,7 @@ class AuthController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","AgreeTerms"},
+     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","AgreeTerms","YearsOld"},
      *               @OA\Property(
      *                  property="Forename",
      *                  type="string"
@@ -130,22 +130,34 @@ class AuthController extends Controller
     {
 
 
+        // if(isset($request->AgreeTerms)){
+        //     if($request->AgreeTerms == 'No'){
+        //         return response()->json(['error'=>'Please agree terms','isError' => true], 422);
+        //     }
+        // }else{
+        //     return response()->json(['error'=>'Please agree terms','isError' => true], 422);
+        // }
+
         if(isset($request->AgreeTerms)){
-            if($request->AgreeTerms == 'No'){
-                return response()->json(['error'=>'Please agree terms','isError' => true], 422);
+            if($request->AgreeTerms == 'Yes'){
+                $AgreeTerms = 1;
+            }else{
+                $AgreeTerms = 0;
             }
-        }else{
-            return response()->json(['error'=>'Please agree terms','isError' => true], 422);
         }
+        
         if(isset($request->YearsOld)){
             if($request->YearsOld == 'Yes'){
                 $YearsOld = 1;
             }else{
                 $YearsOld = 0;
             }
-        }else{
-            $YearsOld = 1;
         }
+
+        if($YearsOld == 0){
+            return response()->json(['error'=>'The years old must be greater than 0 characters','isError' => true]);
+        }
+        
 
         if(isset($request->UserId) && !empty($request->UserId)){
             $validator = Validator::make($request->all(),[
@@ -163,7 +175,8 @@ class AuthController extends Controller
                 'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
                 'Category'=>'required|string',
                 'PhoneNumber'=>'nullable:min:10',
-                'AgreeTerms'=>'required'
+                'AgreeTerms'=>'required',
+                'YearsOld'=>'required'
             ]);
         }
 
@@ -196,7 +209,7 @@ class AuthController extends Controller
                 'category' => $request->Category,
                 'year_old' => $YearsOld,
                 'two_factor' => $twoFactor,
-                'term' => 1
+                'term' => $AgreeTerms
             ]);
             if($user->save()){
                 $user->assignRole(['ContentCreator']);
