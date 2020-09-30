@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasApiTokens,HasRoles; //SoftDeletes,
+    use Notifiable, HasApiTokens,HasRoles; //
 
     protected $guard_name = 'api';
 

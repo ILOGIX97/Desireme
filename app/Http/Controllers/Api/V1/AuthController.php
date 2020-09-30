@@ -128,32 +128,6 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-
-
-        // if(isset($request->AgreeTerms)){
-        //     if($request->AgreeTerms == 'No'){
-        //         return response()->json(['error'=>'Please agree terms','isError' => true], 422);
-        //     }
-        // }else{
-        //     return response()->json(['error'=>'Please agree terms','isError' => true], 422);
-        // }
-
-        if(isset($request->AgreeTerms)){
-            if($request->AgreeTerms == 'Yes'){
-                $AgreeTerms = 1;
-            }else{
-                $AgreeTerms = 0;
-            }
-        }
-        
-        if(isset($request->YearsOld)){
-            if($request->YearsOld == 'Yes'){
-                $YearsOld = 1;
-            }else{
-                $YearsOld = 0;
-            }
-        }
-
         if(isset($request->UserId) && !empty($request->UserId)){
             $validator = Validator::make($request->all(),[
                 'Forename' => 'required|string',
@@ -202,9 +176,9 @@ class AuthController extends Controller
                 'email' => $request->Email,
                 'password' => bcrypt($request->Password),
                 'category' => $request->Category,
-                'year_old' => $YearsOld,
+                'year_old' => $request->YearsOld,
                 'two_factor' => $twoFactor,
-                'term' => $AgreeTerms
+                'term' => $request->AgreeTerms
             ]);
             if($user->save()){
                 $user->assignRole(['ContentCreator']);
@@ -373,12 +347,12 @@ class AuthController extends Controller
 
         $credentials = request(['email', 'password']);
         //echo '<pre>'; print_r($credentials); exit;
-        if(!Auth::attempt($credentials))
+        if(!Auth::attempt($credentials)){
             return response()->json([
                 'message' => 'Unauthorized',
                 'isError' => true
             ], 401);
-
+        }
         $user = $request->user();
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
