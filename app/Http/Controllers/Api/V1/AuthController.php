@@ -30,7 +30,7 @@ class AuthController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","AgreeTerms","YearsOld"},
+     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","AgreeTerms","YearsOld","Role"},
      *               @OA\Property(
      *                  property="Forename",
      *                  type="string"
@@ -42,6 +42,12 @@ class AuthController extends Controller
      *               @OA\Property(
      *                  property="UserId",
      *                  type="integer"
+     *               ),
+     *               @OA\Property(
+     *                  property="Role",
+     *                  type="string",
+     *                  default = "ContentCreator",
+     *                  enum={"ContentCreator", "Desirer"}
      *               ),
      *               @OA\Property(
      *                  property="DisplayName",

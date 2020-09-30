@@ -82,6 +82,7 @@ class UserController extends Controller
             $userData[$userid]['YearsOld'] = $user['year_old'];
             $userData[$userid]['AgreeTerms'] = $user['term'];
             $userData[$userid]['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+            $userData[$userid]['Role'] = !empty($user->roles->first()->name) ? $user->roles->first()->name : '';
         }
         return response()->json([
             'data' => $userData,
@@ -215,6 +216,16 @@ class UserController extends Controller
         $data['email'] = $admin[0]->email;
         $data['username'] = ucfirst($userDetails[0]->first_name).' '.ucfirst($userDetails[0]->last_name);
 
+        $validator = Validator::make($request->all(),[
+            'PhotoId' => 'required',
+            'PhotowithId' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+
         if(isset($request->ForeName) && $request->ForeName != ''){
             $firstName = $request->ForeName;
         }else{
@@ -239,6 +250,7 @@ class UserController extends Controller
             $photo_with_id = $this->createImage($image1,$path);
             
         }
+        //echo $photo_id; exit;
         $UpdateDetails = User::where('id', $id)->update([
             'photo_id' => $photo_id,
             'photo_id_1' => $photo_with_id,
@@ -337,7 +349,7 @@ class UserController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"ProfilePic","ProfileBanner"},
+     *               required={"ProfilePic","ProfileBanner","ProfileVideo"},
      *               @OA\Property(
      *                  property="ProfilePic",
      *                  type="string"
@@ -408,6 +420,9 @@ class UserController extends Controller
 
         $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
         $validator = Validator::make($request->all(),[
+            'ProfilePic' => 'required',
+            'ProfileBanner' => 'required',
+            'ProfileVideo' => 'required',
             'TwitterURL' => 'nullable:regex:'.$regex,
             'AmazonURL' => 'nullable:regex:'.$regex,
             'Bio' => 'nullable:min:20|max:200',
@@ -672,7 +687,7 @@ class UserController extends Controller
     }
 
     function createImage($image,$path){
-        
+        if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);
             $ext = explode('/',$ext[0]);			
             $ext = $ext[1];
@@ -682,7 +697,15 @@ class UserController extends Controller
             $full_path = $path . $imageName;
             Storage::put($full_path, base64_decode($image));
             $returnpath = str_replace("public/","",$path).$imageName;
-            return $returnpath;
+            
+        } else {
+            $removeData = config('app.url').'storage/'; 
+            $returnpath = str_replace($removeData,"",$image);
+            
+            //$returnpath = $image;
+        }
+        return $returnpath;
+            
     }
 
     function getResponse($userId){
@@ -713,7 +736,7 @@ class UserController extends Controller
          $userData['YearsOld'] = $user['year_old'];
          $userData['AgreeTerms'] = $user['term'];
          $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
-
+         $userData['Role'] = $user->roles->first()->name;
          return $userData;
     }
 
