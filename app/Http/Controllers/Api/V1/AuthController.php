@@ -76,7 +76,7 @@ class AuthController extends Controller
      *               ),
      *               @OA\Property(
      *                  property="TwoFactor",
-     *                   type="integer",
+     *                  type="integer",
      *                  default="0",
      *                  enum={"1", "0"}
      *               ),
@@ -167,7 +167,7 @@ class AuthController extends Controller
                 'password' => bcrypt($request->Password),
                 'category' => $request->Category,
                 'year_old' => $request->YearsOld,
-                'two_factor' => $request->twoFactor,
+                'two_factor' => $request->TwoFactor,
                 'term' => $request->AgreeTerms
             ]);
             if($user->save()){
