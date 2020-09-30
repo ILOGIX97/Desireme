@@ -76,9 +76,9 @@ class AuthController extends Controller
      *               ),
      *               @OA\Property(
      *                  property="TwoFactor",
-     *                  type="string",
-     *                  default="No",
-     *                  enum={"Yes", "No"}
+     *                   type="integer",
+     *                  default="0",
+     *                  enum={"1", "0"}
      *               ),
      *               @OA\Property(
      *                  property="AgreeTerms",
@@ -154,16 +154,6 @@ class AuthController extends Controller
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
 
-        if(isset($request->two_factor)){
-            if($request->two_factor == 'Yes'){
-                $twoFactor = 1;
-            }else{
-                $twoFactor = 0;
-            }
-        }else{
-            $twoFactor = 1;
-        }
-
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         
         if(empty($request->UserId)){
@@ -177,7 +167,7 @@ class AuthController extends Controller
                 'password' => bcrypt($request->Password),
                 'category' => $request->Category,
                 'year_old' => $request->YearsOld,
-                'two_factor' => $twoFactor,
+                'two_factor' => $request->twoFactor,
                 'term' => $request->AgreeTerms
             ]);
             if($user->save()){
@@ -213,6 +203,7 @@ class AuthController extends Controller
                     $userData['Category'] = $user['category'];
                     $userData['YearsOld'] = $user['year_old'];
                     $userData['AgreeTerms'] = $user['term'];
+                    $userData['twoFactor'] = $user['two_factor'];
 
                     return response()->json([
                         'message' => 'Successfully created user!',
@@ -230,8 +221,6 @@ class AuthController extends Controller
             $user->display_name = $dpName;
             $user->contact = $request->PhoneNumber;
             $user->category = $request->Category;
-            $user->year_old = $YearsOld;
-            $user->two_factor = $twoFactor;
             if($user->save()){
                 $user = User::find($request->UserId);
 
@@ -259,6 +248,7 @@ class AuthController extends Controller
                 $userData['Category'] = $user['category'];
                 $userData['YearsOld'] = $user['year_old'];
                 $userData['AgreeTerms'] = $user['term'];
+                $userData['twoFactor'] = $user['two_factor'];
 
                 return response()->json([
                     'message' => 'User updated successfully!',

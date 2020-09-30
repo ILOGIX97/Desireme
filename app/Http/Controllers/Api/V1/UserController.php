@@ -81,6 +81,7 @@ class UserController extends Controller
             $userData[$userid]['Category'] = $user['category'];
             $userData[$userid]['YearsOld'] = $user['year_old'];
             $userData[$userid]['AgreeTerms'] = $user['term'];
+            $userData[$userid]['twoFactor'] = $user['two_factor'];
         }
         return response()->json([
             'data' => $userData,
@@ -160,6 +161,7 @@ class UserController extends Controller
             $userData['Category'] = $user['category'];
             $userData['YearsOld'] = $user['year_old'];
             $userData['AgreeTerms'] = $user['term'];
+            $userData['twoFactor'] = $user['two_factor'];
 
         return response()->json([
             'data' => $userData,
@@ -302,6 +304,7 @@ class UserController extends Controller
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
          $userData['AgreeTerms'] = $user['term'];
+         $userData['twoFactor'] = $user['two_factor'];
 
         return response()->json([
             'data' => $userData,
@@ -385,6 +388,7 @@ class UserController extends Controller
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
          $userData['AgreeTerms'] = $user['term'];
+         $userData['twoFactor'] = $user['two_factor'];
 
      return response()->json([
          'data' => $userData,
@@ -560,6 +564,7 @@ class UserController extends Controller
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
          $userData['AgreeTerms'] = $user['term'];
+         $userData['twoFactor'] = $user['two_factor'];
 
         return response()->json([
             'data' => $userData,
@@ -789,6 +794,7 @@ class UserController extends Controller
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
          $userData['AgreeTerms'] = $user['term'];
+         $userData['twoFactor'] = $user['two_factor'];
 
         return response()->json([
             'data' => $userData,
