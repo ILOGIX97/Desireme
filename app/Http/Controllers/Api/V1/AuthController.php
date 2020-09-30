@@ -30,7 +30,7 @@ class AuthController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username"},
+     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","AgreeTerms"},
      *               @OA\Property(
      *                  property="Forename",
      *                  type="string"
@@ -134,6 +134,8 @@ class AuthController extends Controller
             if($request->AgreeTerms == 'No'){
                 return response()->json(['error'=>'Please agree terms','isError' => true], 422);
             }
+        }else{
+            return response()->json(['error'=>'Please agree terms','isError' => true], 422);
         }
         if(isset($request->YearsOld)){
             if($request->YearsOld == 'Yes'){
@@ -160,7 +162,8 @@ class AuthController extends Controller
                 'Username' => 'required|string|unique:users|max:50',
                 'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
                 'Category'=>'required|string',
-                'PhoneNumber'=>'nullable:min:10'
+                'PhoneNumber'=>'nullable:min:10',
+                'AgreeTerms'=>'required'
             ]);
         }
 
@@ -192,19 +195,49 @@ class AuthController extends Controller
                 'password' => bcrypt($request->Password),
                 'category' => $request->Category,
                 'year_old' => $YearsOld,
-                'two_factor' => $twoFactor
+                'two_factor' => $twoFactor,
+                'term' => 1
             ]);
             if($user->save()){
+                $user->assignRole(['ContentCreator']);
                 $data['name'] = $request->Forename.' '.$request->Surname;
                 $data['user_id'] = $user->id;
                 $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
 
                     Mail::to($request->Email)->send(new SendMailable($data));
+                    $user = User::find($user->id);
+
+                    $userData['Forename'] = $user['first_name'];
+                    $userData['Surname'] = $user['last_name'];
+                    $userData['DisplayName'] = $user['display_name'];
+                    $userData['Username'] = $user['username'];
+                    $userData['Email'] = $user['email'];
+                    $userData['EmailVerified'] = $user['email_verified'];
+                    $userData['PhoneNumber'] = $user['contact'];
+                    $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+                    $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+                    $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+                    $userData['SubscriptionPrice'] = $user['subscription_price'];
+                    $userData['TwitterURL'] = $user['twitter_url'];
+                    $userData['AmazonURL'] = $user['amazon_url'];
+                    $userData['Bio'] = $user['bio'];
+                    $userData['Tags'] = $user['tags'];
+                    $userData['Country'] = $user['country'];
+                    $userData['AccountName'] = $user['account_name'];
+                    $userData['SortCode'] = $user['sort_code'];
+                    $userData['AccountNumber'] = $user['account_number'];
+                    $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+                    $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+                    $userData['Category'] = $user['category'];
+                    $userData['YearsOld'] = $user['year_old'];
+                    $userData['AgreeTerms'] = $user['term'];
+
                     return response()->json([
                         'message' => 'Successfully created user!',
+                        'data' => $userData,
+                        'isError' => false,
                         'user_id' => $data['user_id'],
-                        'isError' => false
-                    ], 201);
+                    ]);
                 }else{
                     return response()->json(['error'=>'Provide proper details','isError' => true]);
                 }
@@ -218,11 +251,39 @@ class AuthController extends Controller
             $user->year_old = $YearsOld;
             $user->two_factor = $twoFactor;
             if($user->save()){
+                $user = User::find($request->UserId);
+
+                $userData['Forename'] = $user['first_name'];
+                $userData['Surname'] = $user['last_name'];
+                $userData['DisplayName'] = $user['display_name'];
+                $userData['Username'] = $user['username'];
+                $userData['Email'] = $user['email'];
+                $userData['EmailVerified'] = $user['email_verified'];
+                $userData['PhoneNumber'] = $user['contact'];
+                $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+                $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+                $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+                $userData['SubscriptionPrice'] = $user['subscription_price'];
+                $userData['TwitterURL'] = $user['twitter_url'];
+                $userData['AmazonURL'] = $user['amazon_url'];
+                $userData['Bio'] = $user['bio'];
+                $userData['Tags'] = $user['tags'];
+                $userData['Country'] = $user['country'];
+                $userData['AccountName'] = $user['account_name'];
+                $userData['SortCode'] = $user['sort_code'];
+                $userData['AccountNumber'] = $user['account_number'];
+                $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+                $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+                $userData['Category'] = $user['category'];
+                $userData['YearsOld'] = $user['year_old'];
+                $userData['AgreeTerms'] = $user['term'];
+
                 return response()->json([
                     'message' => 'User updated successfully!',
                     'user_id' => $request->UserId,
+                    'data' => $userData,
                     'isError' => false
-                ], 201);
+                ]);
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => true]);
         }

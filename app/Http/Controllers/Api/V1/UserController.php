@@ -80,6 +80,7 @@ class UserController extends Controller
             $userData[$userid]['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
             $userData[$userid]['Category'] = $user['category'];
             $userData[$userid]['YearsOld'] = $user['year_old'];
+            $userData[$userid]['AgreeTerms'] = $user['term'];
         }
         return response()->json([
             'data' => $userData,
@@ -158,6 +159,7 @@ class UserController extends Controller
             $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
             $userData['Category'] = $user['category'];
             $userData['YearsOld'] = $user['year_old'];
+            $userData['AgreeTerms'] = $user['term'];
 
         return response()->json([
             'data' => $userData,
@@ -299,6 +301,7 @@ class UserController extends Controller
          $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
+         $userData['AgreeTerms'] = $user['term'];
 
         return response()->json([
             'data' => $userData,
@@ -381,6 +384,7 @@ class UserController extends Controller
          $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
+         $userData['AgreeTerms'] = $user['term'];
 
      return response()->json([
          'data' => $userData,
@@ -555,6 +559,7 @@ class UserController extends Controller
          $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
+         $userData['AgreeTerms'] = $user['term'];
 
         return response()->json([
             'data' => $userData,
@@ -783,6 +788,7 @@ class UserController extends Controller
          $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
          $userData['Category'] = $user['category'];
          $userData['YearsOld'] = $user['year_old'];
+         $userData['AgreeTerms'] = $user['term'];
 
         return response()->json([
             'data' => $userData,
