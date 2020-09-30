@@ -160,7 +160,7 @@ class UserController extends Controller
             $userData['YearsOld'] = $user['year_old'];
 
         return response()->json([
-            'data' => $user,
+            'data' => $userData,
             'isError' => false
         ]);
         //return response()->json($request->user());
