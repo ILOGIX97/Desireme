@@ -277,9 +277,9 @@ class AuthController extends Controller
                     $path = 'public/documents/';
                     $profile_pic = $this->createImage($image,$path);
                 }
-                $user->profile = $profile_pic;
-                $user->location = $request->Location;
             }
+            $user->profile = $profile_pic;
+            $user->location = $request->Location;
             if($user->save()){
                 $user = User::find($request->UserId);
 
