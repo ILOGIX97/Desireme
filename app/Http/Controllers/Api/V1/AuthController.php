@@ -269,8 +269,8 @@ class AuthController extends Controller
             $user->contact = $request->PhoneNumber;
             $user->category = $request->Category;
             $user->term = $request->AgreeTerms;
-            $user->year_old= $request->TwoFactor;
-            $user->two_factor= $request->YearsOld;
+            $user->two_factor= $request->TwoFactor;
+            $user->year_old= $request->YearsOld;
             if($user->roles->first()->name == 'Desirer'){
                 if(null !== $request->ProfilePic){
                     $image = $request->ProfilePic;
