@@ -17,7 +17,7 @@ class Post extends Model
      * @var array
     */
     protected $fillable = [
-        'comment', 'tags', 'publish', 'schedule_at', 'add_to_album'
+        'comment', 'tags', 'publish','media', 'schedule_at', 'add_to_album'
     ];
 
     public function users()

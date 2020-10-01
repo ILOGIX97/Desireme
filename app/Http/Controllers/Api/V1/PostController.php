@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -42,6 +44,10 @@ class PostController extends Controller
      *               ),
      *               @OA\Property(
      *                  property="Tags",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="PhotoorVideo",
      *                  type="string"
      *               ),
      *               @OA\Property(
@@ -104,16 +110,25 @@ class PostController extends Controller
             $failedRules = $validator->failed();
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
-        
-        
+
+        if(null !== $request->PhotoorVideo){
+            $image = $request->PhotoorVideo;
+            $path = 'public/posts/';
+            $media = $this->createImage($image,$path);
+        }else{
+            $media = '';
+        }
+
         //echo $request->ScheduleDateTime; exit;
         $post =  new Post([
     		'comment' => $request->Comment,
-    		'tags' => (!empty($request->Tags)) ? $request->Tags : '',
+            'tags' => (!empty($request->Tags)) ? $request->Tags : '',
+            'media' => $media,
     		'publish' => $request->Publish,
             'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
             'add_to_album' => $request->AddtoAlbum,
         ]);
+        //echo '<pre>'; print_r($post); exit;
         //$user = User::find($id)->posts()->save($post);
         if($post->save()){
             $post->users()->sync($id);
@@ -222,9 +237,18 @@ class PostController extends Controller
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
         
+        if(null !== $request->PhotoorVideo){
+            $image = $request->PhotoorVideo;
+            $path = 'public/posts/';
+            $media = $this->createImage($image,$path);
+        }else{
+            $media = '';
+        }
+        
         $postDetails = Post::where('id', $id)->update([
             'comment' => $request->Comment,
-    		'tags' => (!empty($request->Tags)) ? $request->Tags : '',
+            'tags' => (!empty($request->Tags)) ? $request->Tags : '',
+            'media' => $media,
     		'publish' => $request->Publish,
             'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
             'add_to_album' => $request->AddtoAlbum,
@@ -381,11 +405,38 @@ class PostController extends Controller
         $postData['comment'] = $postDetail['comment'];
         $postData['tags'] = $postDetail['tags'];
         $postData['publish'] = $postDetail['publish'];
+        $postData['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
         $postData['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
         $postData['add_to_album'] = ($postDetail['add_to_album'] == 1) ? 'Yes' : 'No';
          
         
          return $postData;
+    }
+
+    function createImage($image,$path){
+        if (preg_match('/^data:image\/\w+;base64,/', $image) ||  preg_match('/^data:video\/\w+;base64,/', $image)) {
+            $ext = explode(';base64',$image);
+            $ext = explode('/',$ext[0]);			
+            $ext = $ext[1];
+            if (preg_match('/^data:image\/\w+;base64,/', $image)){
+                $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+            }
+
+            if (preg_match('/^data:video\/\w+;base64,/', $image)){
+                $image = preg_replace('/^data:video\/\w+;base64,/', '', $image);
+            }
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10).'.'.$ext;
+            $full_path = $path . $imageName;
+            Storage::put($full_path, base64_decode($image));
+            $returnpath = str_replace("public/","",$path).$imageName;
+            
+        }else {
+            $removeData = config('app.url').'storage/'; 
+            $returnpath = str_replace($removeData,"",$image);
+        }
+        return $returnpath;
+            
     }
 
     
