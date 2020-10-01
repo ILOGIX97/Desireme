@@ -47,13 +47,16 @@ use Illuminate\Support\Facades\Route;
     Route::group([
         'middleware' => 'auth:api'
       ], function() {
-          //User related routes
-          Route::post('alluser', 'Api\V1\UserController@alluser');
-          Route::post('getDetails/{id}', 'Api\V1\UserController@getDetails');
-          Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
-          Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
-          //Post related routes
-          Route::post('addPost/{userid}', 'Api\V1\PostController@addPost');
+    //User related routes
+    Route::post('alluser', 'Api\V1\UserController@alluser');
+    Route::post('getDetails/{id}', 'Api\V1\UserController@getDetails');
+    Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
+    Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
+    //Post related routes
+    Route::post('addPost/{userid}', 'Api\V1\PostController@addPost');
+    Route::post('updatePost/{postid}', 'Api\V1\PostController@updatePost');
+    Route::post('getUserPost/{userid}', 'Api\V1\PostController@getUserPost');
+    Route::post('deletePost/{postid}', 'Api\V1\PostController@deletePost');
       });
 
   });

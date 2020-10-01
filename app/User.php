@@ -70,7 +70,7 @@ class User extends Authenticatable
 
     public function posts()
     {
-        return $this->hasMany('App\Post');
+        return $this->belongsToMany('App\Post', 'post_user', 'user_id', 'post_id');
     }
 
     

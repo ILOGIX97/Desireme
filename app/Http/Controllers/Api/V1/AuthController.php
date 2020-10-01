@@ -281,7 +281,7 @@ class AuthController extends Controller
                 $user->location = $request->Location;
             }
             if($user->save()){
-                $user = User::find($request->UserId);
+                $user = User::findOrFail($request->UserId);
 
                 $userData['Forename'] = $user['first_name'];
                 $userData['Surname'] = $user['last_name'];

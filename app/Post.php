@@ -20,9 +20,9 @@ class Post extends Model
         'comment', 'tags', 'publish', 'schedule_at', 'add_to_album'
     ];
 
-    public function user()
+    public function users()
     {
-        return $this->belongsToMany('App\User');
+        return $this->belongsToMany('App\User', 'post_user', 'post_id', 'user_id');
     }
 
     

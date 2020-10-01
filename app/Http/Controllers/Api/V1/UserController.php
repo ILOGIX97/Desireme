@@ -476,7 +476,7 @@ class UserController extends Controller
             'location'=>$request->Location
          ]);
 
-         $userData = $this->getResponse($id);
+        $userData = $this->getResponse($id);
 
         return response()->json([
             'data' => $userData,
@@ -663,8 +663,8 @@ class UserController extends Controller
     public function addPaymentDetails(Request $request,$id){
 
         $validator = Validator::make($request->all(),[
-            'SortCode' => 'numeric|digits:6',
-            'AccountNumber' => 'numeric|digits:8',
+            'SortCode' => 'nullable|numeric|digits:6',
+            'AccountNumber' => 'nullable|numeric|digits:8',
 
         ]);
 
@@ -714,7 +714,7 @@ class UserController extends Controller
     }
 
     function getResponse($userId){
-        $user = User::find($userId);
+        $user = User::findOrFail($userId);
         //echo $user->roles->first()->name; exit;
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
