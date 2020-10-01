@@ -400,7 +400,7 @@ class AuthController extends Controller
         //echo '<pre>'; print_r($credentials); exit;
         if(!Auth::attempt($credentials)){
             return response()->json([
-                'message' => 'Unauthorized',
+                'message' => 'Your email or password is wrong! Please try again!',
                 'isError' => true
             ], 401);
         }
