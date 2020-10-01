@@ -188,11 +188,13 @@ class AuthController extends Controller
                     'two_factor' => $request->TwoFactor,
                     'term' => $request->AgreeTerms
                 ]);
-            }else{
+            }else if($request->Role == 'Desirer'){
                 if(null !== $request->ProfilePic){
                     $image = $request->ProfilePic;
                     $path = 'public/documents/';
                     $profile_pic = $this->createImage($image,$path);
+                }else{
+                    $profile_pic = '';
                 }
                 $user =  new User([
                     'first_name' => $request->Forename,
@@ -245,6 +247,7 @@ class AuthController extends Controller
                     $userData['YearsOld'] = $user['year_old'];
                     $userData['AgreeTerms'] = $user['term'];
                     $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+                    $userData['Location'] = $user['location'];
                     $userData['Role'] = $user->roles->first()->name;
 
                     return response()->json([
@@ -263,13 +266,15 @@ class AuthController extends Controller
             $user->display_name = $dpName;
             $user->contact = $request->PhoneNumber;
             $user->category = $request->Category;
-            if(null !== $request->ProfilePic){
-                $image = $request->ProfilePic;
-                $path = 'public/documents/';
-                $profile_pic = $this->createImage($image,$path);
+            if($user->roles->first()->name == 'Desirer'){
+                if(null !== $request->ProfilePic){
+                    $image = $request->ProfilePic;
+                    $path = 'public/documents/';
+                    $profile_pic = $this->createImage($image,$path);
+                }
+                $user->profile = $profile_pic;
+                $user->location = $request->Location;
             }
-            $user->profile = $profile_pic;
-            $user->location = $request->Location;
             if($user->save()){
                 $user = User::find($request->UserId);
 
@@ -298,7 +303,8 @@ class AuthController extends Controller
                 $userData['YearsOld'] = $user['year_old'];
                 $userData['AgreeTerms'] = $user['term'];
                 $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
-                $userData['Role'] = $user->roles->first()->name;
+                $userData['Location'] = $user['location'];
+                $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
 
                 return response()->json([
                     'message' => 'User updated successfully!',

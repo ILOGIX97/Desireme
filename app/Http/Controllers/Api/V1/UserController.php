@@ -82,6 +82,7 @@ class UserController extends Controller
             $userData[$userid]['YearsOld'] = $user['year_old'];
             $userData[$userid]['AgreeTerms'] = $user['term'];
             $userData[$userid]['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+            $userData[$userid]['Location'] = $user['location'];
             $userData[$userid]['Role'] = !empty($user->roles->first()->name) ? $user->roles->first()->name : '';
         }
         return response()->json([
@@ -368,7 +369,7 @@ class UserController extends Controller
      *               ),
      *               @OA\Property(
      *                  property="SubscriptionPrice",
-     *                  type="string"
+     *                  type="integer"
      *               ),
      *               @OA\Property(
      *                  property="TwitterURL",
@@ -448,13 +449,17 @@ class UserController extends Controller
 
         if(null !== $request->ProfileVideo){
             $image = $request->ProfileVideo;
-            $ext = explode(';base64',$image);
-            $ext = explode('/',$ext[0]);			
-            $ext = $ext[1];
-            $ext = trim(strtolower($ext));
-            if($ext != 'gif'){
-                return response()->json(['error'=>'The profile video must be a file of type: gif.','isError' => true], 422);
+                
+            if (preg_match('/^data:image\/\w+;base64,/', $image)) {
+                $ext = explode(';base64',$image);
+                $ext = explode('/',$ext[0]);			
+                $ext = $ext[1];
+                $ext = trim(strtolower($ext));
+                if($ext != 'gif'){
+                    return response()->json(['error'=>'The profile video must be a file of type: gif.','isError' => true], 422);
+                }
             }
+            
             $path = 'public/documents/video/';
             $Profile_Video = $this->createImage($image,$path);
         }
@@ -710,7 +715,7 @@ class UserController extends Controller
 
     function getResponse($userId){
         $user = User::find($userId);
-
+        //echo $user->roles->first()->name; exit;
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
@@ -736,7 +741,8 @@ class UserController extends Controller
          $userData['YearsOld'] = $user['year_old'];
          $userData['AgreeTerms'] = $user['term'];
          $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
-         $userData['Role'] = $user->roles->first()->name;
+         $userData['Location'] = $user['location'];
+         $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
          return $userData;
     }
 
