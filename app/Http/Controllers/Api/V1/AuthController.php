@@ -149,7 +149,9 @@ class AuthController extends Controller
                 'Forename' => 'required|string',
                 'Surname' => 'required|string',
                 'Category'=>'required|string',
-                'PhoneNumber'=>'nullable:min:10'
+                'PhoneNumber'=>'nullable:min:10',
+                'AgreeTerms'=>'required|gt:0',
+                'YearsOld'=>'required|gt:0',
             ]);
         }else{
             $validator = Validator::make($request->all(),[
@@ -266,6 +268,9 @@ class AuthController extends Controller
             $user->display_name = $dpName;
             $user->contact = $request->PhoneNumber;
             $user->category = $request->Category;
+            $user->term = $request->AgreeTerms;
+            $user->year_old= $request->TwoFactor;
+            $user->two_factor= $request->YearsOld;
             if($user->roles->first()->name == 'Desirer'){
                 if(null !== $request->ProfilePic){
                     $image = $request->ProfilePic;
