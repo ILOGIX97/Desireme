@@ -13,6 +13,8 @@ use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -79,6 +81,14 @@ class AuthController extends Controller
      *               @OA\Property(
      *                  property="PhoneNumber",
      *                  type="string",
+     *               ),
+     *               @OA\Property(
+     *                  property="ProfilePic",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Location",
+     *                  type="string"
      *               ),
      *               @OA\Property(
      *                  property="TwoFactor",
@@ -151,7 +161,8 @@ class AuthController extends Controller
                 'Category'=>'required|string',
                 'PhoneNumber'=>'nullable:min:10',
                 'AgreeTerms'=>'required|gt:0',
-                'YearsOld'=>'required|gt:0'
+                'YearsOld'=>'required|gt:0',
+                'Role'=>'required'
             ]);
         }
 
@@ -163,21 +174,45 @@ class AuthController extends Controller
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         
         if(empty($request->UserId)){
-            $user =  new User([
-                'first_name' => $request->Forename,
-                'last_name' => $request->Surname,
-                'display_name' => $dpName,
-                'username' => $request->Username,
-                'contact' => $request->PhoneNumber,
-                'email' => $request->Email,
-                'password' => bcrypt($request->Password),
-                'category' => $request->Category,
-                'year_old' => $request->YearsOld,
-                'two_factor' => $request->TwoFactor,
-                'term' => $request->AgreeTerms
-            ]);
+            if($request->Role == 'ContentCreator'){
+                $user =  new User([
+                    'first_name' => $request->Forename,
+                    'last_name' => $request->Surname,
+                    'display_name' => $dpName,
+                    'username' => $request->Username,
+                    'contact' => $request->PhoneNumber,
+                    'email' => $request->Email,
+                    'password' => bcrypt($request->Password),
+                    'category' => $request->Category,
+                    'year_old' => $request->YearsOld,
+                    'two_factor' => $request->TwoFactor,
+                    'term' => $request->AgreeTerms
+                ]);
+            }else{
+                if(null !== $request->ProfilePic){
+                    $image = $request->ProfilePic;
+                    $path = 'public/documents/';
+                    $profile_pic = $this->createImage($image,$path);
+                }
+                $user =  new User([
+                    'first_name' => $request->Forename,
+                    'last_name' => $request->Surname,
+                    'display_name' => $dpName,
+                    'username' => $request->Username,
+                    'contact' => $request->PhoneNumber,
+                    'email' => $request->Email,
+                    'password' => bcrypt($request->Password),
+                    'category' => $request->Category,
+                    'year_old' => $request->YearsOld,
+                    'two_factor' => $request->TwoFactor,
+                    'term' => $request->AgreeTerms,
+                    'profile' => $profile_pic,
+                    'location'=>$request->Location
+                ]);
+            }
+            
             if($user->save()){
-                $user->assignRole(['ContentCreator']);
+                $user->assignRole([$request->Role]);
                 $data['name'] = $request->Forename.' '.$request->Surname;
                 $data['user_id'] = $user->id;
                 $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
@@ -210,6 +245,7 @@ class AuthController extends Controller
                     $userData['YearsOld'] = $user['year_old'];
                     $userData['AgreeTerms'] = $user['term'];
                     $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+                    $userData['Role'] = $user->roles->first()->name;
 
                     return response()->json([
                         'message' => 'Successfully created user!',
@@ -227,6 +263,13 @@ class AuthController extends Controller
             $user->display_name = $dpName;
             $user->contact = $request->PhoneNumber;
             $user->category = $request->Category;
+            if(null !== $request->ProfilePic){
+                $image = $request->ProfilePic;
+                $path = 'public/documents/';
+                $profile_pic = $this->createImage($image,$path);
+            }
+            $user->profile = $profile_pic;
+            $user->location = $request->Location;
             if($user->save()){
                 $user = User::find($request->UserId);
 
@@ -255,6 +298,7 @@ class AuthController extends Controller
                 $userData['YearsOld'] = $user['year_old'];
                 $userData['AgreeTerms'] = $user['term'];
                 $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+                $userData['Role'] = $user->roles->first()->name;
 
                 return response()->json([
                     'message' => 'User updated successfully!',
@@ -587,6 +631,27 @@ class AuthController extends Controller
                 'isError' => false
             ], 201);
         }
+    }
+
+    function createImage($image,$path){
+        if (preg_match('/^data:image\/\w+;base64,/', $image)) {
+            $ext = explode(';base64',$image);
+            $ext = explode('/',$ext[0]);			
+            $ext = $ext[1];
+            $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
+            $image = str_replace(' ', '+', $image);
+            $imageName = Str::random(10).'.'.$ext;
+            $full_path = $path . $imageName;
+            Storage::put($full_path, base64_decode($image));
+            $returnpath = str_replace("public/","",$path).$imageName;
+            
+        } else {
+            $removeData = config('app.url').'storage/'; 
+            $returnpath = str_replace($removeData,"",$image);
+            
+            //$returnpath = $image;
+        }
+        return $returnpath;
     }
 
 
