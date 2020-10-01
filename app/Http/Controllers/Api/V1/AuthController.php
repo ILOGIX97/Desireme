@@ -262,7 +262,7 @@ class AuthController extends Controller
         }else{
             $user = User::find($request->UserId);
             $user->first_name = $request->Forename;
-            $user->last_name = $request->Forename;
+            $user->last_name = $request->Surname;
             $user->display_name = $dpName;
             $user->contact = $request->PhoneNumber;
             $user->category = $request->Category;

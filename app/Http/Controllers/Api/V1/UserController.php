@@ -427,7 +427,7 @@ class UserController extends Controller
             'TwitterURL' => 'nullable:regex:'.$regex,
             'AmazonURL' => 'nullable:regex:'.$regex,
             'Bio' => 'nullable:min:20|max:200',
-            'SubscriptionPrice' => 'nullable:integer|between:3,100',
+            'SubscriptionPrice' => 'integer|between:3,100|nullable',
         ]);
 
         if ($validator->fails()) {
