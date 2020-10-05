@@ -313,7 +313,7 @@ class UserController extends Controller
      *  )
      */
 
-    public function verifyemail(Request $request,$role,$id){
+    public function verifyemail(Request $request,$id){
 
         $UpdateDetails = User::where('id', $id)->update([
             'email_verified' => now()
