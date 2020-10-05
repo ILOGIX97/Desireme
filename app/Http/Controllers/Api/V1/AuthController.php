@@ -405,9 +405,35 @@ class AuthController extends Controller
                 'isError' => true
             ], 401);
         }
-        $user = $request->user(); //->where('email_verified','!=',null);
-        //echo 'hello =>' . $user->email_verified; exit;
-        //print_r($user); exit;
+        $user = $request->user();
+        $userData['userId'] = $user['id'];
+        $userData['Forename'] = $user['first_name'];
+        $userData['Surname'] = $user['last_name'];
+        $userData['DisplayName'] = $user['display_name'];
+        $userData['Username'] = $user['username'];
+        $userData['Email'] = $user['email'];
+        $userData['EmailVerified'] = $user['email_verified'];
+        $userData['PhoneNumber'] = $user['contact'];
+        $userData['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+        $userData['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+        $userData['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+        $userData['SubscriptionPrice'] = $user['subscription_price'];
+        $userData['TwitterURL'] = $user['twitter_url'];
+        $userData['AmazonURL'] = $user['amazon_url'];
+        $userData['Bio'] = $user['bio'];
+        $userData['Tags'] = $user['tags'];
+        $userData['Country'] = $user['country'];
+        $userData['AccountName'] = $user['account_name'];
+        $userData['SortCode'] = $user['sort_code'];
+        $userData['AccountNumber'] = $user['account_number'];
+        $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+        $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+        $userData['Category'] = $user['category'];
+        $userData['YearsOld'] = $user['year_old'];
+        $userData['AgreeTerms'] = $user['term'];
+        $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+        $userData['Location'] = $user['location'];
+        $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
         if(!empty($user->email_verified) && !empty($user->check_registration))
         {
             $tokenResult = $user->createToken('Personal Access Token');
@@ -418,8 +444,7 @@ class AuthController extends Controller
                 'access_token' => '',
                 'token_type' => 'Bearer',
                 'expires_at' => '',
-                'user_id' => $user->id,
-                'username' => $user->username,
+                'data' => $userData,
                 'isError' => true
             ]);
         }
@@ -436,8 +461,7 @@ class AuthController extends Controller
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
-            'user_id' => $user->id,
-            'username' => $user->username,
+            'data' => $userData,
             'isError' => false
         ]);
 
