@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function verifyemail($id){
-        
+    public function verifyemail($role,$id){
+          
           $UpdateDetails = User::where('id', $id)->update([
              'email_verified' => now()
           ]);
         
-          return redirect('http://localhost:3000/verify/'.$id);
+          return redirect('http://localhost:3000/verify/'.$role.'/'.$id);
     }
 }

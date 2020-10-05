@@ -218,8 +218,9 @@ class AuthController extends Controller
             if($user->save()){
                 $user->assignRole([$request->Role]);
                 $data['name'] = $request->Forename.' '.$request->Surname;
+                $data['role'] = $user->roles->first()->name;
                 $data['user_id'] = $user->id;
-                $data['url'] = config('app.url').'verifyemail/'.$data['user_id'];
+                $data['url'] = config('app.url').'verifyemail/'.$data['role'].'/'.$data['user_id'];
 
                     Mail::to($request->Email)->send(new SendMailable($data));
                     $user = User::find($user->id);
@@ -404,20 +405,39 @@ class AuthController extends Controller
                 'isError' => true
             ], 401);
         }
-        $user = $request->user();
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
+        $user = $request->user(); //->where('email_verified','!=',null);
+        //echo 'hello =>' . $user->email_verified; exit;
+        //print_r($user); exit;
+        if(!empty($user->email_verified) && !empty($user->check_registration))
+        {
+            $tokenResult = $user->createToken('Personal Access Token');
+            $token = $tokenResult->token;
+        }else{
+            return response()->json([
+                'message' => 'Registration process not completed',
+                'access_token' => '',
+                'token_type' => 'Bearer',
+                'expires_at' => '',
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'isError' => true
+            ]);
+        }
+            
 
         if (isset($request->remember_me) && $request->remember_me == 'Yes')
-            $token->expires_at = Carbon::now()->addWeeks(1);
+            $token->expires_at = Carbon::now()->addHours(8);
             $token->save();
 
         return response()->json([
+            'message' => 'Registration process completed',
             'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
+            'user_id' => $user->id,
+            'username' => $user->username,
             'isError' => false
         ]);
 

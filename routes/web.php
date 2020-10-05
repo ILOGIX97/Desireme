@@ -21,5 +21,6 @@ Route::get('/', function () {
     return view('verifyemail');
 });*/
 
-Route::get('/verifyemail/{id}', 'UserController@verifyemail');
+// Route::get('/verifyemail/{id}', 'UserController@verifyemail');
+Route::get('/verifyemail/{rolename}/{id}', 'UserController@verifyemail');
 Route::view('password/email', 'auth.reset_password')->name('password.reset');

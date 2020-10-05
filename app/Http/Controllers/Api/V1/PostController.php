@@ -177,6 +177,10 @@ class PostController extends Controller
      *                  type="string"
      *               ),
      *               @OA\Property(
+     *                  property="PhotoorVideo",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
      *                  property="Publish",
      *                  type="string",
      *                  default="new",
@@ -323,6 +327,7 @@ class PostController extends Controller
         foreach($postDetails as $postDetail){
             $postData[$i]['id'] = $postDetail['id'];
             $postData[$i]['comment'] = $postDetail['comment'];
+            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$i]['tags'] = $postDetail['tags'];
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
