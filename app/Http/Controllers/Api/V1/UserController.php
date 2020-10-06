@@ -692,6 +692,125 @@ class UserController extends Controller
 
     }
 
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/profileSettings/{id}",
+     *          operationId="Update User Profile",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="Update User Profile",
+     *      description="data of user",
+     *      @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"FirstName","LastName","Email","ProfilePhoto","CoverPhoto"},
+     *               @OA\Property(
+     *                  property="FirstName",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="LastName",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Email",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="DisplayName",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="ProfilePhoto",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="CoverPhoto",
+     *                  type="string"
+     *               ),
+     *           )
+     *       ),
+     *   ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function profileSettings(Request $request,$id){
+        
+        $validator = Validator::make($request->all(),[
+            'Email' => 'required|string|email',
+            'FirstName' => 'required|string',
+            'LastName' => 'required|string',
+            'ProfilePhoto' => 'required',
+            'CoverPhoto' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+
+        
+        $profile_pic = '';
+        $cover_pic = '';
+        if(null !== $request->ProfilePhoto){
+            $image = $request->ProfilePhoto;
+            $path = 'public/documents/';
+            $profile_pic = $this->createImage($image,$path);
+        }
+        if(null !== $request->CoverPhoto){
+            $image1 = $request->CoverPhoto;  // your base64 encoded
+            $path = 'public/documents/';
+            $cover_pic = $this->createImage($image1,$path);
+            
+        }
+        $UpdateDetails = User::where('id', $id)->update([
+            'profile' => $profile_pic,
+            'cover' => $cover_pic,
+            'first_name' => $request->FirstName,
+            'last_name' => $request->LastName,
+            'display_name' => $request->DisplayName
+         ]);
+        $userData = $this->getResponse($id);
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);
+    }
+
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);

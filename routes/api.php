@@ -51,7 +51,10 @@ use Illuminate\Support\Facades\Route;
     Route::post('alluser', 'Api\V1\UserController@alluser');
     Route::post('getDetails/{id}', 'Api\V1\UserController@getDetails');
     Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
+    Route::post('/profileSettings/{id}', 'Api\V1\UserController@profileSettings');
+    
     Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
+    
     //Post related routes
     Route::post('addPost/{userid}', 'Api\V1\PostController@addPost');
     Route::post('updatePost/{postid}', 'Api\V1\PostController@updatePost');
