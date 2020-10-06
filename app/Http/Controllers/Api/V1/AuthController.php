@@ -161,7 +161,7 @@ class AuthController extends Controller
                 'PhoneNumber'=>'nullable:min:10',
                 'AgreeTerms'=>'required|gt:0',
                 'YearsOld'=>'required|gt:0',
-            ]);
+            ],$messages);
         }else{
             $validator = Validator::make($request->all(),[
                 'Forename' => 'required|string',
