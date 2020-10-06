@@ -858,11 +858,11 @@ class UserController extends Controller
             'check_activation' => 0
          ]);
 
-        $userData = $this->getResponse($id);
+        //$userData = $this->getResponse($id);
 
         return response()->json([
             'message' => 'Account closed successfully',
-            'data' => $userData,
+            'data' => '',
             'isError' => false
         ]);
         //return response()->json($request->user());
