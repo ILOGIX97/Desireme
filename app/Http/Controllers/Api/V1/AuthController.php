@@ -144,6 +144,15 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        
+        
+        $messages = array(
+            'required' => 'The :attribute field is required.',
+            'AgreeTerms.gt' => 'please agree terms and conditions',
+            'YearsOld.gt' => 'Years must be 18 or over',
+        );
+          
+
         if(isset($request->UserId) && !empty($request->UserId)){
             $validator = Validator::make($request->all(),[
                 'Forename' => 'required|string',
@@ -165,11 +174,12 @@ class AuthController extends Controller
                 'AgreeTerms'=>'required|gt:0',
                 'YearsOld'=>'required|gt:0',
                 'Role'=>'required'
-            ]);
+            ],$messages);
         }
 
         if ($validator->fails()) {
             $failedRules = $validator->failed();
+            //echo '<pre>'; print_r($validator->errors()); exit;
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
 

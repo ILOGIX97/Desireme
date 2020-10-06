@@ -869,6 +869,104 @@ class UserController extends Controller
 
     }
 
+     /**
+     * @OA\Post(
+     *          path="/api/v1/updatePaymentDetails/{id}",
+     *          operationId="Update User Payment Details",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="Update User Payment Details",
+     *      description="data of users account",
+     *      @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               @OA\Property(
+     *                  property="Country",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="AccountName",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="SortCode",
+     *                  type="number"
+     *               ),
+     *               @OA\Property(
+     *                  property="AccountNumber",
+     *                  type="number"
+     *               ),
+     *           )
+     *       ),
+     *   ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function updatePaymentDetails(Request $request,$id){
+
+        $validator = Validator::make($request->all(),[
+            'SortCode' => 'nullable|numeric|digits:6',
+            'AccountNumber' => 'nullable|numeric|digits:8',
+
+        ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+
+        $UpdateDetails = User::where('id', $id)->update([
+            'country' => $request->Country,
+            'account_name' => $request->AccountName,
+            'sort_code'=> $request->SortCode,
+            'account_number'=>$request->AccountNumber,
+          ]);
+
+        $userData = $this->getResponse($id); 
+
+        return response()->json([
+            'message' => 'Account details updated successfully',
+            'data' => $userData,
+            'isError' => false
+        ]);
+
+        //return response()->json(User::find($id));
+
+    }
+
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);

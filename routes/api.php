@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
     Route::post('/profileSettings/{id}', 'Api\V1\UserController@profileSettings');
     Route::post('/closeAccount/{id}', 'Api\V1\UserController@closeAccount');
+    Route::post('updatePaymentDetails/{id}', 'Api\V1\UserController@addPaymentDetails');
 
     Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
     
