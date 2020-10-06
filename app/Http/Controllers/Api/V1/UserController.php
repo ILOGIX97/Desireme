@@ -861,6 +861,7 @@ class UserController extends Controller
         $userData = $this->getResponse($id);
 
         return response()->json([
+            'message' => 'Account closed successfully',
             'data' => $userData,
             'isError' => false
         ]);
