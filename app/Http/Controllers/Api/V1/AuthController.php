@@ -434,17 +434,27 @@ class AuthController extends Controller
         $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
         $userData['Location'] = $user['location'];
         $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
-        if(!empty($user->email_verified) && !empty($user->check_registration))
+        
+        if(!empty($user->email_verified) && !empty($user->check_registration) && !empty($user->check_activation))
         {
             $tokenResult = $user->createToken('Personal Access Token');
             $token = $tokenResult->token;
         }else{
+            if(empty($user->email_verified)){
+                $message = 'Email address not verified';
+            }
+            if(empty($user->check_registration)){
+                $message = 'Registration process not completed';
+            }
+            if(empty($user->check_activation)){
+                $message = 'User is not activated';
+            }
             return response()->json([
-                'message' => 'Registration process not completed',
+                'message' => $message,
                 'access_token' => '',
-                'token_type' => 'Bearer',
+                'token_type' => '',
                 'expires_at' => '',
-                'data' => $userData,
+                'data' => '',
                 'isError' => true
             ]);
         }

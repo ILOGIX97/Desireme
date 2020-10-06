@@ -811,6 +811,63 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *          path="/api/v1/closeAccount/{id}",
+     *          operationId="Close user account",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      summary="Close user account",
+     *      description="data of user",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function closeAccount($id){
+        $UpdateDetails = User::where('id', $id)->update([
+            'check_activation' => 0
+         ]);
+
+        $userData = $this->getResponse($id);
+
+        return response()->json([
+            'data' => $userData,
+            'isError' => false
+        ]);
+        //return response()->json($request->user());
+
+    }
+
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);
