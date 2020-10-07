@@ -73,5 +73,11 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Post', 'post_user', 'user_id', 'post_id');
     }
 
+    public function albums()
+    {
+        return $this->belongsToMany('App\Album', 'album_user', 'user_id', 'album_id');
+    }
+
+
     
 }

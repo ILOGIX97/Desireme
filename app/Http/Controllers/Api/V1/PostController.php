@@ -37,9 +37,13 @@ class PostController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Comment","Publish"},
+     *               required={"Title","Caption","Publish"},
      *               @OA\Property(
-     *                  property="Comment",
+     *                  property="Title",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Caption",
      *                  type="string"
      *               ),
      *               @OA\Property(
@@ -63,10 +67,8 @@ class PostController extends Controller
      *                  format="date-time"
      *               ),
      *               @OA\Property(
-     *                  property="AddtoAlbum",
-     *                  type="string",
-     *                  default="0",
-     *                  enum={"0", "1"}
+     *                  property="ChooseAlbum",
+     *                  type="integer",
      *               ),
      *          )
      *       ),
@@ -101,7 +103,8 @@ class PostController extends Controller
     public function addPost(Request $request,$id){
         
         $validator = Validator::make($request->all(),[
-            'Comment' => 'required',
+            'Title' => 'required',
+            'Caption' => 'required',
             'Publish' => 'required',
             'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d/m/Y H:i'
         ]);
@@ -121,7 +124,8 @@ class PostController extends Controller
 
         //echo $request->ScheduleDateTime; exit;
         $post =  new Post([
-    		'comment' => $request->Comment,
+            'title' => $request->Title,
+            'caption' => $request->Caption,
             'tags' => (!empty($request->Tags)) ? $request->Tags : '',
             'media' => $media,
     		'publish' => $request->Publish,
@@ -167,9 +171,13 @@ class PostController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Comment","Publish"},
+     *               required={"Title","Caption","Publish"},
      *               @OA\Property(
-     *                  property="Comment",
+     *                  property="Title",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Caption",
      *                  type="string"
      *               ),
      *               @OA\Property(
@@ -231,7 +239,8 @@ class PostController extends Controller
     public function updatePost(Request $request,$id){
         
         $validator = Validator::make($request->all(),[
-            'Comment' => 'required',
+            'Title' => 'required',
+            'Caption' => 'required',
             'Publish' => 'required',
             'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d/m/Y H:i'
         ]);
@@ -250,7 +259,8 @@ class PostController extends Controller
         }
         
         $postDetails = Post::where('id', $id)->update([
-            'comment' => $request->Comment,
+            'title' => $request->Title,
+            'caption' => $request->Caption,
             'tags' => (!empty($request->Tags)) ? $request->Tags : '',
             'media' => $media,
     		'publish' => $request->Publish,
@@ -278,7 +288,7 @@ class PostController extends Controller
      * @OA\Post(
      *          path="/api/v1/getUserPost/{userid}",
      *          operationId="Get User Posts",
-     *          tags={"Posts"},
+     *          tags={"Users"},
      *      @OA\Parameter(
      *          name="userid",
      *          in="path",
@@ -336,7 +346,7 @@ class PostController extends Controller
         }
         if(count($postDetails)){
             return response()->json([
-                'message' => 'Post updated successfully!',
+                'message' => 'User post list!',
                 'data' => $postData,
                 'isError' => false
             ], 201);

@@ -5,25 +5,23 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Post extends Model
+class Album extends Model
 {
     use SoftDeletes;
 
     protected $dates = ['deleted_at'];
-     
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
     */
     protected $fillable = [
-        'title','caption', 'tags', 'publish','media', 'schedule_at', 'add_to_album'
+        'name'
     ];
 
     public function users()
     {
-        return $this->belongsToMany('App\User', 'post_user', 'post_id', 'user_id');
+        return $this->belongsToMany('App\User', 'album_user', 'album_id', 'user_id');
     }
-
-    
 }
