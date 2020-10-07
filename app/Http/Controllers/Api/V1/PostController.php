@@ -130,7 +130,7 @@ class PostController extends Controller
             'media' => $media,
     		'publish' => $request->Publish,
             'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
-            'add_to_album' => $request->AddtoAlbum,
+            'add_to_album' => (!empty($request->ChooseAlbum)) ? $request->ChooseAlbum : '0',
         ]);
         //echo '<pre>'; print_r($post); exit;
         //$user = User::find($id)->posts()->save($post);
@@ -201,10 +201,8 @@ class PostController extends Controller
      *                  format="date-time"
      *               ),
      *               @OA\Property(
-     *                  property="AddtoAlbum",
-     *                  type="string",
-     *                  default="0",
-     *                  enum={"0", "1"}
+     *                  property="ChooseAlbum",
+     *                  type="integer",
      *               ),
      *          )
      *       ),
@@ -265,7 +263,7 @@ class PostController extends Controller
             'media' => $media,
     		'publish' => $request->Publish,
             'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
-            'add_to_album' => $request->AddtoAlbum,
+            'add_to_album' => (!empty($request->ChooseAlbum)) ? $request->ChooseAlbum : '0',
          ]);
 
         if($postDetails){
@@ -341,7 +339,7 @@ class PostController extends Controller
             $postData[$i]['tags'] = $postDetail['tags'];
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$i]['add_to_album'] = ($postDetail['add_to_album'] == 1) ? 'Yes' : 'No';
+            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
             $i++;
         }
         if(count($postDetails)){
@@ -422,7 +420,7 @@ class PostController extends Controller
         $postData['publish'] = $postDetail['publish'];
         $postData['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
         $postData['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-        $postData['add_to_album'] = ($postDetail['add_to_album'] == 1) ? 'Yes' : 'No';
+        $postData['add_to_album'] = $postDetail['add_to_album'];
          
         
          return $postData;
