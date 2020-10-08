@@ -58,11 +58,20 @@ class HomeController extends Controller
      *  )
      */
     public function getUsersbyCategory($category){
-        $users = User::whereHas(
-            'roles', function($q){
-                $q->where('name', 'ContentCreator');
-            }
-        )->where('category', ucfirst($category))->get();
+        if(strtolower($category) != 'all'){
+            $users = User::whereHas(
+                'roles', function($q){
+                    $q->where('name', 'ContentCreator');
+                }
+            )->where('category', ucfirst($category))->get();
+        }else{
+            $users = User::whereHas(
+                'roles', function($q){
+                    $q->where('name', 'ContentCreator');
+                }
+            )->get();
+        }
+        
         //echo '<pre>'; print_r($users); exit();
         $userData = array();
         $i = 0;
