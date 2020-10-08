@@ -44,6 +44,12 @@ use Illuminate\Support\Facades\Route;
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
     Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
     Route::get('getCountries', 'Api\V1\UserController@getCountries');
+
+
+    //Homepage apis
+    Route::post('getUsersbyCategory/{category}', 'Api\V1\HomeController@getUsersbyCategory');
+    Route::post('getUsersbyName/{name}', 'Api\V1\HomeController@getUsersbyName');
+
     Route::group([
         'middleware' => 'auth:api'
       ], function() {
