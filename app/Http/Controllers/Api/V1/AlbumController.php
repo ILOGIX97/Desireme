@@ -298,7 +298,8 @@ class AlbumController extends Controller
     public function deleteAlbum($id){
         if(Album::find($id)->delete()){
             return response()->json([
-                'message' => 'Successfully deleted album!'
+                'message' => 'Successfully deleted album!',
+                'isError' => false
             ], 201);
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => false]);

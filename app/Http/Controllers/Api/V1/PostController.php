@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Post;
 use App\User;
+use App\Like;
+use App\Comment;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
@@ -331,8 +333,20 @@ class PostController extends Controller
         //echo $id; exit;
         $user = User::findOrFail($id);
         $postDetails = $user->posts()->get();
+        
         $i=0;
         foreach($postDetails as $postDetail){
+
+            $likeDetails = Like::where('post_id',$postDetail['id'])->get();
+            $likeUsers = array();
+            if(count($likeDetails) > 0){
+                $i = 0;
+                foreach($likeDetails as $likeDetail){
+                    $likeUsers[$i]['id'] = $likeDetail['user_id'];
+                    $i++;
+                }
+            }
+
             $postData[$i]['id'] = $postDetail['id'];
             $postData[$i]['comment'] = $postDetail['comment'];
             $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
@@ -340,6 +354,8 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likes'] = count($likeDetails);
+            $postData[$i]['likeUsers'] = $likeUsers;
             $i++;
         }
         if(count($postDetails)){
@@ -412,18 +428,169 @@ class PostController extends Controller
     	
     }
 
+    
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/likePost/{postid}/{userid}",
+     *          operationId="Like User Post",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="postid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="Like User Post",
+     *      description="Like User Post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function likePost($postid,$userid){
+        
+        //echo $request->ScheduleDateTime; exit;
+        $post_like =  new Like([
+            'post_id' => $postid,
+            'user_id' => $userid,
+        ]);
+
+        $users = Like::where('post_id',$postid)->where('user_id',$userid)->get();
+        //echo '<pre>'; print_r($users); exit;
+        if(count($users) == 0){
+            if($post_like->save()){
+                $postData = $this->getPostResponse($postid);
+                return response()->json([
+                    'message' => 'Post liked successfully!',
+                    'data' => $postData,
+                    'isError' => false
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => true]);
+            }
+        }else{
+            return response()->json(['error'=>'Post already liked','isError' => true]);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/dislikePost/{postid}/{userid}",
+     *          operationId="DisLike User Post",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="postid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="DisLike User Post",
+     *      description="DisLike User Post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function dislikePost($postid,$userid){
+        
+        
+
+        if(Like::where('post_id',$postid)->where('user_id',$userid)->delete())
+        {
+            return response()->json([
+                'message' => 'Post disliked successfully!'
+            ], 201);
+        }else{
+            return response()->json(['error'=>'Provide proper details','isError' => false]);
+        }
+       
+        
+        
+    }
+
     function getPostResponse($postId){
         $postDetail = Post::find($postId);
+
+        
         $postData['id'] = $postDetail['id'];
-        $postData['comment'] = $postDetail['comment'];
+        $postData['title'] = $postDetail['title'];
+        $postData['caption'] = $postDetail['caption'];
         $postData['tags'] = $postDetail['tags'];
         $postData['publish'] = $postDetail['publish'];
         $postData['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
         $postData['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
         $postData['add_to_album'] = $postDetail['add_to_album'];
-         
         
-         return $postData;
+        return $postData;
     }
 
     function createImage($image,$path){
@@ -451,7 +618,5 @@ class PostController extends Controller
         return $returnpath;
             
     }
-
-    
 
 }

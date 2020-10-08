@@ -174,9 +174,10 @@ class HomeController extends Controller
             'roles', function($q){
                 $q->where('name', 'ContentCreator');
             }
-        )->where('first_name', $name)
-        ->orWhere('last_name', $name)
-        ->orWhere('username', $name)
+        )->where('first_name','LIKE', '%' . $name . '%')
+        ->orWhere('last_name', 'LIKE','%' . $name . '%')
+        ->orWhere('username', 'LIKE','%' . $name . '%')
+        ->orWhere('email', 'LIKE','%' . $name . '%')
         ->get();
         //echo '<pre>'; print_r($users); exit();
         $userData = array();

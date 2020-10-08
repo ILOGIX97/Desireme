@@ -68,6 +68,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('updatePost/{postid}', 'Api\V1\PostController@updatePost');
     Route::post('getUserPost/{userid}', 'Api\V1\PostController@getUserPost');
     Route::post('deletePost/{postid}', 'Api\V1\PostController@deletePost');
+    Route::post('likePost/{postid}/{userid}', 'Api\V1\PostController@likePost');
+    Route::post('dislikePost/{postid}/{userid}', 'Api\V1\PostController@dislikePost');    
 
     //Album routes
     Route::post('addAlbum/{userid}', 'Api\V1\AlbumController@addAlbum');
