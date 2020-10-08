@@ -18,7 +18,7 @@ class HomeController extends Controller
 {
     /**
      * @OA\Post(
-     *          path="/api/v1/getUsersbyCategory/{category}",
+     *          path="/api/v1/getUsersbyCategory/{category}/{start}/{end}",
      *          operationId="User category",
      *          tags={"Homepage"},
      *      @OA\Parameter(
@@ -27,6 +27,22 @@ class HomeController extends Controller
      *          required=true,
      *          @OA\Schema(
      *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
      *          )
      *      ),
      *
@@ -57,19 +73,19 @@ class HomeController extends Controller
      *      ),
      *  )
      */
-    public function getUsersbyCategory($category){
+    public function getUsersbyCategory($category,$start,$limit){
         if(strtolower($category) != 'all'){
             $users = User::whereHas(
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->where('category', ucfirst($category))->get();
+            )->where('category', ucfirst($category))->offset($start)->limit($limit)->get();
         }else{
             $users = User::whereHas(
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->get();
+            )->offset($start)->limit($limit)->get();
         }
         
         //echo '<pre>'; print_r($users); exit();
