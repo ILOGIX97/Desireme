@@ -375,6 +375,81 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
+     *          path="/api/v1/getAllPost",
+     *          operationId="Get All Posts",
+     *          tags={"Posts"},
+     *      summary="Get All Posts",
+     *      description="data of post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getAllPost(){
+        
+        $postDetails = Post::all();
+        
+        $i=0;
+        foreach($postDetails as $postDetail){
+
+            $likeDetails = Like::where('post_id',$postDetail['id'])->get();
+            $likeUsers = array();
+            if(count($likeDetails) > 0){
+                $i = 0;
+                foreach($likeDetails as $likeDetail){
+                    $likeUsers[$i]['id'] = $likeDetail['user_id'];
+                    $i++;
+                }
+            }
+
+            $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['comment'] = $postDetail['comment'];
+            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$i]['tags'] = $postDetail['tags'];
+            $postData[$i]['publish'] = $postDetail['publish'];
+            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likes'] = count($likeDetails);
+            $postData[$i]['likeUsers'] = $likeUsers;
+            $i++;
+        }
+        if(count($postDetails)){
+            return response()->json([
+                'message' => 'User post list!',
+                'data' => $postData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Post available','isError' => true]);
+        }
+        
+    }
+
+    /**
+     * @OA\Post(
      *          path="/api/v1/deletePost/{postid}",
      *          operationId="Delete User Post Details",
      *          tags={"Posts"},

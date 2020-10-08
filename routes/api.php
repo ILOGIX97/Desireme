@@ -44,7 +44,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
     Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
     Route::get('getCountries', 'Api\V1\UserController@getCountries');
-
+    
 
     //Homepage apis
     Route::post('getUsersbyCategory/{category}/{start}/{limit}', 'Api\V1\HomeController@getUsersbyCategory');
@@ -67,6 +67,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('addPost/{userid}', 'Api\V1\PostController@addPost');
     Route::post('updatePost/{postid}', 'Api\V1\PostController@updatePost');
     Route::post('getUserPost/{userid}', 'Api\V1\PostController@getUserPost');
+    Route::post('getAllPost', 'Api\V1\PostController@getAllPost');
     Route::post('deletePost/{postid}', 'Api\V1\PostController@deletePost');
     Route::post('likePost/{postid}/{userid}', 'Api\V1\PostController@likePost');
     Route::post('dislikePost/{postid}/{userid}', 'Api\V1\PostController@dislikePost');    
