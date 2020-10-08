@@ -18,7 +18,7 @@ class HomeController extends Controller
 {
     /**
      * @OA\Post(
-     *          path="/api/v1/getUsersbyCategory/{category}/{start}/{end}",
+     *          path="/api/v1/getUsersbyCategory/{category}/{start}/{limit}",
      *          operationId="User category",
      *          tags={"Homepage"},
      *      @OA\Parameter(
