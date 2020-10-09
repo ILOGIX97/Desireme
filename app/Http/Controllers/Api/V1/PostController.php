@@ -417,11 +417,22 @@ class PostController extends Controller
 
             $likeDetails = Like::where('post_id',$postDetail['id'])->get();
             $likeUsers = array();
+            $j = 0;
             if(count($likeDetails) > 0){
-                $i = 0;
                 foreach($likeDetails as $likeDetail){
-                    $likeUsers[$i]['id'] = $likeDetail['user_id'];
-                    $i++;
+                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $j++;
+                }
+            }
+
+            $commentDetails = Comment::where('post_id',$postDetail['id'])->get();
+            $commentUsers = array();
+            $k = 0;
+            if(count($commentDetails) > 0){
+                foreach($commentDetails as $commentDetail){
+                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $k++;
                 }
             }
 
@@ -434,6 +445,8 @@ class PostController extends Controller
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['comments'] = count($commentDetails);
+            $postData[$i]['commentUsers'] = $commentUsers;
             $i++;
         }
         if(count($postDetails)){
@@ -652,10 +665,264 @@ class PostController extends Controller
         
     }
 
+     /**
+     * @OA\Post(
+     *          path="/api/v1/addCommenttoPost/{postid}/{userid}",
+     *          operationId="Comment on User Post",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="postid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"Comment"},
+     *               @OA\Property(
+     *                  property="Comment",
+     *                  type="string"
+     *               ),
+     *           )
+     *         ),
+     *      ),
+     *      
+     *      summary="Comment on User Post",
+     *      description="Comment on User Post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function addCommenttoPost(request $request, $postid,$userid){
+        
+        $validator = Validator::make($request->all(),[
+            'Comment' => 'required',
+         ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+        $post_comment =  new Comment([
+            'post_id' => $postid,
+            'user_id' => $userid,
+            'comment' => $request->Comment,
+        ]);
+
+       if($post_comment->save()){
+                $postData = $this->getPostResponse($postid);
+                return response()->json([
+                    'message' => 'Comment added successfully!',
+                    'data' => $postData,
+                    'isError' => false
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => true]);
+            }
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/updatePostComment/{commentid}",
+     *          operationId="Update Comment on User Post",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="commentid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"Comment"},
+     *               @OA\Property(
+     *                  property="Comment",
+     *                  type="string"
+     *               ),
+     *           )
+     *         ),
+     *      ),
+     *      
+     *      summary="Comment on User Post",
+     *      description="Update Comment on User Post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function updatePostComment(request $request, $id){
+        
+        $validator = Validator::make($request->all(),[
+            'Comment' => 'required',
+         ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+
+
+        $post_comment = Comment::where('id', $id)->update([
+            'comment' => $request->Comment,
+        ]);
+
+        $comment = Comment::find($id);
+         if($post_comment){
+                $postData = $this->getPostResponse($comment['post_id']);
+                return response()->json([
+                    'message' => 'Comment updated successfully!',
+                    'data' => $postData,
+                    'isError' => false
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => true]);
+            }
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/deletePostComment/{commentid}",
+     *          operationId="Delete Comment of User Post",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="commentid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="Comment on User Post",
+     *      description="Delete Comment of User Post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function deletePostComment($id){
+        
+        if(Comment::where('id',$id)->delete())
+        {
+            return response()->json([
+                'message' => 'Comment deleted successfully!'
+            ], 201);
+        }else{
+            return response()->json(['error'=>'Provide proper details','isError' => false]);
+        }
+    }
+
     function getPostResponse($postId){
         $postDetail = Post::find($postId);
 
-        
+        $likeDetails = Like::where('post_id',$postId)->get();
+        $likeUsers = array();
+        if(count($likeDetails) > 0){
+            $i = 0;
+            foreach($likeDetails as $likeDetail){
+                $likeUsers[$i]['userid'] = $likeDetail['user_id'];
+                $i++;
+            }
+        }
+
+        $commentDetails = Comment::where('post_id',$postId)->get();
+        $commentUsers = array();
+        if(count($commentDetails) > 0){
+            $i = 0;
+            foreach($commentDetails as $commentDetail){
+                $commentUsers[$i]['userid'] = $commentDetail['user_id'];
+                $commentUsers[$i]['comment'] = $commentDetail['comment'];
+                $i++;
+            }
+        }
+
         $postData['id'] = $postDetail['id'];
         $postData['title'] = $postDetail['title'];
         $postData['caption'] = $postDetail['caption'];
@@ -664,6 +931,10 @@ class PostController extends Controller
         $postData['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
         $postData['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
         $postData['add_to_album'] = $postDetail['add_to_album'];
+        $postData['likes'] = count($likeDetails);
+        $postData['likeUsers'] = $likeUsers;
+        $postData['comments'] = count($commentDetails);
+        $postData['commentUsers'] = $commentUsers;
         
         return $postData;
     }

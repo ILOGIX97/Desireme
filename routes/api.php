@@ -70,7 +70,10 @@ use Illuminate\Support\Facades\Route;
     Route::post('getAllPost', 'Api\V1\PostController@getAllPost');
     Route::post('deletePost/{postid}', 'Api\V1\PostController@deletePost');
     Route::post('likePost/{postid}/{userid}', 'Api\V1\PostController@likePost');
-    Route::post('dislikePost/{postid}/{userid}', 'Api\V1\PostController@dislikePost');    
+    Route::post('dislikePost/{postid}/{userid}', 'Api\V1\PostController@dislikePost');
+    Route::post('addCommenttoPost/{postid}/{userid}', 'Api\V1\PostController@addCommenttoPost');  
+    Route::post('updatePostComment/{commentid}', 'Api\V1\PostController@updatePostComment'); 
+    Route::post('deletePostComment/{commentid}', 'Api\V1\PostController@deletePostComment');    
 
     //Album routes
     Route::post('addAlbum/{userid}', 'Api\V1\AlbumController@addAlbum');
