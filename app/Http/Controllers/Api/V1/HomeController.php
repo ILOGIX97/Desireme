@@ -123,6 +123,7 @@ class HomeController extends Controller
             $i++;
         }
         return response()->json([
+            'userCount' => count($users),
             'data' => $userData,
             'isError' => false
         ]);
