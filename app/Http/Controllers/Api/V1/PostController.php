@@ -367,6 +367,7 @@ class PostController extends Controller
                     $likeUsers[$j]['banner'] = $likeDetail['cover'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
                     $likeUsers[$j]['userName'] = $likeDetail['username'];
                     $j++;
                 }
@@ -385,6 +386,7 @@ class PostController extends Controller
                     $commentUsers[$k]['banner'] = $commentDetail['cover'];
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
                      $k++;
                 }
@@ -489,6 +491,7 @@ class PostController extends Controller
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
                     $likeUsers[$j]['userName'] = $likeDetail['username'];
                     $j++;
                 }
@@ -506,6 +509,7 @@ class PostController extends Controller
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
                     $j++;
                     $k++;
