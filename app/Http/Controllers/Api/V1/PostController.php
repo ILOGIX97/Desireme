@@ -8,6 +8,7 @@ use App\Post;
 use App\User;
 use App\Like;
 use App\Comment;
+use App\Views;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
@@ -357,10 +358,25 @@ class PostController extends Controller
             $likeDetails = Like::where('post_id',$postDetail['id'])->get();
             $likeUsers = array();
             if(count($likeDetails) > 0){
-                $i = 0;
+                $j = 0;
                 foreach($likeDetails as $likeDetail){
-                    $likeUsers[$i]['id'] = $likeDetail['user_id'];
-                    $i++;
+                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $j++;
+                }
+            }
+
+            $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'comments.user_id')
+                                ->get();
+            $commentUsers = array();
+            $k = 0;
+            if(count($commentDetails) > 0){
+                foreach($commentDetails as $commentDetail){
+                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                     $k++;
                 }
             }
 
@@ -373,6 +389,8 @@ class PostController extends Controller
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['comments'] = count($commentDetails);
+            $postData[$i]['commentUsers'] = $commentUsers;
             $i++;
         }
         if(count($postDetails)){
@@ -472,7 +490,7 @@ class PostController extends Controller
                 foreach($commentDetails as $commentDetail){
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
-                    $commentUsers[$j]['profile'] = $likeDetail['profile'];
+                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
                     $j++;
                     $k++;
                 }
@@ -1007,6 +1025,95 @@ class PostController extends Controller
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
         
+    }
+
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/viewPost/{postid}/{userid}",
+     *          operationId="increse View count of User Post",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="postid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="increse View count of User Post",
+     *      description="Increse View count of User Post",
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function viewPost($postid,$userid){
+        
+        //echo $request->ScheduleDateTime; exit;
+        $post_view =  new Like([
+            'post_id' => $postid,
+            'user_id' => $userid,
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
+        ]);
+
+        $users = Like::where('post_id',$postid)->where('user_id',$userid)->get();
+        $postData = $this->getPostResponse($postid);
+        if(count($users) == 0){
+            if($post_view->save()){
+                return response()->json([
+                    'message' => 'Post liked successfully!',
+                    'data' => $postData,
+                    'isError' => false
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => true]);
+            }
+        }else{
+
+            if(Like::where('post_id',$postid)->where('user_id',$userid)->delete())
+            {
+                return response()->json([
+                    'message' => 'Post disliked successfully!',
+                    'data' => $postData,
+                    'isError' => false,
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => false]);
+            }
+        }
     }
 
     function getPostResponse($postId){
