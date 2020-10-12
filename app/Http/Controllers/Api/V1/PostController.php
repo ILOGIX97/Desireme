@@ -286,11 +286,27 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getUserPost/{userid}",
+     *          path="/api/v1/getUserPost/{userid}/{start}/{limit}",
      *          operationId="Get User Posts",
      *          tags={"Users"},
      *      @OA\Parameter(
      *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
      *          in="path",
      *          required=true,
      *          @OA\Schema(
@@ -328,11 +344,12 @@ class PostController extends Controller
      *  )
      */
 
-    public function getUserPost($id){
+    public function getUserPost($id,$start,$limit){
         
         //echo $id; exit;
         $user = User::findOrFail($id);
-        $postDetails = $user->posts()->get();
+        $allPost = $user->posts()->get();
+        $postDetails = $user->posts()->offset($start)->limit($limit)->get();
         
         $i=0;
         foreach($postDetails as $postDetail){
@@ -361,6 +378,7 @@ class PostController extends Controller
         if(count($postDetails)){
             return response()->json([
                 'message' => 'User post list!',
+                'count' => count($allPost),
                 'data' => $postData,
                 'isError' => false
             ], 201);
@@ -375,9 +393,25 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getAllPost",
+     *          path="/api/v1/getAllPost/{start}/{limit}",
      *          operationId="Get All Posts",
      *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      summary="Get All Posts",
      *      description="data of post",
      *      
@@ -408,30 +442,38 @@ class PostController extends Controller
      *  )
      */
 
-    public function getAllPost(){
+    public function getAllPost($start,$limit){
         
-        $postDetails = Post::all();
+        $allPost = Post::all();
+        $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
         
         $i=0;
         foreach($postDetails as $postDetail){
 
-            $likeDetails = Like::where('post_id',$postDetail['id'])->get();
+            $likeDetails = Like::where('post_id',$postDetail['id'])
+                            ->join('users', 'users.id', '=', 'likes.user_id')
+                            ->get();
             $likeUsers = array();
             $j = 0;
             if(count($likeDetails) > 0){
                 foreach($likeDetails as $likeDetail){
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $j++;
                 }
             }
 
-            $commentDetails = Comment::where('post_id',$postDetail['id'])->get();
+            $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'comments.user_id')
+                                ->get();
             $commentUsers = array();
             $k = 0;
             if(count($commentDetails) > 0){
                 foreach($commentDetails as $commentDetail){
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$j]['profile'] = $likeDetail['profile'];
+                    $j++;
                     $k++;
                 }
             }
@@ -451,7 +493,8 @@ class PostController extends Controller
         }
         if(count($postDetails)){
             return response()->json([
-                'message' => 'User post list!',
+                'message' => 'All post list!',
+                'count' => count($allPost),
                 'data' => $postData,
                 'isError' => false
             ], 201);
@@ -579,10 +622,9 @@ class PostController extends Controller
         ]);
 
         $users = Like::where('post_id',$postid)->where('user_id',$userid)->get();
-        //echo '<pre>'; print_r($users); exit;
+        $postData = $this->getPostResponse($postid);
         if(count($users) == 0){
             if($post_like->save()){
-                $postData = $this->getPostResponse($postid);
                 return response()->json([
                     'message' => 'Post liked successfully!',
                     'data' => $postData,
@@ -592,7 +634,17 @@ class PostController extends Controller
                 return response()->json(['error'=>'Provide proper details','isError' => true]);
             }
         }else{
-            return response()->json(['error'=>'Post already liked','isError' => true]);
+
+            if(Like::where('post_id',$postid)->where('user_id',$userid)->delete())
+            {
+                return response()->json([
+                    'message' => 'Post disliked successfully!',
+                    'data' => $postData,
+                    'isError' => false,
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Provide proper details','isError' => false]);
+            }
         }
     }
 
@@ -897,6 +949,64 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => false]);
         }
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/getPostDetail/{postid}",
+     *          operationId="Get Post detail",
+     *          tags={"Posts"},
+     *      summary="Get Post detail",
+     *      description="data of post",
+     *      @OA\Parameter(
+     *          name="postid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getPostDetail($postid){
+        
+        $postData = $this->getPostResponse($postid);
+        if(count($postData)){
+            return response()->json([
+                'message' => 'User post list!',
+                'data' => $postData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Post available','isError' => true]);
+        }
+        
     }
 
     function getPostResponse($postId){

@@ -66,14 +66,15 @@ use Illuminate\Support\Facades\Route;
     //Post related routes
     Route::post('addPost/{userid}', 'Api\V1\PostController@addPost');
     Route::post('updatePost/{postid}', 'Api\V1\PostController@updatePost');
-    Route::post('getUserPost/{userid}', 'Api\V1\PostController@getUserPost');
-    Route::post('getAllPost', 'Api\V1\PostController@getAllPost');
+    Route::post('getUserPost/{userid}/{start}/{limit}', 'Api\V1\PostController@getUserPost');
+    Route::post('getAllPost/{start}/{limit}', 'Api\V1\PostController@getAllPost');
     Route::post('deletePost/{postid}', 'Api\V1\PostController@deletePost');
     Route::post('likePost/{postid}/{userid}', 'Api\V1\PostController@likePost');
     Route::post('dislikePost/{postid}/{userid}', 'Api\V1\PostController@dislikePost');
     Route::post('addCommenttoPost/{postid}/{userid}', 'Api\V1\PostController@addCommenttoPost');  
     Route::post('updatePostComment/{commentid}', 'Api\V1\PostController@updatePostComment'); 
-    Route::post('deletePostComment/{commentid}', 'Api\V1\PostController@deletePostComment');    
+    Route::post('deletePostComment/{commentid}', 'Api\V1\PostController@deletePostComment');
+    Route::post('getPostDetail/{postid}', 'Api\V1\PostController@getPostDetail');    
 
     //Album routes
     Route::post('addAlbum/{userid}', 'Api\V1\AlbumController@addAlbum');

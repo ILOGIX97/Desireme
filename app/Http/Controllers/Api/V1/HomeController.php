@@ -74,6 +74,11 @@ class HomeController extends Controller
      *  )
      */
     public function getUsersbyCategory($category,$start,$limit){
+        $all = User::whereHas(
+            'roles', function($q){
+                $q->where('name', 'ContentCreator');
+            }
+        )->get();
         if(strtolower($category) != 'all'){
             $users = User::whereHas(
                 'roles', function($q){
@@ -123,7 +128,7 @@ class HomeController extends Controller
             $i++;
         }
         return response()->json([
-            'userCount' => count($users),
+            'userCount' => count($all),
             'data' => $userData,
             'isError' => false
         ]);
