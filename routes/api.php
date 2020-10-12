@@ -74,7 +74,9 @@ use Illuminate\Support\Facades\Route;
     Route::post('addCommenttoPost/{postid}/{userid}', 'Api\V1\PostController@addCommenttoPost');  
     Route::post('updatePostComment/{commentid}', 'Api\V1\PostController@updatePostComment'); 
     Route::post('deletePostComment/{commentid}', 'Api\V1\PostController@deletePostComment');
-    Route::post('getPostDetail/{postid}', 'Api\V1\PostController@getPostDetail');    
+    Route::post('getPostDetail/{postid}', 'Api\V1\PostController@getPostDetail');  
+    Route::post('viewPost/{postid}/{userid}', 'Api\V1\PostController@viewPost');  
+    Route::post('mostViewed/{start}/{limit}', 'Api\V1\PostController@mostViewed');  
 
     //Album routes
     Route::post('addAlbum/{userid}', 'Api\V1\AlbumController@addAlbum');

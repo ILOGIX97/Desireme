@@ -10,6 +10,7 @@ use App\Like;
 use App\Comment;
 use App\Views;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -18,8 +19,8 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    
-    
+
+
     /**
      * @OA\Post(
      *          path="/api/v1/addPost/{userid}",
@@ -33,7 +34,7 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Add User Post Details",
      *      description="data of users post",
      *      @OA\RequestBody(
@@ -104,7 +105,7 @@ class PostController extends Controller
      */
 
     public function addPost(Request $request,$id){
-        
+
         $validator = Validator::make($request->all(),[
             'Title' => 'required',
             'Caption' => 'required',
@@ -148,10 +149,10 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => true]);
         }
-        
-        
+
+
         return response()->json(Post::find($id));
-    	
+
     }
 
     /**
@@ -167,7 +168,7 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Update User Post Details",
      *      description="data of users post",
      *      @OA\RequestBody(
@@ -238,7 +239,7 @@ class PostController extends Controller
      */
 
     public function updatePost(Request $request,$id){
-        
+
         $validator = Validator::make($request->all(),[
             'Title' => 'required',
             'Caption' => 'required',
@@ -250,7 +251,7 @@ class PostController extends Controller
             $failedRules = $validator->failed();
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
-        
+
         if(null !== $request->PhotoorVideo){
             $image = $request->PhotoorVideo;
             $path = 'public/posts/';
@@ -258,7 +259,7 @@ class PostController extends Controller
         }else{
             $media = '';
         }
-        
+
         $postDetails = Post::where('id', $id)->update([
             'title' => $request->Title,
             'caption' => $request->Caption,
@@ -279,10 +280,10 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => true]);
         }
-        
-        
+
+
         return response()->json(Post::find($id));
-    	
+
     }
 
     /**
@@ -314,10 +315,10 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Get User Posts",
      *      description="data of users post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -346,12 +347,12 @@ class PostController extends Controller
      */
 
     public function getUserPost($id,$start,$limit){
-        
+
         //echo $id; exit;
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
         $postDetails = $user->posts()->offset($start)->limit($limit)->get();
-        
+
         $i=0;
         foreach($postDetails as $postDetail){
 
@@ -415,10 +416,10 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
-        
-        
+
+
         return response()->json(Post::find($id));
-    	
+
     }
 
     /**
@@ -444,7 +445,7 @@ class PostController extends Controller
      *      ),
      *      summary="Get All Posts",
      *      description="data of post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -473,10 +474,10 @@ class PostController extends Controller
      */
 
     public function getAllPost($start,$limit){
-        
+
         $allPost = Post::all();
         $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
-        
+
         $i=0;
         foreach($postDetails as $postDetail){
 
@@ -539,7 +540,7 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
-        
+
     }
 
     /**
@@ -555,10 +556,10 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Delete User Post Details",
      *      description="delete data of users post",
-     *    
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -594,10 +595,10 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => false]);
         }
-    	
+
     }
 
-    
+
 
     /**
      * @OA\Post(
@@ -620,10 +621,10 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Like User Post",
      *      description="Like User Post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -652,7 +653,7 @@ class PostController extends Controller
      */
 
     public function likePost($postid,$userid){
-        
+
         //echo $request->ScheduleDateTime; exit;
         $post_like =  new Like([
             'post_id' => $postid,
@@ -707,10 +708,10 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="DisLike User Post",
      *      description="DisLike User Post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -739,8 +740,8 @@ class PostController extends Controller
      */
 
     public function dislikePost($postid,$userid){
-        
-        
+
+
 
         if(Like::where('post_id',$postid)->where('user_id',$userid)->delete())
         {
@@ -750,9 +751,9 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => false]);
         }
-       
-        
-        
+
+
+
     }
 
      /**
@@ -788,10 +789,10 @@ class PostController extends Controller
      *           )
      *         ),
      *      ),
-     *      
+     *
      *      summary="Comment on User Post",
      *      description="Comment on User Post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -820,7 +821,7 @@ class PostController extends Controller
      */
 
     public function addCommenttoPost(request $request, $postid,$userid){
-        
+
         $validator = Validator::make($request->all(),[
             'Comment' => 'required',
          ]);
@@ -860,7 +861,7 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      @OA\RequestBody(
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
@@ -873,10 +874,10 @@ class PostController extends Controller
      *           )
      *         ),
      *      ),
-     *      
+     *
      *      summary="Comment on User Post",
      *      description="Update Comment on User Post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -905,7 +906,7 @@ class PostController extends Controller
      */
 
     public function updatePostComment(request $request, $id){
-        
+
         $validator = Validator::make($request->all(),[
             'Comment' => 'required',
          ]);
@@ -946,10 +947,10 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="Comment on User Post",
      *      description="Delete Comment of User Post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -978,7 +979,7 @@ class PostController extends Controller
      */
 
     public function deletePostComment($id){
-        
+
         if(Comment::where('id',$id)->delete())
         {
             return response()->json([
@@ -1004,7 +1005,7 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -1033,7 +1034,7 @@ class PostController extends Controller
      */
 
     public function getPostDetail($postid){
-        
+
         $postData = $this->getPostResponse($postid);
         if(count($postData)){
             return response()->json([
@@ -1044,7 +1045,7 @@ class PostController extends Controller
         }else{
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
-        
+
     }
 
 
@@ -1069,10 +1070,10 @@ class PostController extends Controller
      *              type="integer"
      *          )
      *      ),
-     *      
+     *
      *      summary="increse View count of User Post",
      *      description="Increse View count of User Post",
-     *      
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -1101,38 +1102,145 @@ class PostController extends Controller
      */
 
     public function viewPost($postid,$userid){
-        
-        //echo $request->ScheduleDateTime; exit;
-        $post_view =  new Like([
+        $ip = request()->ip();
+
+        $post_view =  new Views([
             'post_id' => $postid,
             'user_id' => $userid,
-            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'ip_addr' => $ip,
         ]);
-
-        $users = Like::where('post_id',$postid)->where('user_id',$userid)->get();
         $postData = $this->getPostResponse($postid);
-        if(count($users) == 0){
-            if($post_view->save()){
+        if($post_view->save()){
                 return response()->json([
-                    'message' => 'Post liked successfully!',
+                    'message' => 'Post Viewed successfully!',
                     'data' => $postData,
                     'isError' => false
                 ], 201);
             }else{
                 return response()->json(['error'=>'Provide proper details','isError' => true]);
             }
-        }else{
+    }
 
-            if(Like::where('post_id',$postid)->where('user_id',$userid)->delete())
-            {
-                return response()->json([
-                    'message' => 'Post disliked successfully!',
-                    'data' => $postData,
-                    'isError' => false,
-                ], 201);
-            }else{
-                return response()->json(['error'=>'Provide proper details','isError' => false]);
+    /**
+     * @OA\Post(
+     *          path="/api/v1/mostViewed/{start}/{limit}",
+     *          operationId="List of most viewed posts",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="List of most viewed posts",
+     *      description="List of most viewed posts",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function mostViewed($start,$limit){
+        $posts = Views::select('posts.*', DB::raw('count(post_id) as count'))
+        ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
+        ->groupBy('views.post_id')
+        ->get();
+
+        $i=0;
+        foreach($posts as $postDetail){
+
+            $likeDetails = Like::where('post_id',$postDetail['id'])
+                            ->join('users', 'users.id', '=', 'likes.user_id')
+                            ->get();
+            $likeUsers = array();
+            $j = 0;
+            if(count($likeDetails) > 0){
+                foreach($likeDetails as $likeDetail){
+                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
+                    $likeUsers[$j]['userName'] = $likeDetail['username'];
+                    $j++;
+                }
             }
+
+            $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'comments.user_id')
+                                ->get();
+            $commentUsers = array();
+            $k = 0;
+            if(count($commentDetails) > 0){
+                foreach($commentDetails as $commentDetail){
+                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
+                    $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $j++;
+                    $k++;
+                }
+            }
+
+            $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['viewCount'] = $postDetail['count'];
+            $postData[$i]['comment'] = $postDetail['comment'];
+            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$i]['tags'] = $postDetail['tags'];
+            $postData[$i]['publish'] = $postDetail['publish'];
+            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likes'] = count($likeDetails);
+            $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['comments'] = count($commentDetails);
+            $postData[$i]['commentUsers'] = $commentUsers;
+            
+            $i++;
+        }
+        if(count($posts)){
+            return response()->json([
+                'message' => 'Most Viewed post list!',
+                'data' => $postData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Post available','isError' => true]);
         }
     }
 
@@ -1160,6 +1268,17 @@ class PostController extends Controller
             }
         }
 
+        $viewDetails = Views::where('post_id',$postId)->get();
+        $viewUsers = array();
+        if(count($viewDetails) > 0){
+            $i = 0;
+            foreach($viewDetails as $viewDetail){
+                $viewUsers[$i]['userid'] = $viewDetail['user_id'];
+                $viewUsers[$i]['comment'] = $viewDetail['comment'];
+                $i++;
+            }
+        }
+
         $postData['id'] = $postDetail['id'];
         $postData['title'] = $postDetail['title'];
         $postData['caption'] = $postDetail['caption'];
@@ -1172,14 +1291,16 @@ class PostController extends Controller
         $postData['likeUsers'] = $likeUsers;
         $postData['comments'] = count($commentDetails);
         $postData['commentUsers'] = $commentUsers;
-        
+        $postData['views'] = count($viewDetails);
+        $postData['viewUsers'] = $viewUsers;
+
         return $postData;
     }
 
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image) ||  preg_match('/^data:video\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);
-            $ext = explode('/',$ext[0]);			
+            $ext = explode('/',$ext[0]);
             $ext = $ext[1];
             if (preg_match('/^data:image\/\w+;base64,/', $image)){
                 $image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
@@ -1193,13 +1314,13 @@ class PostController extends Controller
             $full_path = $path . $imageName;
             Storage::put($full_path, base64_decode($image));
             $returnpath = str_replace("public/","",$path).$imageName;
-            
+
         }else {
-            $removeData = config('app.url').'storage/'; 
+            $removeData = config('app.url').'storage/';
             $returnpath = str_replace($removeData,"",$image);
         }
         return $returnpath;
-            
+
     }
 
 }
