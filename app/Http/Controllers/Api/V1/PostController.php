@@ -355,13 +355,19 @@ class PostController extends Controller
         $i=0;
         foreach($postDetails as $postDetail){
 
-            $likeDetails = Like::where('post_id',$postDetail['id'])->get();
+            $likeDetails = Like::where('post_id',$postDetail['id'])
+            ->join('users', 'users.id', '=', 'likes.user_id')
+            ->get();
             $likeUsers = array();
             if(count($likeDetails) > 0){
                 $j = 0;
                 foreach($likeDetails as $likeDetail){
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['banner'] = $likeDetail['cover'];
+                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['userName'] = $likeDetail['username'];
                     $j++;
                 }
             }
@@ -376,6 +382,10 @@ class PostController extends Controller
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['banner'] = $commentDetail['cover'];
+                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['userName'] = $commentDetail['username'];
                      $k++;
                 }
             }
@@ -477,6 +487,9 @@ class PostController extends Controller
                 foreach($likeDetails as $likeDetail){
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['userName'] = $likeDetail['username'];
                     $j++;
                 }
             }
@@ -491,6 +504,9 @@ class PostController extends Controller
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['userName'] = $commentDetail['username'];
                     $j++;
                     $k++;
                 }
