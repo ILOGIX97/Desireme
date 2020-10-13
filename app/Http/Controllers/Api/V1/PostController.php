@@ -288,11 +288,19 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getUserPost/{userid}/{start}/{limit}",
+     *          path="/api/v1/getUserPost/{userid}/{loginUser}/{start}/{limit}",
      *          operationId="Get User Posts",
      *          tags={"Users"},
      *      @OA\Parameter(
      *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="loginUser",
      *          in="path",
      *          required=true,
      *          @OA\Schema(
@@ -346,16 +354,16 @@ class PostController extends Controller
      *  )
      */
 
-    public function getUserPost($id,$start,$limit){
+    public function getUserPost($id,$loginUser,$start,$limit){
 
-        //echo $id; exit;
+        
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
         $postDetails = $user->posts()->offset($start)->limit($limit)->get();
-
+        
         $i=0;
         foreach($postDetails as $postDetail){
-
+            $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
                 $UserDetails = $user;
@@ -368,6 +376,9 @@ class PostController extends Controller
             if(count($likeDetails) > 0){
                 $j = 0;
                 foreach($likeDetails as $likeDetail){
+                    if($loginUser == $likeDetail['user_id']){
+                        $likedbyme = 1;
+                    }
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['banner'] = $likeDetail['cover'];
@@ -411,6 +422,7 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likedByMe'] = $likedbyme;
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
@@ -435,11 +447,19 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getAllPost/{start}/{limit}",
+     *          path="/api/v1/getAllPost/{loginUser}/{start}/{limit}",
      *          operationId="Get All Posts",
      *          tags={"Posts"},
      *      @OA\Parameter(
      *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="loginUser",
      *          in="path",
      *          required=true,
      *          @OA\Schema(
@@ -484,16 +504,13 @@ class PostController extends Controller
      *  )
      */
 
-    public function getAllPost($start,$limit){
+    public function getAllPost($loginUser,$start,$limit){
 
         $allPost = Post::all();
         $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
-
-
-
         $i=0;
         foreach($postDetails as $postDetail){
-
+            $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
                 $UserDetails = $user;
@@ -508,6 +525,9 @@ class PostController extends Controller
             $j = 0;
             if(count($likeDetails) > 0){
                 foreach($likeDetails as $likeDetail){
+                    if($loginUser == $likeDetail['user_id']){
+                        $likedbyme = 1;
+                    }
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
@@ -550,6 +570,7 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likedByMe'] = $likedbyme;
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
