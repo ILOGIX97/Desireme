@@ -356,6 +356,11 @@ class PostController extends Controller
         $i=0;
         foreach($postDetails as $postDetail){
 
+            $Users = $postDetail->users()->get();
+            foreach($Users as $user){
+                $UserDetails = $user;
+            }
+
             $likeDetails = Like::where('post_id',$postDetail['id'])
             ->join('users', 'users.id', '=', 'likes.user_id')
             ->get();
@@ -394,6 +399,12 @@ class PostController extends Controller
             }
 
             $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['firstName'] = $UserDetails['first_name'];
+            $postData[$i]['lastName'] = $UserDetails['last_name'];
+            $postData[$i]['displayName'] = $UserDetails['display_name'];
+            $postData[$i]['profile'] = $UserDetails['profile'];
+            $postData[$i]['banner'] = $UserDetails['banner'];
+            $postData[$i]['username'] = $UserDetails['username'];
             $postData[$i]['comment'] = $postDetail['comment'];
             $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$i]['tags'] = $postDetail['tags'];
