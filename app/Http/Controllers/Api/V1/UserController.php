@@ -936,7 +936,6 @@ class UserController extends Controller
      */
 
     public function updatePaymentDetails(Request $request,$id){
-
         $validator = Validator::make($request->all(),[
             'SortCode' => 'nullable|numeric|digits:6',
             'AccountNumber' => 'nullable|numeric|digits:8',

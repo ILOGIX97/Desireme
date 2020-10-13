@@ -478,9 +478,18 @@ class PostController extends Controller
         $allPost = Post::all();
         $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
 
+
+
         $i=0;
         foreach($postDetails as $postDetail){
 
+            $Users = $postDetail->users()->get();
+            foreach($Users as $user){
+                $UserDetails = $user;
+            }
+            //echo '<pre>'; print_r($UserDetails); exit;
+
+            
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -518,6 +527,12 @@ class PostController extends Controller
             }
 
             $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['firstName'] = $UserDetails['first_name'];
+            $postData[$i]['lastName'] = $UserDetails['last_name'];
+            $postData[$i]['displayName'] = $UserDetails['display_name'];
+            $postData[$i]['profile'] = $UserDetails['profile'];
+            $postData[$i]['banner'] = $UserDetails['banner'];
+            $postData[$i]['username'] = $UserDetails['username'];
             $postData[$i]['comment'] = $postDetail['comment'];
             $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$i]['tags'] = $postDetail['tags'];
@@ -1174,11 +1189,158 @@ class PostController extends Controller
      */
 
     public function mostViewed($start,$limit){
-        $posts = Views::select('posts.*', DB::raw('count(post_id) as count'))
+        $allPost = Views::select('posts.*', DB::raw('count(post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
         ->groupBy('views.post_id')
         ->get();
+        
+        $posts = Views::select('posts.*', DB::raw('count(post_id) as count'))
+        ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
+        ->groupBy('views.post_id')
+        ->offset($start)->limit($limit)->get();
+        
 
+        $i=0;
+        foreach($posts as $postDetail){
+
+            $likeDetails = Like::where('post_id',$postDetail['id'])
+                            ->join('users', 'users.id', '=', 'likes.user_id')
+                            ->get();
+            $likeUsers = array();
+            $j = 0;
+            if(count($likeDetails) > 0){
+                foreach($likeDetails as $likeDetail){
+                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
+                    $likeUsers[$j]['userName'] = $likeDetail['username'];
+                    $j++;
+                }
+            }
+
+            $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'comments.user_id')
+                                ->get();
+            $commentUsers = array();
+            $k = 0;
+            if(count($commentDetails) > 0){
+                foreach($commentDetails as $commentDetail){
+                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
+                    $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $j++;
+                    $k++;
+                }
+            }
+
+            $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['viewCount'] = $postDetail['count'];
+            $postData[$i]['comment'] = $postDetail['comment'];
+            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$i]['tags'] = $postDetail['tags'];
+            $postData[$i]['publish'] = $postDetail['publish'];
+            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likes'] = count($likeDetails);
+            $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['comments'] = count($commentDetails);
+            $postData[$i]['commentUsers'] = $commentUsers;
+            
+            $i++;
+        }
+        if(count($posts)){
+            return response()->json([
+                'message' => 'Most Viewed post list!',
+                'count' => count($allPost),
+                'data' => $postData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Post available','isError' => true]);
+        }
+    }
+
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/mostPopular/{start}/{limit}",
+     *          operationId="List of most popular posts",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="List of most popular posts",
+     *      description="List of most popular posts",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function mostPopular($start,$limit){
+        
+        
+        // $posts = DB::table('likes','comments')
+        //     ->leftJoin('posts','likes.post_id', '=', 'posts.id')   
+        //     ->leftJoin('comments','comments.post_id', '=', 'posts.id')
+        // ->select('posts.*', DB::raw('count(likes.post_id) as lcount') , DB::raw('count(comments.post_id) as ccount'))
+        //     ->groupBy('likes.post_id')
+        //     ->groupBy('comments.post_id')
+        //     ->get();
+
+        $posts = DB::table("posts")
+        ->select("posts.*",
+                  DB::raw("(SELECT COUNT(likes.post_id) FROM likes
+                              WHERE likes.post_id = posts.id
+                              GROUP BY likes.post_id) as likeCount"),
+                  DB::raw("(SELECT COUNT(comments.post_id) FROM comments
+                              WHERE comments.post_id = posts.id
+                              GROUP BY comments.post_id) as commentCount"))
+        ->get();
+
+        echo '<pre>'; print_r($posts); exit;
         $i=0;
         foreach($posts as $postDetail){
 
