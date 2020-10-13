@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('deleteUser/{id}', 'Api\V1\UserController@deleteUser');
     Route::post('/profileSettings/{id}', 'Api\V1\UserController@profileSettings');
     Route::post('/closeAccount/{id}', 'Api\V1\UserController@closeAccount');
-    Route::post('updatePaymentDetails/{id}', 'Api\V1\UserController@addPaymentDetails');
+    Route::post('updatePaymentDetails/{id}', 'Api\V1\UserController@updatePaymentDetails');
 
     Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
     
@@ -76,7 +76,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('deletePostComment/{commentid}', 'Api\V1\PostController@deletePostComment');
     Route::post('getPostDetail/{postid}', 'Api\V1\PostController@getPostDetail');  
     Route::post('viewPost/{postid}/{userid}', 'Api\V1\PostController@viewPost');  
-    Route::post('mostViewed/{start}/{limit}', 'Api\V1\PostController@mostViewed');  
+    Route::post('mostViewed/{start}/{limit}', 'Api\V1\PostController@mostViewed'); 
+    Route::post('mostPopular/{start}/{limit}', 'Api\V1\PostController@mostPopular'); 
 
     //Album routes
     Route::post('addAlbum/{userid}', 'Api\V1\AlbumController@addAlbum');
