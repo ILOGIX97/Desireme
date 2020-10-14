@@ -1347,27 +1347,24 @@ class PostController extends Controller
 
     public function mostPopular($start,$limit){
         
-        
-        // $posts = DB::table('likes','comments')
-        //     ->leftJoin('posts','likes.post_id', '=', 'posts.id')   
-        //     ->leftJoin('comments','comments.post_id', '=', 'posts.id')
-        // ->select('posts.*', DB::raw('count(likes.post_id) as lcount') , DB::raw('count(comments.post_id) as ccount'))
-        //     ->groupBy('likes.post_id')
-        //     ->groupBy('comments.post_id')
-        //     ->get();
-
-        $posts = DB::table("posts")
+       $posts = DB::table("posts")
         ->select("posts.*",
-                  DB::raw("(SELECT COUNT(likes.post_id) FROM likes
+                  DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
                               WHERE likes.post_id = posts.id
                               GROUP BY likes.post_id) as likeCount"),
-                  DB::raw("(SELECT COUNT(comments.post_id) FROM comments
+                  DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
                               WHERE comments.post_id = posts.id
-                              GROUP BY comments.post_id) as commentCount"))
-        ->get();
+                              GROUP BY comments.post_id) as commentCount"),
+                   DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
+                              WHERE comments.post_id = posts.id
+                              GROUP BY comments.post_id) + (SELECT ifnull(COUNT(likes.post_id),0) FROM likes
+                              WHERE likes.post_id = posts.id
+                              GROUP BY likes.post_id) as totalCount"))->orderBy('totalCount', 'DESC')
+                              ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->get();
 
-        echo '<pre>'; print_r($posts); exit;
+        
         $i=0;
+        $posts = json_decode($posts, true);
         foreach($posts as $postDetail){
 
             $likeDetails = Like::where('post_id',$postDetail['id'])
@@ -1407,8 +1404,6 @@ class PostController extends Controller
             }
 
             $postData[$i]['id'] = $postDetail['id'];
-            $postData[$i]['viewCount'] = $postDetail['count'];
-            $postData[$i]['comment'] = $postDetail['comment'];
             $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$i]['tags'] = $postDetail['tags'];
             $postData[$i]['publish'] = $postDetail['publish'];
