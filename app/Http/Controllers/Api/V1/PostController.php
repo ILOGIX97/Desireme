@@ -361,8 +361,8 @@ class PostController extends Controller
         $allPost = $user->posts()->get();
         $postDetails = $user->posts()->offset($start)->limit($limit)->get();
         
-        $i=0;
         foreach($postDetails as $postDetail){
+            $ID = $postDetail['id'];
             $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
@@ -409,25 +409,24 @@ class PostController extends Controller
                 }
             }
 
-            $postData[$i]['id'] = $postDetail['id'];
-            $postData[$i]['firstName'] = $UserDetails['first_name'];
-            $postData[$i]['lastName'] = $UserDetails['last_name'];
-            $postData[$i]['displayName'] = $UserDetails['display_name'];
-            $postData[$i]['profile'] = $UserDetails['profile'];
-            $postData[$i]['banner'] = $UserDetails['banner'];
-            $postData[$i]['username'] = $UserDetails['username'];
-            $postData[$i]['comment'] = $postDetail['comment'];
-            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$i]['tags'] = $postDetail['tags'];
-            $postData[$i]['publish'] = $postDetail['publish'];
-            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$i]['likedByMe'] = $likedbyme;
-            $postData[$i]['likes'] = count($likeDetails);
-            $postData[$i]['likeUsers'] = $likeUsers;
-            $postData[$i]['comments'] = count($commentDetails);
-            $postData[$i]['commentUsers'] = $commentUsers;
-            $i++;
+            $postData[$ID]['id'] = $postDetail['id'];
+            $postData[$ID]['firstName'] = $UserDetails['first_name'];
+            $postData[$ID]['lastName'] = $UserDetails['last_name'];
+            $postData[$ID]['displayName'] = $UserDetails['display_name'];
+            $postData[$ID]['profile'] = $UserDetails['profile'];
+            $postData[$ID]['banner'] = $UserDetails['banner'];
+            $postData[$ID]['username'] = $UserDetails['username'];
+            $postData[$ID]['comment'] = $postDetail['comment'];
+            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$ID]['tags'] = $postDetail['tags'];
+            $postData[$ID]['publish'] = $postDetail['publish'];
+            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['likedByMe'] = $likedbyme;
+            $postData[$ID]['likes'] = count($likeDetails);
+            $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['commentUsers'] = $commentUsers;
         }
         if(count($postDetails)){
             return response()->json([
@@ -508,8 +507,8 @@ class PostController extends Controller
 
         $allPost = Post::all();
         $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
-        $i=0;
         foreach($postDetails as $postDetail){
+            $ID = $postDetail['id'];
             $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
@@ -557,25 +556,24 @@ class PostController extends Controller
                 }
             }
 
-            $postData[$i]['id'] = $postDetail['id'];
-            $postData[$i]['firstName'] = $UserDetails['first_name'];
-            $postData[$i]['lastName'] = $UserDetails['last_name'];
-            $postData[$i]['displayName'] = $UserDetails['display_name'];
-            $postData[$i]['profile'] = $UserDetails['profile'];
-            $postData[$i]['banner'] = $UserDetails['banner'];
-            $postData[$i]['username'] = $UserDetails['username'];
-            $postData[$i]['comment'] = $postDetail['comment'];
-            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$i]['tags'] = $postDetail['tags'];
-            $postData[$i]['publish'] = $postDetail['publish'];
-            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$i]['likedByMe'] = $likedbyme;
-            $postData[$i]['likes'] = count($likeDetails);
-            $postData[$i]['likeUsers'] = $likeUsers;
-            $postData[$i]['comments'] = count($commentDetails);
-            $postData[$i]['commentUsers'] = $commentUsers;
-            $i++;
+            $postData[$ID]['id'] = $postDetail['id'];
+            $postData[$ID]['firstName'] = $UserDetails['first_name'];
+            $postData[$ID]['lastName'] = $UserDetails['last_name'];
+            $postData[$ID]['displayName'] = $UserDetails['display_name'];
+            $postData[$ID]['profile'] = $UserDetails['profile'];
+            $postData[$ID]['banner'] = $UserDetails['banner'];
+            $postData[$ID]['username'] = $UserDetails['username'];
+            $postData[$ID]['comment'] = $postDetail['comment'];
+            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$ID]['tags'] = $postDetail['tags'];
+            $postData[$ID]['publish'] = $postDetail['publish'];
+            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['likedByMe'] = $likedbyme;
+            $postData[$ID]['likes'] = count($likeDetails);
+            $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['commentUsers'] = $commentUsers;
         }
         if(count($postDetails)){
             return response()->json([
