@@ -144,7 +144,7 @@ class HomeController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getUsersbyName/{name}",
+     *          path="/api/v1/getUsersbyName/{name}/{start}/{limit}",
      *          operationId="User profile",
      *          tags={"Homepage"},
      *      @OA\Parameter(
@@ -153,6 +153,22 @@ class HomeController extends Controller
      *          required=true,
      *          @OA\Schema(
      *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
      *          )
      *      ),
      *
@@ -183,16 +199,30 @@ class HomeController extends Controller
      *      ),
      *  )
      */
-    public function getUsersbyName($name){
-        $users = User::whereHas(
-            'roles', function($q){
-                $q->where('name', 'ContentCreator');
-            }
-        )->where('first_name','LIKE', '%' . $name . '%')
-        ->orWhere('last_name', 'LIKE','%' . $name . '%')
-        ->orWhere('username', 'LIKE','%' . $name . '%')
-        ->orWhere('email', 'LIKE','%' . $name . '%')
-        ->get();
+    public function getUsersbyName($name,$start,$limit){
+        if(!empty($limit)){
+            $users = User::whereHas(
+                'roles', function($q){
+                    $q->where('name', 'ContentCreator');
+                }
+            )->where('first_name','LIKE', '%' . $name . '%')
+            ->orWhere('last_name', 'LIKE','%' . $name . '%')
+            ->orWhere('username', 'LIKE','%' . $name . '%')
+            ->orWhere('email', 'LIKE','%' . $name . '%')
+            ->offset($start)->limit($limit)
+            ->get();
+        }else{
+            $users = User::whereHas(
+                'roles', function($q){
+                    $q->where('name', 'ContentCreator');
+                }
+            )->where('first_name','LIKE', '%' . $name . '%')
+            ->orWhere('last_name', 'LIKE','%' . $name . '%')
+            ->orWhere('username', 'LIKE','%' . $name . '%')
+            ->orWhere('email', 'LIKE','%' . $name . '%')
+            ->get();
+        }
+        
         //echo '<pre>'; print_r($users); exit();
         $userData = array();
         $i = 0;
