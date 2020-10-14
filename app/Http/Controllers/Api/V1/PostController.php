@@ -1487,7 +1487,7 @@ class PostController extends Controller
              })
         ->leftJoin('posts', function($join) {
             $join->on('post_user.post_id', '=', 'posts.id');
-             })
+         })
          ->select("users.*",
             DB::raw("(SELECT ifnull(COUNT(likes.user_id),0) FROM likes
                         WHERE likes.user_id = users.id
@@ -1546,10 +1546,165 @@ class PostController extends Controller
          }else{
              return response()->json(['error'=>'No Post available','isError' => true]);
          }
-     }
+    }
 
 
-    function getPostResponse($postId){
+    /**
+     * @OA\Post(
+     *          path="/api/v1/searchActivity/{search}/{loginUser}/{start}/{limit}",
+     *          operationId="Post list",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="search",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="Get list of posts",
+     *      description="Returns list of post",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+    public function searchActivity($search,$loginUser,$start,$limit){
+        if(!empty($limit)){
+            $posts = Post::where('title','LIKE', '%' . $search . '%')
+            ->orWhere('caption', 'LIKE','%' . $search . '%')
+            ->orWhere('tags', 'LIKE','%' . $search . '%')
+            ->offset($start)->limit($limit)
+            ->get();
+        }else{
+            $posts = Post::where('title','LIKE', '%' . $search . '%')
+            ->orWhere('caption', 'LIKE','%' . $search . '%')
+            ->orWhere('tags', 'LIKE','%' . $search . '%')
+            ->get();
+        }
+        
+        foreach($posts as $postDetail){
+            $ID = $postDetail['id'];
+            $likedbyme = 0;
+            $Users = $postDetail->users()->get();
+            foreach($Users as $user){
+                $UserDetails = $user;
+            }
+            //echo '<pre>'; print_r($UserDetails); exit;
+
+            
+            $likeDetails = Like::where('post_id',$postDetail['id'])
+                            ->join('users', 'users.id', '=', 'likes.user_id')
+                            ->get();
+            $likeUsers = array();
+            $j = 0;
+            if(count($likeDetails) > 0){
+                foreach($likeDetails as $likeDetail){
+                    if($loginUser == $likeDetail['user_id']){
+                        $likedbyme = 1;
+                    }
+                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
+                    $likeUsers[$j]['userName'] = $likeDetail['username'];
+                    $j++;
+                }
+            }
+
+            $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'comments.user_id')
+                                ->get();
+            $commentUsers = array();
+            $k = 0;
+            if(count($commentDetails) > 0){
+                foreach($commentDetails as $commentDetail){
+                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
+                    $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $j++;
+                    $k++;
+                }
+            }
+
+            $postData[$ID]['id'] = $postDetail['id'];
+            $postData[$ID]['firstName'] = $UserDetails['first_name'];
+            $postData[$ID]['lastName'] = $UserDetails['last_name'];
+            $postData[$ID]['displayName'] = $UserDetails['display_name'];
+            $postData[$ID]['profile'] = $UserDetails['profile'];
+            $postData[$ID]['banner'] = $UserDetails['banner'];
+            $postData[$ID]['username'] = $UserDetails['username'];
+            $postData[$ID]['comment'] = $postDetail['comment'];
+            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$ID]['tags'] = $postDetail['tags'];
+            $postData[$ID]['publish'] = $postDetail['publish'];
+            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['likedByMe'] = $likedbyme;
+            $postData[$ID]['likes'] = count($likeDetails);
+            $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['commentUsers'] = $commentUsers;
+        }
+        
+        return response()->json([
+            'data' => $postData,
+            'isError' => false
+        ]);
+    }
+    
+     function getPostResponse($postId){
         $postDetail = Post::find($postId);
 
         $likeDetails = Like::where('post_id',$postId)->get();
