@@ -1416,7 +1416,7 @@ class PostController extends Controller
         }
         if(count($posts)){
             return response()->json([
-                'message' => 'Most Viewed post list!',
+                'message' => 'Most Popular posts list!',
                 'data' => $postData,
                 'isError' => false
             ], 201);
