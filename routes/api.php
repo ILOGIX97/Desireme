@@ -78,6 +78,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('viewPost/{postid}/{userid}', 'Api\V1\PostController@viewPost');  
     Route::post('mostViewed/{start}/{limit}', 'Api\V1\PostController@mostViewed'); 
     Route::post('mostPopular/{start}/{limit}', 'Api\V1\PostController@mostPopular'); 
+    Route::post('mostPopularProfile/{start}/{limit}', 'Api\V1\PostController@mostPopularProfile');
 
     //Album routes
     Route::post('addAlbum/{userid}', 'Api\V1\AlbumController@addAlbum');

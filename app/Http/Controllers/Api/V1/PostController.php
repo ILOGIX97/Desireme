@@ -1427,6 +1427,128 @@ class PostController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *          path="/api/v1/mostPopularProfile/{start}/{limit}",
+     *          operationId="List of most popular Profile",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="List of most popular Profile",
+     *      description="List of most popular Profile",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function mostPopularProfile($start,$limit){
+        
+        $users = DB::table("users")
+        ->leftJoin('post_user', function($join) {
+            $join->on('post_user.user_id', '=', 'users.id');
+             })
+        ->leftJoin('posts', function($join) {
+            $join->on('post_user.post_id', '=', 'posts.id');
+             })
+         ->select("users.*",
+            DB::raw("(SELECT ifnull(COUNT(likes.user_id),0) FROM likes
+                        WHERE likes.user_id = users.id
+                        GROUP BY likes.user_id) as likeCount"),
+            DB::raw("(SELECT ifnull(COUNT(comments.user_id),0) FROM comments
+                        WHERE comments.user_id = users.id
+                        GROUP BY comments.user_id) as commentCount"),
+            DB::raw("(SELECT ifnull(COUNT(comments.user_id),0) FROM comments
+                        WHERE comments.user_id = users.id
+                        GROUP BY comments.user_id) + (SELECT ifnull(COUNT(likes.user_id),0) FROM likes
+                        WHERE likes.user_id = users.id
+                        GROUP BY likes.user_id) as totalCount"))
+                        ->groupBy('users.id')
+                        ->orderBy('totalCount', 'DESC')
+                        ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();
+ 
+         
+         $users = json_decode($users, true);
+         $i = 0;
+         foreach($users as $user){
+            $userData[$i]['id'] = $user['id'];
+            $userData[$i]['Forename'] = $user['first_name'];
+            $userData[$i]['Surname'] = $user['last_name'];
+            $userData[$i]['DisplayName'] = $user['display_name'];
+            $userData[$i]['Username'] = $user['username'];
+            $userData[$i]['Email'] = $user['email'];
+            $userData[$i]['EmailVerified'] = $user['email_verified'];
+            $userData[$i]['PhoneNumber'] = $user['contact'];
+            $userData[$i]['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+            $userData[$i]['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+            $userData[$i]['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+            $userData[$i]['SubscriptionPrice'] = $user['subscription_price'];
+            $userData[$i]['TwitterURL'] = $user['twitter_url'];
+            $userData[$i]['AmazonURL'] = $user['amazon_url'];
+            $userData[$i]['Bio'] = $user['bio'];
+            $userData[$i]['Tags'] = $user['tags'];
+            $userData[$i]['Country'] = $user['country'];
+            $userData[$i]['AccountName'] = $user['account_name'];
+            $userData[$i]['SortCode'] = $user['sort_code'];
+            $userData[$i]['AccountNumber'] = $user['account_number'];
+            $userData[$i]['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+            $userData[$i]['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+            $userData[$i]['Category'] = $user['category'];
+            $userData[$i]['YearsOld'] = $user['year_old'];
+            $userData[$i]['AgreeTerms'] = $user['term'];
+            $userData[$i]['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+            $userData[$i]['Location'] = $user['location'];
+            $i++;
+          }
+         if(count($users)){
+             return response()->json([
+                 'message' => 'Most Popular post list!',
+                 'data' => $userData,
+                 'isError' => false
+             ], 201);
+         }else{
+             return response()->json(['error'=>'No Post available','isError' => true]);
+         }
+     }
+
+
     function getPostResponse($postId){
         $postDetail = Post::find($postId);
 
@@ -1505,5 +1627,7 @@ class PostController extends Controller
         return $returnpath;
 
     }
+
+    
 
 }
