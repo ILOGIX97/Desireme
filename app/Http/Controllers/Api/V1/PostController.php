@@ -1628,6 +1628,8 @@ class PostController extends Controller
             ->orWhere('tags', 'LIKE','%' . $search . '%')
             ->get();
         }
+
+        $postData = array();
         
         foreach($posts as $postDetail){
             $ID = $postDetail['id'];
