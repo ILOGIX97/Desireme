@@ -1360,7 +1360,7 @@ class PostController extends Controller
                               GROUP BY comments.post_id) + (SELECT ifnull(COUNT(likes.post_id),0) FROM likes
                               WHERE likes.post_id = posts.id
                               GROUP BY likes.post_id) as totalCount"))->orderBy('totalCount', 'DESC')
-                              ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->get();
+                              ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();
 
         
         
@@ -1403,16 +1403,16 @@ class PostController extends Controller
                 }
             }
 
-            $postData[$ID]['id'] = $postDetail['id'];
-            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$ID]['tags'] = $postDetail['tags'];
-            $postData[$ID]['publish'] = $postDetail['publish'];
-            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['likes'] = count($likeDetails);
-            $postData[$ID]['likeUsers'] = $likeUsers;
-            $postData[$ID]['comments'] = count($commentDetails);
-            $postData[$ID]['commentUsers'] = $commentUsers;
+            $postData["$ID"]['id'] = $postDetail['id'];
+            $postData["$ID"]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData["$ID"]['tags'] = $postDetail['tags'];
+            $postData["$ID"]['publish'] = $postDetail['publish'];
+            $postData["$ID"]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData["$ID"]['add_to_album'] = $postDetail['add_to_album'];
+            $postData["$ID"]['likes'] = count($likeDetails);
+            $postData["$ID"]['likeUsers'] = $likeUsers;
+            $postData["$ID"]['comments'] = count($commentDetails);
+            $postData["$ID"]['commentUsers'] = $commentUsers;
         }
         if(count($posts)){
             return response()->json([
