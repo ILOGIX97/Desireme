@@ -360,14 +360,22 @@ class PostController extends Controller
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
         $postDetails = $user->posts()->offset($start)->limit($limit)->get();
+        $userData['first_name'] = $user['first_name'];
+            $userData['last_name'] = $user['last_name'];
+            $userData['display_name'] = $user['display_name'];
+            $userData['profile'] = $user['profile'];
+            $userData['banner'] = $user['banner'];
+            $userData['username'] = $user['username'];
+            $userData['country'] = $user['country'];
+            $userData['state'] = $user['state'];
         
         foreach($postDetails as $postDetail){
             $ID = $postDetail['id'];
             $likedbyme = 0;
-            $Users = $postDetail->users()->get();
-            foreach($Users as $user){
-                $UserDetails = $user;
-            }
+            // $Users = $postDetail->users()->get();
+            // foreach($Users as $user){
+            //     $UserDetails = $user;
+            // }
 
             $likeDetails = Like::where('post_id',$postDetail['id'])
             ->join('users', 'users.id', '=', 'likes.user_id')
@@ -408,14 +416,7 @@ class PostController extends Controller
                      $k++;
                 }
             }
-            $userData['first_name'] = $UserDetails['first_name'];
-            $userData['last_name'] = $UserDetails['last_name'];
-            $userData['display_name'] = $UserDetails['display_name'];
-            $userData['profile'] = $UserDetails['profile'];
-            $userData['banner'] = $UserDetails['banner'];
-            $userData['username'] = $UserDetails['username'];
-            $userData['country'] = $UserDetails['country'];
-            $userData['state'] = $UserDetails['state'];
+            
 
             
 
@@ -447,7 +448,7 @@ class PostController extends Controller
                 'isError' => false
             ], 201);
         }else{
-            return response()->json(['error'=>'No Post available','isError' => true]);
+            return response()->json(['error'=>'No Post available','userData' => $userData,'isError' => true]);
         }
 
 
