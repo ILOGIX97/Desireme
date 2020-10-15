@@ -414,6 +414,8 @@ class PostController extends Controller
             $userData['profile'] = $UserDetails['profile'];
             $userData['banner'] = $UserDetails['banner'];
             $userData['username'] = $UserDetails['username'];
+            $userData['country'] = $UserDetails['country'];
+            $userData['state'] = $UserDetails['state'];
 
             
 
@@ -1438,9 +1440,17 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/mostPopularProfile/{start}/{limit}",
+     *          path="/api/v1/mostPopularProfile/{loginUser}/{start}/{limit}",
      *          operationId="List of most popular Profile",
      *          tags={"Posts"},
+     *       @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\Parameter(
      *          name="start",
      *          in="path",
@@ -1488,7 +1498,7 @@ class PostController extends Controller
      *  )
      */
 
-    public function mostPopularProfile($start,$limit){
+    public function mostPopularProfile($loginUser,$start,$limit){
         
         $users = DB::table("users")
         ->leftJoin('post_user', function($join) {
@@ -1509,6 +1519,7 @@ class PostController extends Controller
                         GROUP BY comments.user_id) + (SELECT ifnull(COUNT(likes.user_id),0) FROM likes
                         WHERE likes.user_id = users.id
                         GROUP BY likes.user_id) as totalCount"))
+                        ->where('users.id','!=', $loginUser)
                         ->groupBy('users.id')
                         ->orderBy('totalCount', 'DESC')
                         ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();

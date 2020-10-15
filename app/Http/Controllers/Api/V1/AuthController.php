@@ -82,6 +82,14 @@ class AuthController extends Controller
      *                  property="PhoneNumber",
      *                  type="string",
      *               ),
+     *                @OA\Property(
+     *                  property="Country",
+     *                  type="string"
+     *               ),
+     *                @OA\Property(
+     *                  property="State",
+     *                  type="string"
+     *               ),
      *               @OA\Property(
      *                  property="ProfilePic",
      *                  type="string"
@@ -170,6 +178,8 @@ class AuthController extends Controller
                 'Username' => 'required|string|unique:users|max:50',
                 'Password' => 'required|min:6|string|required_with:ConfirmPassword|same:ConfirmPassword',
                 'Category'=>'required|string',
+                'Country' => 'required|string',
+                'State' => 'required|string',
                 'PhoneNumber'=>'nullable:min:10',
                 'AgreeTerms'=>'required|gt:0',
                 'YearsOld'=>'required|gt:0',
@@ -196,6 +206,8 @@ class AuthController extends Controller
                     'email' => $request->Email,
                     'password' => bcrypt($request->Password),
                     'category' => $request->Category,
+                    'country' => $request->Country,
+                    'state' => $request->State,
                     'year_old' => $request->YearsOld,
                     'two_factor' => $request->TwoFactor,
                     'term' => $request->AgreeTerms
@@ -217,6 +229,8 @@ class AuthController extends Controller
                     'email' => $request->Email,
                     'password' => bcrypt($request->Password),
                     'category' => $request->Category,
+                    'country' => $request->Country,
+                    'state' => $request->State,
                     'year_old' => $request->YearsOld,
                     'two_factor' => $request->TwoFactor,
                     'term' => $request->AgreeTerms,
@@ -251,6 +265,7 @@ class AuthController extends Controller
                     $userData['Bio'] = $user['bio'];
                     $userData['Tags'] = $user['tags'];
                     $userData['Country'] = $user['country'];
+                    $userData['State'] = $user['state'];
                     $userData['AccountName'] = $user['account_name'];
                     $userData['SortCode'] = $user['sort_code'];
                     $userData['AccountNumber'] = $user['account_number'];
@@ -310,6 +325,7 @@ class AuthController extends Controller
                 $userData['Bio'] = $user['bio'];
                 $userData['Tags'] = $user['tags'];
                 $userData['Country'] = $user['country'];
+                $userData['State'] = $user['state'];
                 $userData['AccountName'] = $user['account_name'];
                 $userData['SortCode'] = $user['sort_code'];
                 $userData['AccountNumber'] = $user['account_number'];

@@ -73,6 +73,7 @@ class UserController extends Controller
             $userData[$userid]['Bio'] = $user['bio'];
             $userData[$userid]['Tags'] = $user['tags'];
             $userData[$userid]['Country'] = $user['country'];
+            $userData[$userid]['State'] = $user['state'];
             $userData[$userid]['AccountName'] = $user['account_name'];
             $userData[$userid]['SortCode'] = $user['sort_code'];
             $userData[$userid]['AccountNumber'] = $user['account_number'];
@@ -620,6 +621,10 @@ class UserController extends Controller
      *                  type="string"
      *               ),
      *               @OA\Property(
+     *                  property="State",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
      *                  property="AccountName",
      *                  type="string"
      *               ),
@@ -675,6 +680,7 @@ class UserController extends Controller
 
         $UpdateDetails = User::where('id', $id)->update([
             'country' => $request->Country,
+            'state' => $request->State,
             'account_name' => $request->AccountName,
             'sort_code'=> $request->SortCode,
             'account_number'=>$request->AccountNumber,
@@ -894,6 +900,10 @@ class UserController extends Controller
      *                  type="string"
      *               ),
      *               @OA\Property(
+     *                  property="State",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
      *                  property="AccountName",
      *                  type="string"
      *               ),
@@ -949,6 +959,7 @@ class UserController extends Controller
 
         $UpdateDetails = User::where('id', $id)->update([
             'country' => $request->Country,
+            'state' => $request->State,
             'account_name' => $request->AccountName,
             'sort_code'=> $request->SortCode,
             'account_number'=>$request->AccountNumber,
@@ -1007,6 +1018,7 @@ class UserController extends Controller
          $userData['Bio'] = $user['bio'];
          $userData['Tags'] = $user['tags'];
          $userData['Country'] = $user['country'];
+         $userData['State'] = $user['state'];
          $userData['AccountName'] = $user['account_name'];
          $userData['SortCode'] = $user['sort_code'];
          $userData['AccountNumber'] = $user['account_number'];

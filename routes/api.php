@@ -78,7 +78,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('viewPost/{postid}/{userid}', 'Api\V1\PostController@viewPost');  
     Route::post('mostViewed/{start}/{limit}', 'Api\V1\PostController@mostViewed'); 
     Route::post('mostPopular/{start}/{limit}', 'Api\V1\PostController@mostPopular'); 
-    Route::post('mostPopularProfile/{start}/{limit}', 'Api\V1\PostController@mostPopularProfile');
+    Route::post('mostPopularProfile/{loginUser}/{start}/{limit}', 'Api\V1\PostController@mostPopularProfile');
     Route::post('searchActivity/{search}/{loginUser}/{start}/{limit}', 'Api\V1\PostController@searchActivity');
 
     //Album routes
