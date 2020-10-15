@@ -416,7 +416,8 @@ class PostController extends Controller
             $postData[$ID]['profile'] = $UserDetails['profile'];
             $postData[$ID]['banner'] = $UserDetails['banner'];
             $postData[$ID]['username'] = $UserDetails['username'];
-            $postData[$ID]['comment'] = $postDetail['comment'];
+            $postData[$ID]['title'] = $postDetail['title'];
+            $postData[$ID]['caption'] = $postDetail['caption'];
             $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$ID]['tags'] = $postDetail['tags'];
             $postData[$ID]['publish'] = $postDetail['publish'];
@@ -563,7 +564,8 @@ class PostController extends Controller
             $postData[$ID]['profile'] = $UserDetails['profile'];
             $postData[$ID]['banner'] = $UserDetails['banner'];
             $postData[$ID]['username'] = $UserDetails['username'];
-            $postData[$ID]['comment'] = $postDetail['comment'];
+            $postData[$ID]['title'] = $postDetail['title'];
+            $postData[$ID]['caption'] = $postDetail['caption'];
             $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$ID]['tags'] = $postDetail['tags'];
             $postData[$ID]['publish'] = $postDetail['publish'];
