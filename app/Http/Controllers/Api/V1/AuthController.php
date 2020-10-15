@@ -230,7 +230,7 @@ class AuthController extends Controller
                     'password' => bcrypt($request->Password),
                     'category' => $request->Category,
                     'country' => $request->Country,
-                    'state' => $request->State,
+                    'state' => (!empty($request->State))?$request->State:'',
                     'year_old' => $request->YearsOld,
                     'two_factor' => $request->TwoFactor,
                     'term' => $request->AgreeTerms,
