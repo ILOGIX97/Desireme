@@ -408,16 +408,23 @@ class PostController extends Controller
                      $k++;
                 }
             }
+            $userData['first_name'] = $UserDetails['first_name'];
+            $userData['last_name'] = $UserDetails['last_name'];
+            $userData['display_name'] = $UserDetails['display_name'];
+            $userData['profile'] = $UserDetails['profile'];
+            $userData['banner'] = $UserDetails['banner'];
+            $userData['username'] = $UserDetails['username'];
+
+            
 
             $postData[$ID]['id'] = $postDetail['id'];
-            $postData[$ID]['firstName'] = $UserDetails['first_name'];
-            $postData[$ID]['lastName'] = $UserDetails['last_name'];
-            $postData[$ID]['displayName'] = $UserDetails['display_name'];
-            $postData[$ID]['profile'] = $UserDetails['profile'];
-            $postData[$ID]['banner'] = $UserDetails['banner'];
-            $postData[$ID]['username'] = $UserDetails['username'];
-            $postData[$ID]['title'] = $postDetail['title'];
-            $postData[$ID]['caption'] = $postDetail['caption'];
+            // $postData[$ID]['firstName'] = $UserDetails['first_name'];
+            // $postData[$ID]['lastName'] = $UserDetails['last_name'];
+            // $postData[$ID]['displayName'] = $UserDetails['display_name'];
+            // $postData[$ID]['profile'] = $UserDetails['profile'];
+            // $postData[$ID]['banner'] = $UserDetails['banner'];
+            // $postData[$ID]['username'] = $UserDetails['username'];
+            $postData[$ID]['comment'] = $postDetail['comment'];
             $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$ID]['tags'] = $postDetail['tags'];
             $postData[$ID]['publish'] = $postDetail['publish'];
@@ -434,6 +441,7 @@ class PostController extends Controller
                 'message' => 'User post list!',
                 'count' => count($allPost),
                 'data' => $postData,
+                'userData' => $userData,
                 'isError' => false
             ], 201);
         }else{
@@ -564,8 +572,7 @@ class PostController extends Controller
             $postData[$ID]['profile'] = $UserDetails['profile'];
             $postData[$ID]['banner'] = $UserDetails['banner'];
             $postData[$ID]['username'] = $UserDetails['username'];
-            $postData[$ID]['title'] = $postDetail['title'];
-            $postData[$ID]['caption'] = $postDetail['caption'];
+            $postData[$ID]['comment'] = $postDetail['comment'];
             $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
             $postData[$ID]['tags'] = $postDetail['tags'];
             $postData[$ID]['publish'] = $postDetail['publish'];
