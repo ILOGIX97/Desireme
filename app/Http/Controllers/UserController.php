@@ -13,6 +13,6 @@ class UserController extends Controller
              'email_verified' => now()
           ]);
         
-          return redirect('http://localhost:3000/verify/'.$role.'/'.base64_encode($id));
+          return redirect('http://brainstream.ddns.net:3099/verify/'.$role.'/'.base64_encode($id));
     }
 }
