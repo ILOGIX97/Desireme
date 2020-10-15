@@ -230,7 +230,7 @@ class AuthController extends Controller
                     'password' => bcrypt($request->Password),
                     'category' => $request->Category,
                     'country' => $request->Country,
-                    'state' => (!empty($request->State))?$request->State:'',
+                    'state' => (!empty($request->State)) ? $request->State : '',
                     'year_old' => $request->YearsOld,
                     'two_factor' => $request->TwoFactor,
                     'term' => $request->AgreeTerms,
@@ -265,7 +265,7 @@ class AuthController extends Controller
                     $userData['Bio'] = $user['bio'];
                     $userData['Tags'] = $user['tags'];
                     $userData['Country'] = $user['country'];
-                    $userData['State'] = $user['state'];
+                    $userData['State'] = (!empty($request->State)) ? $request->State : '';
                     $userData['AccountName'] = $user['account_name'];
                     $userData['SortCode'] = $user['sort_code'];
                     $userData['AccountNumber'] = $user['account_number'];
