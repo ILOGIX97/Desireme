@@ -418,8 +418,12 @@ class PostController extends Controller
             }
             
 
+            $today = Carbon::now();
+            $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
+            $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
+            $hours_created = $created_at->diffInHours($today);
+            $hours_updated = $updated_at->diffInHours($today);
             
-
             $postData[$ID]['id'] = $postDetail['id'];
             // $postData[$ID]['firstName'] = $UserDetails['first_name'];
             // $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -434,8 +438,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
-            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['created'] = $hours_created;
+            $postData[$ID]['updated'] = $hours_updated;
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -531,7 +535,11 @@ class PostController extends Controller
             }
             //echo '<pre>'; print_r($UserDetails); exit;
 
-            
+            $today = Carbon::now();
+            $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
+            $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
+            $hours_created = $created_at->diffInHours($today);
+            $hours_updated = $updated_at->diffInHours($today);
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -585,8 +593,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');//strtotime($postDetail['created_at']);
-            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['created'] = $hours_created;
+            $postData[$ID]['updated'] = $hours_updated;
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -1744,6 +1752,12 @@ class PostController extends Controller
                 }
             }
 
+            $today = Carbon::now();
+            $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
+            $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
+            $hours_created = $created_at->diffInHours($today);
+            $hours_updated = $updated_at->diffInHours($today);
+
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -1758,8 +1772,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
-            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['created'] = $hours_created;
+            $postData[$ID]['updated'] = $hours_updated;
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -1887,6 +1901,12 @@ class PostController extends Controller
                 }
             }
 
+            $today = Carbon::now();
+            $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
+            $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
+            $hours_created = $created_at->diffInHours($today);
+            $hours_updated = $updated_at->diffInHours($today);
+
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -1901,8 +1921,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
-            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['created'] = $hours_created;
+            $postData[$ID]['updated'] = $hours_updated;
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
