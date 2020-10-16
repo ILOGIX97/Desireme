@@ -586,7 +586,7 @@ class UserController extends Controller
         foreach($newJson as $json1){
             $jsonC[$i]['id'] = $json1->id;
             $jsonC[$i]['name'] = $json1->name;
-            $jsonC[$i]['code'] = $json1->iso2;
+            $jsonC[$i]['code'] = $json1->alpha2;
             $i++;
         }
         return response()->json([
