@@ -434,8 +434,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = $postDetail['created_at'];
-            $postData[$ID]['updated'] = $postDetail['updated_at'];
+            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -585,8 +585,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = $postDetail['created_at'];
-            $postData[$ID]['updated'] = $postDetail['updated_at'];
+            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');//strtotime($postDetail['created_at']);
+            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -1308,8 +1308,8 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$i]['created'] = $postDetail['created_at'];
-            $postData[$i]['updated'] = $postDetail['updated_at'];
+            $postData[$i]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
+            $postData[$i]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
@@ -1384,24 +1384,29 @@ class PostController extends Controller
     public function mostPopular($start,$limit){
         
        $posts = DB::table("posts")
-        ->select("posts.*",
-                  DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
+        ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
+                DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
                               WHERE likes.post_id = posts.id
                               GROUP BY likes.post_id) as likeCount"),
-                  DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
+                DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
                               WHERE comments.post_id = posts.id
                               GROUP BY comments.post_id) as commentCount"),
-                   DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
+                DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
                               WHERE comments.post_id = posts.id
                               GROUP BY comments.post_id) + (SELECT ifnull(COUNT(likes.post_id),0) FROM likes
                               WHERE likes.post_id = posts.id
-                              GROUP BY likes.post_id) as totalCount"))->orderBy('totalCount', 'DESC')
-                              ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();
+                              GROUP BY likes.post_id) as totalCount"))
+                ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
+                ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                ->orderBy('totalCount', 'DESC')
+                ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();
 
         
         $i=0;
         $posts = json_decode($posts, true);
         foreach($posts as $postDetail){
+
+            
 
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
@@ -1440,6 +1445,12 @@ class PostController extends Controller
             }
 
             $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['firstName'] = $postDetail['first_name'];
+            $postData[$i]['lastName'] = $postDetail['last_name'];
+            $postData[$i]['displayName'] = $postDetail['display_name'];
+            $postData[$i]['profile'] = $postDetail['profile'];
+            $postData[$i]['banner'] = $postDetail['cover'];
+            $postData[$i]['username'] = $postDetail['username'];
             $postData[$i]['title'] = $postDetail['title'];
             $postData[$i]['caption'] = $postDetail['caption'];
             $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
@@ -1447,8 +1458,8 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$i]['created'] = $postDetail['created_at'];
-            $postData[$i]['updated'] = $postDetail['updated_at'];
+            $postData[$i]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
+            $postData[$i]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
@@ -1743,8 +1754,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = $postDetail['created_at'];
-            $postData[$ID]['updated'] = $postDetail['updated_at'];
+            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -1756,6 +1767,155 @@ class PostController extends Controller
             'data' => $postData,
             'isError' => false
         ]);
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/getRecentPost/{loginUser}/{start}/{limit}",
+     *          operationId="Get All Posts",
+     *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      summary="Get All Posts",
+     *      description="data of post",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getRecentPost($loginUser,$start,$limit){
+
+        $allPost = Post::all();
+        $postDetails = Post::orderBy('created_at','DESC')->offset($start)->limit($limit)->get();
+        $ID = 0;
+        foreach($postDetails as $postDetail){
+            
+            $likedbyme = 0;
+            $Users = $postDetail->users()->get();
+            foreach($Users as $user){
+                $UserDetails = $user;
+            }
+            //echo '<pre>'; print_r($UserDetails); exit;
+
+            
+            $likeDetails = Like::where('post_id',$postDetail['id'])
+                            ->join('users', 'users.id', '=', 'likes.user_id')
+                            ->get();
+            $likeUsers = array();
+            $j = 0;
+            if(count($likeDetails) > 0){
+                foreach($likeDetails as $likeDetail){
+                    if($loginUser == $likeDetail['user_id']){
+                        $likedbyme = 1;
+                    }
+                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
+                    $likeUsers[$j]['userName'] = $likeDetail['username'];
+                    $j++;
+                }
+            }
+
+            $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'comments.user_id')
+                                ->get();
+            $commentUsers = array();
+            $k = 0;
+            if(count($commentDetails) > 0){
+                foreach($commentDetails as $commentDetail){
+                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
+                    $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $j++;
+                    $k++;
+                }
+            }
+
+            $postData[$ID]['id'] = $postDetail['id'];
+            $postData[$ID]['firstName'] = $UserDetails['first_name'];
+            $postData[$ID]['lastName'] = $UserDetails['last_name'];
+            $postData[$ID]['displayName'] = $UserDetails['display_name'];
+            $postData[$ID]['profile'] = $UserDetails['profile'];
+            $postData[$ID]['banner'] = $UserDetails['cover'];
+            $postData[$ID]['username'] = $UserDetails['username'];
+            $postData[$ID]['title'] = $postDetail['title'];
+            $postData[$ID]['caption'] = $postDetail['caption'];
+            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$ID]['tags'] = $postDetail['tags'];
+            $postData[$ID]['publish'] = $postDetail['publish'];
+            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
+            $postData[$ID]['likedByMe'] = $likedbyme;
+            $postData[$ID]['likes'] = count($likeDetails);
+            $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['commentUsers'] = $commentUsers;
+            $ID++;
+        }
+        if(count($postDetails)){
+            return response()->json([
+                'message' => 'All post list!',
+                'count' => count($allPost),
+                'data' => $postData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Post available','isError' => true]);
+        }
+
     }
     
      function getPostResponse($postId){
@@ -1801,8 +1961,8 @@ class PostController extends Controller
         $postData['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
         $postData['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
         $postData['add_to_album'] = $postDetail['add_to_album'];
-        $postData['created'] = $postDetail['created_at'];
-        $postData['updated'] = $postDetail['updated_at'];
+        $postData['created'] = \Carbon\Carbon::parse($postDetail['created_at'])->format('Y-m-d H:i:s');
+        $postData['updated'] = \Carbon\Carbon::parse($postDetail['updated_at'])->format('Y-m-d H:i:s');
         $postData['likes'] = count($likeDetails);
         $postData['likeUsers'] = $likeUsers;
         $postData['comments'] = count($commentDetails);
