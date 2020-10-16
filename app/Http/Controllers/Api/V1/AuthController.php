@@ -487,7 +487,7 @@ class AuthController extends Controller
             
 
         if (isset($request->remember_me) && $request->remember_me == 'Yes')
-            $token->expires_at = Carbon::now()->addHours(8);
+            $token->expires_at = Carbon::now()->addHours(6);
             $token->save();
 
         return response()->json([
