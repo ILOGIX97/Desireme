@@ -425,7 +425,7 @@ class PostController extends Controller
             // $postData[$ID]['lastName'] = $UserDetails['last_name'];
             // $postData[$ID]['displayName'] = $UserDetails['display_name'];
             // $postData[$ID]['profile'] = $UserDetails['profile'];
-            // $postData[$ID]['banner'] = $UserDetails['banner'];
+            // $postData[$ID]['banner'] = $UserDetails['cover'];
             // $postData[$ID]['username'] = $UserDetails['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
@@ -574,7 +574,7 @@ class PostController extends Controller
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
             $postData[$ID]['displayName'] = $UserDetails['display_name'];
             $postData[$ID]['profile'] = $UserDetails['profile'];
-            $postData[$ID]['banner'] = $UserDetails['banner'];
+            $postData[$ID]['banner'] = $UserDetails['cover'];
             $postData[$ID]['username'] = $UserDetails['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
@@ -1238,12 +1238,19 @@ class PostController extends Controller
         ->groupBy('views.post_id')
         ->get();
         
-        $posts = Views::select('posts.*', DB::raw('count(post_id) as count'))
+        $posts = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
+        ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
+        ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->groupBy('views.post_id')
+        ->groupBy('post_user.user_id')
+        ->orderBy('count','DESC')
         ->offset($start)->limit($limit)->get();
+
+        //echo '<pre>'; print_r($posts); exit;
+        $i = 0;
         foreach($posts as $postDetail){
-            $ID = $postDetail['id'];
+            //$ID = $postDetail['id'];
 
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
@@ -1281,19 +1288,27 @@ class PostController extends Controller
                 }
             }
 
-            $postData[$ID]['id'] = $postDetail['id'];
-            $postData[$ID]['viewCount'] = $postDetail['count'];
-            $postData[$ID]['title'] = $postDetail['title'];
-            $postData[$ID]['caption'] = $postDetail['caption'];
-            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$ID]['tags'] = $postDetail['tags'];
-            $postData[$ID]['publish'] = $postDetail['publish'];
-            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['likes'] = count($likeDetails);
-            $postData[$ID]['likeUsers'] = $likeUsers;
-            $postData[$ID]['comments'] = count($commentDetails);
-            $postData[$ID]['commentUsers'] = $commentUsers;
+
+            $postData[$i]['id'] = $postDetail['id'];
+            $postData[$i]['viewCount'] = $postDetail['count'];
+            $postData[$i]['firstName'] = $postDetail['first_name'];
+            $postData[$i]['lastName'] = $postDetail['last_name'];
+            $postData[$i]['displayName'] = $postDetail['display_name'];
+            $postData[$i]['profile'] = $postDetail['profile'];
+            $postData[$i]['banner'] = $postDetail['cover'];
+            $postData[$i]['username'] = $postDetail['username'];
+            $postData[$i]['title'] = $postDetail['title'];
+            $postData[$i]['caption'] = $postDetail['caption'];
+            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$i]['tags'] = $postDetail['tags'];
+            $postData[$i]['publish'] = $postDetail['publish'];
+            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['likes'] = count($likeDetails);
+            $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['comments'] = count($commentDetails);
+            $postData[$i]['commentUsers'] = $commentUsers;
+            $i++;
         }
         if(count($posts)){
             return response()->json([
@@ -1711,7 +1726,7 @@ class PostController extends Controller
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
             $postData[$ID]['displayName'] = $UserDetails['display_name'];
             $postData[$ID]['profile'] = $UserDetails['profile'];
-            $postData[$ID]['banner'] = $UserDetails['banner'];
+            $postData[$ID]['banner'] = $UserDetails['cover'];
             $postData[$ID]['username'] = $UserDetails['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
