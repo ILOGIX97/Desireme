@@ -1382,7 +1382,7 @@ class PostController extends Controller
      */
 
     public function mostPopular($start,$limit){
-        
+       $allPost = Post::all();
        $posts = DB::table("posts")
         ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
                 DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
@@ -1470,6 +1470,7 @@ class PostController extends Controller
         if(count($posts)){
             return response()->json([
                 'message' => 'Most Popular post list!',
+                'count' => count($allPost),
                 'data' => $postData,
                 'isError' => false
             ], 201);
@@ -1688,7 +1689,7 @@ class PostController extends Controller
             ->orWhere('tags', 'LIKE','%' . $search . '%')
             ->get();
         }
-
+        $allPost = Post::all();
         $postData = array();
         
         foreach($posts as $postDetail){
@@ -1764,6 +1765,7 @@ class PostController extends Controller
         }
         
         return response()->json([
+            'count' => count($allPost),
             'data' => $postData,
             'isError' => false
         ]);
@@ -1829,7 +1831,7 @@ class PostController extends Controller
      */
 
     public function getRecentPost($loginUser,$start,$limit){
-
+        
         $allPost = Post::all();
         $postDetails = Post::orderBy('created_at','DESC')->offset($start)->limit($limit)->get();
         $ID = 0;
