@@ -1689,7 +1689,10 @@ class PostController extends Controller
             ->orWhere('tags', 'LIKE','%' . $search . '%')
             ->get();
         }
-        $allPost = Post::all();
+        $allPost = Post::where('title','LIKE', '%' . $search . '%')
+        ->orWhere('caption', 'LIKE','%' . $search . '%')
+        ->orWhere('tags', 'LIKE','%' . $search . '%')
+        ->get();
         $postData = array();
         
         foreach($posts as $postDetail){
@@ -1831,7 +1834,7 @@ class PostController extends Controller
      */
 
     public function getRecentPost($loginUser,$start,$limit){
-        
+
         $allPost = Post::all();
         $postDetails = Post::orderBy('created_at','DESC')->offset($start)->limit($limit)->get();
         $ID = 0;
