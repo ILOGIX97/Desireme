@@ -434,6 +434,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['created'] = $postDetail['created_at'];
+            $postData[$ID]['updated'] = $postDetail['updated_at'];
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -583,6 +585,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['created'] = $postDetail['created_at'];
+            $postData[$ID]['updated'] = $postDetail['updated_at'];
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -1304,6 +1308,8 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['created'] = $postDetail['created_at'];
+            $postData[$i]['updated'] = $postDetail['updated_at'];
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
@@ -1441,6 +1447,8 @@ class PostController extends Controller
             $postData[$i]['publish'] = $postDetail['publish'];
             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$i]['created'] = $postDetail['created_at'];
+            $postData[$i]['updated'] = $postDetail['updated_at'];
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
@@ -1735,6 +1743,8 @@ class PostController extends Controller
             $postData[$ID]['publish'] = $postDetail['publish'];
             $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
             $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['created'] = $postDetail['created_at'];
+            $postData[$ID]['updated'] = $postDetail['updated_at'];
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
@@ -1791,6 +1801,8 @@ class PostController extends Controller
         $postData['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
         $postData['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
         $postData['add_to_album'] = $postDetail['add_to_album'];
+        $postData['created'] = $postDetail['created_at'];
+        $postData['updated'] = $postDetail['updated_at'];
         $postData['likes'] = count($likeDetails);
         $postData['likeUsers'] = $likeUsers;
         $postData['comments'] = count($commentDetails);
