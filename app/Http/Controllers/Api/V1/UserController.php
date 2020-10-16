@@ -586,11 +586,74 @@ class UserController extends Controller
         foreach($newJson as $json1){
             $jsonC[$i]['id'] = $json1->id;
             $jsonC[$i]['name'] = $json1->name;
-            $jsonC[$i]['code'] = $json1->alpha3;
+            $jsonC[$i]['code'] = $json1->iso2;
             $i++;
         }
         return response()->json([
             'list' => $jsonC,
+            'isError' => false
+        ]);
+    }
+
+
+     /**
+     * @OA\Get(
+     *          path="/api/v1/getStates/{countryName}",
+     *          operationId="Get state list for country",
+     *          tags={"General"},
+     *      @OA\Parameter(
+     *          name="countryName",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      summary="Get Countries",
+     *      description="name of all states",
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *  )
+     */
+
+    public function getStates($name){
+
+        $path =  storage_path('app/public').'/countriesStates.json';
+        $json = file_get_contents($path);
+        $newJson = json_decode($json);
+        //echo '<pre>'; print_r($newJson); exit;
+        $i = 0;
+        foreach($newJson as $json1){
+            if($json1->name == $name){
+                $states = $json1->states;
+            }
+            
+            $i++;
+        }
+        return response()->json([
+            'list' => $states,
             'isError' => false
         ]);
     }
