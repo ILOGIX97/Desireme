@@ -459,7 +459,7 @@ class UserController extends Controller
                 $ext = $ext[1];
                 $ext = trim(strtolower($ext));
                 if($ext != 'gif'){
-                    return response()->json(['error'=>'The profile video must be a file of type: gif.','isError' => true], 422);
+                    return response()->json(['error'=>'{ProfileVideo: ["The profile video must be a file of type: gif."]}','isError' => true], 422);
                 }
             }
             
@@ -1099,9 +1099,6 @@ class UserController extends Controller
          $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
          return $userData;
     }
-
-    
-
 
 
 }
