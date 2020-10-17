@@ -351,7 +351,7 @@ class UserController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"ProfilePic","ProfileBanner","ProfileVideo"},
+     *               required={"ProfilePic"},
      *               @OA\Property(
      *                  property="ProfilePic",
      *                  type="string"
@@ -423,8 +423,8 @@ class UserController extends Controller
         $regex = '/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/';
         $validator = Validator::make($request->all(),[
             'ProfilePic' => 'required',
-            'ProfileBanner' => 'required',
-            'ProfileVideo' => 'required',
+            //'ProfileBanner' => 'required',
+            //'ProfileVideo' => 'required',
             'TwitterURL' => 'nullable:regex:'.$regex,
             'AmazonURL' => 'nullable:regex:'.$regex,
             'Bio' => 'nullable:min:20|max:200',
@@ -446,6 +446,8 @@ class UserController extends Controller
             $image = $request->ProfileBanner;
             $path = 'public/documents/';
             $Profile_Banner = $this->createImage($image,$path);
+        }else{
+            $Profile_Banner = '';
         }
 
         if(null !== $request->ProfileVideo){
@@ -463,6 +465,8 @@ class UserController extends Controller
             
             $path = 'public/documents/video/';
             $Profile_Video = $this->createImage($image,$path);
+        }else{
+            $Profile_Video = '';
         }
 
         $UpdateDetails = User::where('id', $id)->update([
