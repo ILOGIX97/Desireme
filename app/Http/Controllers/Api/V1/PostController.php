@@ -369,8 +369,9 @@ class PostController extends Controller
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
         
+        $ID = 0;
         foreach($postDetails as $postDetail){
-            $ID = $postDetail['id'];
+            //$ID = $postDetail['id'];
             $likedbyme = 0;
             // $Users = $postDetail->users()->get();
             // foreach($Users as $user){
@@ -445,6 +446,7 @@ class PostController extends Controller
             $postData[$ID]['likeUsers'] = $likeUsers;
             $postData[$ID]['comments'] = count($commentDetails);
             $postData[$ID]['commentUsers'] = $commentUsers;
+            $ID++;
         }
         if(count($postDetails)){
             return response()->json([
@@ -526,8 +528,9 @@ class PostController extends Controller
 
         $allPost = Post::all();
         $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
+        $ID = 0;
         foreach($postDetails as $postDetail){
-            $ID = $postDetail['id'];
+            //$ID = $postDetail['id'];
             $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
@@ -600,6 +603,7 @@ class PostController extends Controller
             $postData[$ID]['likeUsers'] = $likeUsers;
             $postData[$ID]['comments'] = count($commentDetails);
             $postData[$ID]['commentUsers'] = $commentUsers;
+            $ID++;
         }
         if(count($postDetails)){
             return response()->json([
