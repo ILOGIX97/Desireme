@@ -459,7 +459,9 @@ class UserController extends Controller
                 $ext = $ext[1];
                 $ext = trim(strtolower($ext));
                 if($ext != 'gif'){
-                    return response()->json(['error'=>'{ProfileVideo: ["The profile video must be a file of type: gif."]}','isError' => true], 422);
+                    //return response()->json(['error'=>'{ProfileVideo: ["The profile video must be a file of type: gif."]}','isError' => true], 422);
+                    $error = json_decode('{"error": {"ProfileVideo": ["The profile video must be a file of type: gif."]}, "isError": true}', 422);
+                    return response()->json($error);
                 }
             }
             
