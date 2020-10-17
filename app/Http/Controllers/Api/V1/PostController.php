@@ -1720,9 +1720,9 @@ class PostController extends Controller
         ->orWhere('tags', 'LIKE','%' . $search . '%')
         ->get();
         $postData = array();
-        
+        $ID = 0;
         foreach($posts as $postDetail){
-            $ID = $postDetail['id'];
+            //$ID = $postDetail['id'];
             $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
@@ -1797,6 +1797,7 @@ class PostController extends Controller
             $postData[$ID]['likeUsers'] = $likeUsers;
             $postData[$ID]['comments'] = count($commentDetails);
             $postData[$ID]['commentUsers'] = $commentUsers;
+            $ID++;
         }
         
         return response()->json([
