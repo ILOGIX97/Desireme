@@ -1257,6 +1257,7 @@ class PostController extends Controller
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
+        ->orderBy('posts.id','DESC')
         ->offset($start)->limit($limit)->get();
 
         //echo '<pre>'; print_r($posts); exit;
@@ -1412,7 +1413,7 @@ class PostController extends Controller
                 ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->orderBy('totalCount', 'DESC')
-                ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();
+                ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
         
         $i=0;
@@ -1582,7 +1583,9 @@ class PostController extends Controller
                         ->where('users.id','!=', $loginUser)
                         ->groupBy('users.id')
                         ->orderBy('totalCount', 'DESC')
-                        ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->offset($start)->limit($limit)->get();
+                        ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')
+                        ->orderBy('users.id', 'DESC')
+                        ->offset($start)->limit($limit)->get();
  
          
          $users = json_decode($users, true);
