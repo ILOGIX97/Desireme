@@ -472,15 +472,22 @@ class AuthController extends Controller
         }
             
         
-        if (isset($request->remember_me) && $request->remember_me == 'Yes')
+        if (isset($request->remember_me) && $request->remember_me == 'Yes'){
             $token->expires_at = Carbon::now()->addHours(6);
             $token->save();
+        }else{
+            $token->expires_at = Carbon::now()->addHours(6);
+            $token->save();
+        }
+            
         
         return response()->json([
             'message' => 'Registration process completed',
             'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
-            'expires_at' => Carbon::now()->addHours(6),
+            'expires_at' => Carbon::parse(
+                $tokenResult->token->expires_at
+            )->toDateTimeString(),
             'data' => $userData,
             'isError' => false
         ]);
