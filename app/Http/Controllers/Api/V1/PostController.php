@@ -359,10 +359,11 @@ class PostController extends Controller
         
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
-        $postDetails = $user->posts()->offset($start)->limit($limit)->get();
+        $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         $userData['first_name'] = $user['first_name'];
             $userData['last_name'] = $user['last_name'];
             $userData['display_name'] = $user['display_name'];
+            $userData['bio'] = $user['bio'];
             $userData['profile'] = $user['profile'];
             $userData['banner'] = $user['banner'];
             $userData['username'] = $user['username'];
