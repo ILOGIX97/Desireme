@@ -1779,115 +1779,75 @@ class PostController extends Controller
      */
 
     public function guestMostPopular($loginUser,$start,$limit){
-        $allPost = Post::all();
-        
-            $posts = DB::table("posts")
-         ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
-                 DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
-                               WHERE likes.post_id = posts.id
-                               GROUP BY likes.post_id) as likeCount"),
-                 DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
-                               WHERE comments.post_id = posts.id
-                               GROUP BY comments.post_id) as commentCount"),
-                 DB::raw("(SELECT ifnull(COUNT(comments.post_id),0) FROM comments
-                               WHERE comments.post_id = posts.id
-                               GROUP BY comments.post_id) + (SELECT ifnull(COUNT(likes.post_id),0) FROM likes
-                               WHERE likes.post_id = posts.id
-                               GROUP BY likes.post_id) as totalCount"))
-                 ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
-                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-                 ->orderBy('totalCount', 'DESC')
-                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
+        $users = DB::table("users")
+        ->leftJoin('post_user', function($join) {
+            $join->on('post_user.user_id', '=', 'users.id');
+             })
+        ->leftJoin('posts', function($join) {
+            $join->on('post_user.post_id', '=', 'posts.id');
+         })
+         ->select("users.*",
+            DB::raw("(SELECT ifnull(COUNT(likes.user_id),0) FROM likes
+                        WHERE likes.user_id = users.id
+                        GROUP BY likes.user_id) as likeCount"),
+            DB::raw("(SELECT ifnull(COUNT(comments.user_id),0) FROM comments
+                        WHERE comments.user_id = users.id
+                        GROUP BY comments.user_id) as commentCount"),
+            DB::raw("(SELECT ifnull(COUNT(comments.user_id),0) FROM comments
+                        WHERE comments.user_id = users.id
+                        GROUP BY comments.user_id) + (SELECT ifnull(COUNT(likes.user_id),0) FROM likes
+                        WHERE likes.user_id = users.id
+                        GROUP BY likes.user_id) as totalCount"))
+                        ->where('users.id','!=', $loginUser)
+                        ->groupBy('users.id')
+                        ->orderBy('totalCount', 'DESC')
+                        ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')
+                        ->orderBy('users.id', 'DESC')
+                        ->offset($start)->limit($limit)->get();
  
-        
-
-        
          
-         $i=0;
-         $posts = json_decode($posts, true);
-         foreach($posts as $postDetail){
-             $likedbyme = 0;
-             $likeDetails = Like::where('post_id',$postDetail['id'])
-                             ->join('users', 'users.id', '=', 'likes.user_id')
-                             ->get();
-             $likeUsers = array();
-             $j = 0;
-             if(count($likeDetails) > 0){
-                 foreach($likeDetails as $likeDetail){
-                     if($loginUser == $likeDetail['user_id']){
-                         $likedbyme = 1;
-                     }
- 
-                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
-                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
-                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
-                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
-                     $likeUsers[$j]['userName'] = $likeDetail['username'];
-                     $j++;
-                 }
-             }
- 
-             $commentDetails = Comment::where('post_id',$postDetail['id'])
-                                 ->join('users', 'users.id', '=', 'comments.user_id')
-                                 ->get();
-             $commentUsers = array();
-             $k = 0;
-             if(count($commentDetails) > 0){
-                 foreach($commentDetails as $commentDetail){
-                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
-                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
-                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
-                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
-                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
-                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
-                     $commentUsers[$k]['userName'] = $commentDetail['username'];
-                     $j++;
-                     $k++;
-                 }
-             }
- 
-             $today = Carbon::now();
-             $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
-             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
-             $hours_created = $created_at->diffInHours($today);
-             $hours_updated = $updated_at->diffInHours($today);
- 
-             $postData[$i]['id'] = $postDetail['id'];
-             $postData[$i]['firstName'] = $postDetail['first_name'];
-             $postData[$i]['lastName'] = $postDetail['last_name'];
-             $postData[$i]['displayName'] = $postDetail['display_name'];
-             $postData[$i]['profile'] = $postDetail['profile'];
-             $postData[$i]['banner'] = $postDetail['cover'];
-             $postData[$i]['username'] = $postDetail['username'];
-             $postData[$i]['title'] = $postDetail['title'];
-             $postData[$i]['caption'] = $postDetail['caption'];
-             $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-             $postData[$i]['tags'] = $postDetail['tags'];
-             $postData[$i]['publish'] = $postDetail['publish'];
-             $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-             $postData[$i]['created'] = $hours_created;
-             $postData[$i]['updated'] = $hours_updated;
-             $postData[$i]['likedByMe'] = $likedbyme;
-             $postData[$i]['likes'] = count($likeDetails);
-             $postData[$i]['likeUsers'] = $likeUsers;
-             $postData[$i]['comments'] = count($commentDetails);
-             $postData[$i]['commentUsers'] = $commentUsers;
-             
-             $i++;
-         }
-         if(count($posts)){
+         $users = json_decode($users, true);
+         $i = 0;
+         foreach($users as $user){
+            $userData[$i]['id'] = $user['id'];
+            $userData[$i]['Forename'] = $user['first_name'];
+            $userData[$i]['Surname'] = $user['last_name'];
+            $userData[$i]['DisplayName'] = $user['display_name'];
+            $userData[$i]['Username'] = $user['username'];
+            $userData[$i]['Email'] = $user['email'];
+            $userData[$i]['EmailVerified'] = $user['email_verified'];
+            $userData[$i]['PhoneNumber'] = $user['contact'];
+            $userData[$i]['ProfilePic'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+            $userData[$i]['ProfileBanner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
+            $userData[$i]['ProfileVideo'] = (!empty($user['profile_video']) ? url('storage/'.$user['profile_video']) : '');
+            $userData[$i]['SubscriptionPrice'] = $user['subscription_price'];
+            $userData[$i]['TwitterURL'] = $user['twitter_url'];
+            $userData[$i]['AmazonURL'] = $user['amazon_url'];
+            $userData[$i]['Bio'] = $user['bio'];
+            $userData[$i]['Tags'] = $user['tags'];
+            $userData[$i]['Country'] = $user['country'];
+            $userData[$i]['AccountName'] = $user['account_name'];
+            $userData[$i]['SortCode'] = $user['sort_code'];
+            $userData[$i]['AccountNumber'] = $user['account_number'];
+            $userData[$i]['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
+            $userData[$i]['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
+            $userData[$i]['Category'] = $user['category'];
+            $userData[$i]['YearsOld'] = $user['year_old'];
+            $userData[$i]['AgreeTerms'] = $user['term'];
+            $userData[$i]['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
+            $userData[$i]['Location'] = $user['location'];
+            $i++;
+          }
+         if(count($users)){
              return response()->json([
                  'message' => 'Most Popular post list!',
-                 'count' => count($allPost),
-                 'data' => $postData,
+                 'data' => $userData,
                  'isError' => false
              ], 201);
          }else{
              return response()->json(['error'=>'No Post available','isError' => true]);
          }
-     }
+    }
 
     /**
      * @OA\Post(
