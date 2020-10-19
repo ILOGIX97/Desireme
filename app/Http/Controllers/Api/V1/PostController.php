@@ -356,7 +356,9 @@ class PostController extends Controller
 
     public function getUserPost($id,$loginUser,$start,$limit){
 
-        
+        if(empty($id)){
+            return response()->json(['error'=>'No user available','userData' => '','isError' => true]);
+        }
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
         $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
