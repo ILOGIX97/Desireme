@@ -1204,9 +1204,17 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/mostViewed/{start}/{limit}",
+     *          path="/api/v1/mostViewed/{loginUser}/{start}/{limit}",
      *          operationId="List of most viewed posts",
      *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\Parameter(
      *          name="start",
      *          in="path",
@@ -1254,7 +1262,7 @@ class PostController extends Controller
      *  )
      */
 
-    public function mostViewed($start,$limit){
+    public function mostViewed($loginUser,$start,$limit){
         $allPost = Views::select('posts.*', DB::raw('count(post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
         ->groupBy('views.post_id')
@@ -1274,7 +1282,7 @@ class PostController extends Controller
         $i = 0;
         foreach($posts as $postDetail){
             //$ID = $postDetail['id'];
-
+            $likedbyme = 0;
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1282,6 +1290,10 @@ class PostController extends Controller
             $j = 0;
             if(count($likeDetails) > 0){
                 foreach($likeDetails as $likeDetail){
+                    if($loginUser == $likeDetail['user_id']){
+                        $likedbyme = 1;
+                    }
+
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
@@ -1334,6 +1346,7 @@ class PostController extends Controller
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
             $postData[$i]['created'] = $hours_created;
             $postData[$i]['updated'] = $hours_updated;
+            $postData[$i]['likedByMe'] = $likedbyme;
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
@@ -1355,9 +1368,17 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/mostPopular/{start}/{limit}",
+     *          path="/api/v1/mostPopular/{loginUser}/{start}/{limit}",
      *          operationId="List of most popular posts",
      *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\Parameter(
      *          name="start",
      *          in="path",
@@ -1405,7 +1426,7 @@ class PostController extends Controller
      *  )
      */
 
-    public function mostPopular($start,$limit){
+    public function mostPopular($loginUser,$start,$limit){
        $allPost = Post::all();
        $posts = DB::table("posts")
         ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
@@ -1429,9 +1450,7 @@ class PostController extends Controller
         $i=0;
         $posts = json_decode($posts, true);
         foreach($posts as $postDetail){
-
-            
-
+            $likedbyme = 0;
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1439,6 +1458,10 @@ class PostController extends Controller
             $j = 0;
             if(count($likeDetails) > 0){
                 foreach($likeDetails as $likeDetail){
+                    if($loginUser == $likeDetail['user_id']){
+                        $likedbyme = 1;
+                    }
+
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
@@ -1490,6 +1513,7 @@ class PostController extends Controller
             $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
             $postData[$i]['created'] = $hours_created;
             $postData[$i]['updated'] = $hours_updated;
+            $postData[$i]['likedByMe'] = $likedbyme;
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
