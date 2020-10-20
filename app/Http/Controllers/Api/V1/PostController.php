@@ -795,15 +795,15 @@ class PostController extends Controller
                     $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
                     $commentLikeUsers = array();
                     if(count($commentLikeDetails) > 0){
-                        $i = 0;
+                        $i1 = 0;
                         foreach($commentLikeDetails as $commentLikeDetail){
-                            $commentLikeUsers[$i]['userid'] = $commentLikeDetail['user_id'];
-                            $commentLikeUsers[$i]['profile'] = $commentLikeDetail['profile'];
-                            $commentLikeUsers[$i]['firstName'] = $commentLikeDetail['first_name'];
-                            $commentLikeUsers[$i]['lastName'] = $commentLikeDetail['last_name'];
-                            $commentLikeUsers[$i]['displayName'] = $commentComentDetail['display_name'];
-                            $commentLikeUsers[$i]['userName'] = $commentLikeDetail['username'];
-                            $i++;
+                            $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
+                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
+                            $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
+                            $i1++;
                         }
                     }
 
@@ -817,7 +817,7 @@ class PostController extends Controller
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
                     $commentUsers[$k]['comments'] = count($commentComentDetails);
                     $commentUsers[$k]['commentUsers'] = $commentcommentUsers;
-                    $commentUsers[$k]['likes'] = count($commentComentDetails);
+                    $commentUsers[$k]['likes'] = count($commentLikeDetails);
                     $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
                     $j++;
                     $k++;
