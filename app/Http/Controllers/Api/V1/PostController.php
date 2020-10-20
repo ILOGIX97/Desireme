@@ -16,6 +16,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Paysafe\ThreeDSecure;
+use Paysafe\PaysafeApiClient;
+use Paysafe\Environment;
+use Paysafe\ThreeDSecureV2\Authentications;
+
 
 class PostController extends Controller
 {
@@ -356,7 +361,7 @@ class PostController extends Controller
 
     public function getUserPost($id,$loginUser,$start,$limit){
 
-        
+
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
         if(!empty($loginUser)){
@@ -374,7 +379,7 @@ class PostController extends Controller
             $userData['username'] = $user['username'];
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
-        
+
         $ID = 0;
         foreach($postDetails as $postDetail){
             //$ID = $postDetail['id'];
@@ -423,14 +428,14 @@ class PostController extends Controller
                      $k++;
                 }
             }
-            
+
 
             $today = Carbon::now();
             $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
-            
+
             $postData[$ID]['id'] = $postDetail['id'];
             // $postData[$ID]['firstName'] = $UserDetails['first_name'];
             // $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -541,7 +546,7 @@ class PostController extends Controller
 
     public function getGuestUserPost($id,$loginUser,$start,$limit){
 
-        
+
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
         if(!empty($loginUser)){
@@ -559,7 +564,7 @@ class PostController extends Controller
             $userData['username'] = $user['username'];
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
-        
+
         $ID = 0;
         foreach($postDetails as $postDetail){
             //$ID = $postDetail['id'];
@@ -608,14 +613,14 @@ class PostController extends Controller
                      $k++;
                 }
             }
-            
+
 
             $today = Carbon::now();
             $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
-            
+
             $postData[$ID]['id'] = $postDetail['id'];
             // $postData[$ID]['firstName'] = $UserDetails['first_name'];
             // $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -1452,7 +1457,7 @@ class PostController extends Controller
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
         ->groupBy('views.post_id')
         ->get();
-        
+
         $posts = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
@@ -1631,7 +1636,7 @@ class PostController extends Controller
                 ->orderBy('totalCount', 'DESC')
                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
-        
+
         $i=0;
         $posts = json_decode($posts, true);
         foreach($posts as $postDetail){
@@ -1703,7 +1708,7 @@ class PostController extends Controller
             $postData[$i]['likeUsers'] = $likeUsers;
             $postData[$i]['comments'] = count($commentDetails);
             $postData[$i]['commentUsers'] = $commentUsers;
-            
+
             $i++;
         }
         if(count($posts)){
@@ -1804,8 +1809,8 @@ class PostController extends Controller
                         ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')
                         ->orderBy('users.id', 'DESC')
                         ->offset($start)->limit($limit)->get();
- 
-         
+
+
          $users = json_decode($users, true);
          $i = 0;
          foreach($users as $user){
@@ -1910,7 +1915,7 @@ class PostController extends Controller
      */
 
     public function mostPopularProfile($loginUser,$start,$limit){
-        
+
         $users = DB::table("users")
         ->leftJoin('post_user', function($join) {
             $join->on('post_user.user_id', '=', 'users.id');
@@ -1936,8 +1941,8 @@ class PostController extends Controller
                         ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')
                         ->orderBy('users.id', 'DESC')
                         ->offset($start)->limit($limit)->get();
- 
-         
+
+
          $users = json_decode($users, true);
          $i = 0;
          foreach($users as $user){
@@ -2076,7 +2081,7 @@ class PostController extends Controller
             }
             //echo '<pre>'; print_r($UserDetails); exit;
 
-            
+
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -2145,7 +2150,7 @@ class PostController extends Controller
             $postData[$ID]['commentUsers'] = $commentUsers;
             $ID++;
         }
-        
+
         return response()->json([
             'count' => count($allPost),
             'data' => $postData,
@@ -2218,7 +2223,7 @@ class PostController extends Controller
         $postDetails = Post::orderBy('created_at','DESC')->offset($start)->limit($limit)->get();
         $ID = 0;
         foreach($postDetails as $postDetail){
-            
+
             $likedbyme = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
@@ -2226,7 +2231,7 @@ class PostController extends Controller
             }
             //echo '<pre>'; print_r($UserDetails); exit;
 
-            
+
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -2307,7 +2312,7 @@ class PostController extends Controller
         }
 
     }
-    
+
      function getPostResponse($postId){
         $postDetail = Post::find($postId);
 
@@ -2389,6 +2394,103 @@ class PostController extends Controller
 
     }
 
-    
+    /**
+     * @OA\Post(
+     *          path="/api/v1/store",
+     *          operationId="store check",
+     *          tags={"Posts"},
+     *      summary="store check",
+     *      description="store check",
+     *      @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"holder_Name","card_number","card_exp_month","card_exp_year","deviceFingerprinting_Id"},
+     *               @OA\Property(
+     *                  property="holder_Name",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="card_number",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="card_exp_month",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="card_exp_year",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="amount",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="deviceFingerprinting_Id",
+     *                  type="string"
+     *               ),
+     *           )
+     *       ),
+     *   ),
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *  )
+     */
+
+
+
+    public function store(Request $request)
+    {
+        $paysafeApiKeyId = config('app.paysafeApiKeyId');
+        $paysafeApiKeySecret = config('app.paysafeApiKeySecret');
+        $paysafeAccountNumber = config('app.paysafeAccountNumber');
+        $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
+        //echo '<pre>'; print_r($client); exit;
+        $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
+            'merchantRefNum' => '5f8ea9fc534b5',
+            'amount' => $request->amount,
+            'currency' => 'USD',
+            'deviceFingerprintingId' => $request->deviceFingerprinting_Id,
+            'merchantUrl' => 'https://mysite.com',
+            'authenticationPurpose' => 'PAYMENT_TRANSACTION',
+            'deviceChannel' => 'BROWSER',
+            'messageCategory' => 'PAYMENT',
+            'card' => array(
+                'holderName' => $request->holder_Name,
+                'cardNum' => $request->card_number,
+                'cardExpiry' => array(
+                    'month' => $request->card_exp_month,
+                    'year' => $request->card_exp_year
+                )
+            ),
+        )
+        ));
+        dd();
+        print_r('payment success');
+    }
+
 
 }

@@ -48,6 +48,8 @@ use Illuminate\Support\Facades\Route;
 
     Route::post('getGuestUserPost/{userid}/{loginUser}/{start}/{limit}', 'Api\V1\PostController@getGuestUserPost');
     Route::post('guestMostPopular/{loginUser}/{start}/{limit}', 'Api\V1\PostController@guestMostPopular');
+
+    Route::post('store', 'Api\V1\PostController@store');
     
 
     //Homepage apis
@@ -92,7 +94,9 @@ use Illuminate\Support\Facades\Route;
     Route::post('getUserAlbum/{userid}', 'Api\V1\AlbumController@getUserAlbum');
     Route::post('deleteAlbum/{albumid}', 'Api\V1\AlbumController@deleteAlbum');
 
-  });
+    //Comment routes
+    Route::post('likeComment/{commentid}/{userid}', 'Api\V1\CommentController@likeComment');
+});
 
     
 

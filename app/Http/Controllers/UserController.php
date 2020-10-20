@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\User;
 
 use Illuminate\Http\Request;
+use Paysafe\Environment;
+use Paysafe\PaysafeApiClient;
+use Paysafe\ThreeDSecureV2\Authentications;
 
 class UserController extends Controller
 {
@@ -14,5 +17,10 @@ class UserController extends Controller
           ]);
         
           return redirect('http://brainstream.ddns.net:3099/verify/'.$role.'/'.base64_encode($id));
+    }
+
+    public function paySafe(){
+          
+        return view('pay.index');
     }
 }

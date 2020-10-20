@@ -242,4 +242,25 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Paysafe Credentials
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by the console to properly generate URLs when using
+    | the Artisan command line tool. You should set this to the root of
+    | your application so that it is used when running Artisan tasks.
+    |
+    */
+
+    'paysafeApiKeyId' => env('paysafeApiKeyId', 'test_rahulmac'),
+
+    'paysafeApiKeySecret' => env('paysafeApiKeySecret', 'B-qa2-0-5f87f613-0-302c021460e93c1658e460194db7c3793edb40c61a7fba9b021471e588e1dab8837cb72c12c76c376ade2b592f35'),
+
+    'paysafeAccountNumber' => env('paysafeAccountNumber', '1001838040'),
+
+    'currencyCode' => env('currencyCode', 'USD'),
+
+    'currencyBaseUnitsMultiplier' => env('currencyBaseUnitsMultiplier', '100'),
+
 ];
