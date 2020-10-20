@@ -113,6 +113,101 @@ class CommentController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *          path="/api/v1/CommentComment/{commentid}/{userid}",
+     *          operationId="Comment on Post Comment",
+     *          tags={"Post Comment"},
+     *      @OA\Parameter(
+     *          name="commentid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="userid",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="Comment on Post Comment",
+     *      description="Comment on Post Comment",
+     *      @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"Comment"},
+     *               @OA\Property(
+     *                  property="Comment",
+     *                  type="string"
+     *               ),
+     *           )
+     *       ),
+     *      ),
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function CommentComment(Request $request,$commentid,$userid){
+
+        //echo $request->ScheduleDateTime; exit;
+        $validator = Validator::make($request->all(),[
+            'Comment' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+
+        $comment_comment =  new comment_comment([
+            'comment_id' => $commentid,
+            'user_id' => $userid,
+            'comment' => $request->Comment,
+        ]);
+
+        
+        if($comment_comment->save()){
+            $postData = $this->getCommentResponse($commentid);
+            return response()->json([
+                'message' => 'Comment commented successfully!',
+                'data' => $postData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'Provide proper details','isError' => true]);
+        }
+    }
+
     function getCommentResponse($commentId){
         $postDetail = Comment::find($commentId);
 

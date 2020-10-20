@@ -96,6 +96,7 @@ use Illuminate\Support\Facades\Route;
 
     //Comment routes
     Route::post('likeComment/{commentid}/{userid}', 'Api\V1\CommentController@likeComment');
+    Route::post('CommentComment/{commentid}/{userid}', 'Api\V1\CommentController@CommentComment');
 });
 
     
