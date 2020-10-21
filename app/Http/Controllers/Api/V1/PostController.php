@@ -386,6 +386,7 @@ class PostController extends Controller
         foreach($postDetails as $postDetail){
             //$ID = $postDetail['id'];
             $likedbyme = 0;
+            $commentByMe = 0;
             // $Users = $postDetail->users()->get();
             // foreach($Users as $user){
             //     $UserDetails = $user;
@@ -412,13 +413,50 @@ class PostController extends Controller
                 }
             }
 
-            $commentDetails = Comment::where('post_id',$postDetail['id'])
-                                ->join('users', 'users.id', '=', 'comments.user_id')
+            $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
+                                ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
             $commentUsers = array();
             $k = 0;
             if(count($commentDetails) > 0){
                 foreach($commentDetails as $commentDetail){
+
+                    if($loginUser == $commentDetail['uid']){
+                        $commentByMe = 1;
+                    }
+                    $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
+                    $commentcommentUsers = array();
+                    if(count($commentComentDetails) > 0){
+                        $i = 0;
+                        foreach($commentComentDetails as $commentComentDetail){
+                            $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
+                            $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
+                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
+                            $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
+                            $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
+                            $commentcommentUsers[$i]['userName'] = $commentComentDetail['username'];
+                            $i++;
+                        }
+                    }
+
+
+                    $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
+                    $commentLikeUsers = array();
+                    if(count($commentLikeDetails) > 0){
+                        $i1 = 0;
+                        foreach($commentLikeDetails as $commentLikeDetail){
+                            $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
+                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
+                            $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
+                            $i1++;
+                        }
+                    }
+
+
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
@@ -427,6 +465,10 @@ class PostController extends Controller
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $commentUsers[$k]['comments'] = count($commentComentDetails);
+                    $commentUsers[$k]['commentUsers'] = $commentcommentUsers;
+                    $commentUsers[$k]['likes'] = count($commentLikeDetails);
+                    $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
                      $k++;
                 }
             }
@@ -457,6 +499,7 @@ class PostController extends Controller
             $postData[$ID]['likedByMe'] = $likedbyme;
             $postData[$ID]['likes'] = count($likeDetails);
             $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['commentByMe'] = $commentByMe;
             $postData[$ID]['comments'] = count($commentDetails);
             $postData[$ID]['commentUsers'] = $commentUsers;
             $ID++;
@@ -1520,6 +1563,7 @@ class PostController extends Controller
         foreach($posts as $postDetail){
             //$ID = $postDetail['id'];
             $likedbyme = 0;
+            $commentByMe = 0;
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1537,17 +1581,55 @@ class PostController extends Controller
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
                     $likeUsers[$j]['userName'] = $likeDetail['username'];
+                    
                     $j++;
                 }
             }
 
-            $commentDetails = Comment::where('post_id',$postDetail['id'])
-                                ->join('users', 'users.id', '=', 'comments.user_id')
+            $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
+                                ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
             $commentUsers = array();
             $k = 0;
             if(count($commentDetails) > 0){
                 foreach($commentDetails as $commentDetail){
+
+                    if($loginUser == $commentDetail['uid']){
+                        $commentByMe = 1;
+                    }
+                    $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
+                    $commentcommentUsers = array();
+                    if(count($commentComentDetails) > 0){
+                        $i = 0;
+                        foreach($commentComentDetails as $commentComentDetail){
+                            $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
+                            $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
+                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
+                            $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
+                            $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
+                            $commentcommentUsers[$i]['userName'] = $commentComentDetail['username'];
+                            $i++;
+                        }
+                    }
+
+
+                    $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
+                    $commentLikeUsers = array();
+                    if(count($commentLikeDetails) > 0){
+                        $i1 = 0;
+                        foreach($commentLikeDetails as $commentLikeDetail){
+                            $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
+                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
+                            $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
+                            $i1++;
+                        }
+                    }
+
+
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
@@ -1555,6 +1637,10 @@ class PostController extends Controller
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $commentUsers[$k]['comments'] = count($commentComentDetails);
+                    $commentUsers[$k]['commentUsers'] = $commentcommentUsers;
+                    $commentUsers[$k]['likes'] = count($commentLikeDetails);
+                    $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
                     $j++;
                     $k++;
                 }
@@ -1586,6 +1672,7 @@ class PostController extends Controller
             $postData[$i]['likedByMe'] = $likedbyme;
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['commentByMe'] = $commentByMe;
             $postData[$i]['comments'] = count($commentDetails);
             $postData[$i]['commentUsers'] = $commentUsers;
             $i++;
@@ -1688,6 +1775,7 @@ class PostController extends Controller
         $posts = json_decode($posts, true);
         foreach($posts as $postDetail){
             $likedbyme = 0;
+            $commentByMe = 0;
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1709,13 +1797,50 @@ class PostController extends Controller
                 }
             }
 
-            $commentDetails = Comment::where('post_id',$postDetail['id'])
-                                ->join('users', 'users.id', '=', 'comments.user_id')
+            $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
+                                ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
             $commentUsers = array();
             $k = 0;
             if(count($commentDetails) > 0){
                 foreach($commentDetails as $commentDetail){
+
+                    if($loginUser == $commentDetail['uid']){
+                        $commentByMe = 1;
+                    }
+                    $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
+                    $commentcommentUsers = array();
+                    if(count($commentComentDetails) > 0){
+                        $i = 0;
+                        foreach($commentComentDetails as $commentComentDetail){
+                            $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
+                            $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
+                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
+                            $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
+                            $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
+                            $commentcommentUsers[$i]['userName'] = $commentComentDetail['username'];
+                            $i++;
+                        }
+                    }
+
+
+                    $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
+                    $commentLikeUsers = array();
+                    if(count($commentLikeDetails) > 0){
+                        $i1 = 0;
+                        foreach($commentLikeDetails as $commentLikeDetail){
+                            $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
+                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
+                            $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
+                            $i1++;
+                        }
+                    }
+
+
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
@@ -1723,6 +1848,10 @@ class PostController extends Controller
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
+                    $commentUsers[$k]['comments'] = count($commentComentDetails);
+                    $commentUsers[$k]['commentUsers'] = $commentcommentUsers;
+                    $commentUsers[$k]['likes'] = count($commentLikeDetails);
+                    $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
                     $j++;
                     $k++;
                 }
@@ -1753,6 +1882,7 @@ class PostController extends Controller
             $postData[$i]['likedByMe'] = $likedbyme;
             $postData[$i]['likes'] = count($likeDetails);
             $postData[$i]['likeUsers'] = $likeUsers;
+            $postData[$i]['commentByMe'] = $commentByMe;
             $postData[$i]['comments'] = count($commentDetails);
             $postData[$i]['commentUsers'] = $commentUsers;
 
