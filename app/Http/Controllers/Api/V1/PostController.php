@@ -415,6 +415,9 @@ class PostController extends Controller
             $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
                                 ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
+
+            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            $lastCommenId = $getlastCommenId[0]['id'];
             $commentUsers = array();
             $k = 0;
             if(count($commentDetails) > 0){
@@ -872,7 +875,7 @@ class PostController extends Controller
                             $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
-                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
                             $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
                             $i1++;
                         }
