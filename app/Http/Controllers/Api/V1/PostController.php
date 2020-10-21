@@ -416,23 +416,26 @@ class PostController extends Controller
                                 ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
 
+            
             $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            $lastCommenId = $getlastCommenId[0]['id'];
+            $lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
+            $totalCount = count($commentDetails);
+                
             if(count($commentDetails) > 0){
-                $totalCount = count($commentDetails);
                 foreach($commentDetails as $commentDetail){
-
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
+                    
                     $commentIds[] = $commentDetail['uid'];
-                    $lastCommented = $commentDetail['uid'];
+                    
                     $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
                     $commentcommentUsers = array();
+                    $commentCount = 0;
                     if(count($commentComentDetails) > 0){
                         $i = 0;
-                        $totalCount = count($commentComentDetails)+count($commentDetails);
+                        $commentCount = $commentCount + count($commentComentDetails);
                         foreach($commentComentDetails as $commentComentDetail){
                             $commentCommentUserIds[] = $commentComentDetail['user_id'];
                             $commentcommentDate = \Carbon\Carbon::parse($commentComentDetail['created_at'])->isoFormat('D MMMM YYYY');
@@ -451,18 +454,20 @@ class PostController extends Controller
                         }
                     }
 
-
+                    $totalCount = $totalCount+$commentCount;
+                        
                     $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
                     $commentLikeUsers = array();
                     if(count($commentLikeDetails) > 0){
                         $i1 = 0;
+                        
                         foreach($commentLikeDetails as $commentLikeDetail){
                             $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
-                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
                             $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
                             $i1++;
                         }
@@ -470,12 +475,15 @@ class PostController extends Controller
                             $commentLikeByMe = 1;
                         }
                     }
+                    
 
+                    $commentDate = \Carbon\Carbon::parse($commentDetail['created_at'])->isoFormat('D MMMM YYYY'); 
 
+                    $commentUsers[$k]['id'] = $commentDetail['id'];
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['commentDate'] = $commentDate;
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
-                    $commentUsers[$k]['banner'] = $commentDetail['cover'];
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
@@ -486,7 +494,12 @@ class PostController extends Controller
                     $commentUsers[$k]['commentByMe'] = $commentReplyByMe;
                     $commentUsers[$k]['likes'] = count($commentLikeDetails);
                     $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
-                     $k++;
+                    
+                    $j++;
+                    $k++;
+                }
+                if(in_array($loginUser, $commentIds)){
+                    $commentByMe = 1;
                 }
             }
 
@@ -512,6 +525,7 @@ class PostController extends Controller
             $postData[$ID]['likeUsers'] = $likeUsers;
             $postData[$ID]['commentByMe'] = $commentByMe;
             $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['totalComments'] = $totalCount;
             $postData[$ID]['commentUsers'] = $commentUsers;
             $ID++;
         }
@@ -520,6 +534,7 @@ class PostController extends Controller
                 'message' => 'User post list!',
                 'count' => count($allPost),
                 'data' => $postData,
+                'lastCommentId' => $lastCommenId,
                 'userData' => $userData,
                 'isError' => false
             ], 201);
@@ -1605,11 +1620,13 @@ class PostController extends Controller
         ->offset($start)->limit($limit)->get();
 
         //echo '<pre>'; print_r($posts); exit;
-        $i = 0;
+        $ID = 0;
         foreach($posts as $postDetail){
             //$ID = $postDetail['id'];
             $likedbyme = 0;
             $commentByMe = 0;
+            $lastCommenId = 0;
+            $totalCount = 0;
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1617,10 +1634,7 @@ class PostController extends Controller
             $j = 0;
             if(count($likeDetails) > 0){
                 foreach($likeDetails as $likeDetail){
-                    if($loginUser == $likeDetail['user_id']){
-                        $likedbyme = 1;
-                    }
-
+                    $likeUserIds[] = $likeDetail['user_id'];
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
@@ -1630,26 +1644,41 @@ class PostController extends Controller
                     
                     $j++;
                 }
+                if(in_array($loginUser, $likeUserIds)){
+                    $likedbyme = 1;
+                }
             }
 
             $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
                                 ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
+
+            
+            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            $lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
+            $totalCount = count($commentDetails);
+                
             if(count($commentDetails) > 0){
                 foreach($commentDetails as $commentDetail){
-
-                    if($loginUser == $commentDetail['uid']){
-                        $commentByMe = 1;
-                    }
+                    $commentLikeByMe = 0;
+                    $commentReplyByMe = 0;
+                    
+                    $commentIds[] = $commentDetail['uid'];
+                    
                     $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
                     $commentcommentUsers = array();
+                    $commentCount = 0;
                     if(count($commentComentDetails) > 0){
                         $i = 0;
+                        $commentCount = $commentCount + count($commentComentDetails);
                         foreach($commentComentDetails as $commentComentDetail){
+                            $commentCommentUserIds[] = $commentComentDetail['user_id'];
+                            $commentcommentDate = \Carbon\Carbon::parse($commentComentDetail['created_at'])->isoFormat('D MMMM YYYY');
                             $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
                             $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
+                            $commentcommentUsers[$i]['commentDate'] = $commentcommentDate;
                             $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
                             $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
                             $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
@@ -1657,27 +1686,40 @@ class PostController extends Controller
                             $commentcommentUsers[$i]['userName'] = $commentComentDetail['username'];
                             $i++;
                         }
+                        if(in_array($loginUser, $commentCommentUserIds)){
+                            $commentReplyByMe = 1;
+                        }
                     }
 
-
+                    $totalCount = $totalCount+$commentCount;
+                        
                     $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
                     $commentLikeUsers = array();
                     if(count($commentLikeDetails) > 0){
                         $i1 = 0;
+                        
                         foreach($commentLikeDetails as $commentLikeDetail){
+                            $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
-                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
                             $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
                             $i1++;
                         }
+                        if(in_array($loginUser, $commentUserIds)){
+                            $commentLikeByMe = 1;
+                        }
                     }
+                    
 
+                    $commentDate = \Carbon\Carbon::parse($commentDetail['created_at'])->isoFormat('D MMMM YYYY'); 
 
+                    $commentUsers[$k]['id'] = $commentDetail['id'];
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['commentDate'] = $commentDate;
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
@@ -1685,10 +1727,16 @@ class PostController extends Controller
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
                     $commentUsers[$k]['comments'] = count($commentComentDetails);
                     $commentUsers[$k]['commentUsers'] = $commentcommentUsers;
+                    $commentUsers[$k]['likeByMe'] = $commentLikeByMe;
+                    $commentUsers[$k]['commentByMe'] = $commentReplyByMe;
                     $commentUsers[$k]['likes'] = count($commentLikeDetails);
                     $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
+                    
                     $j++;
                     $k++;
+                }
+                if(in_array($loginUser, $commentIds)){
+                    $commentByMe = 1;
                 }
             }
             $today = Carbon::now();
@@ -1698,36 +1746,37 @@ class PostController extends Controller
             $hours_updated = $updated_at->diffInHours($today);
 
 
-            $postData[$i]['id'] = $postDetail['id'];
-            $postData[$i]['viewCount'] = $postDetail['count'];
-            $postData[$i]['firstName'] = $postDetail['first_name'];
-            $postData[$i]['lastName'] = $postDetail['last_name'];
-            $postData[$i]['displayName'] = $postDetail['display_name'];
-            $postData[$i]['profile'] = $postDetail['profile'];
-            $postData[$i]['banner'] = $postDetail['cover'];
-            $postData[$i]['username'] = $postDetail['username'];
-            $postData[$i]['title'] = $postDetail['title'];
-            $postData[$i]['caption'] = $postDetail['caption'];
-            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$i]['tags'] = $postDetail['tags'];
-            $postData[$i]['publish'] = $postDetail['publish'];
-            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$i]['created'] = $hours_created;
-            $postData[$i]['updated'] = $hours_updated;
-            $postData[$i]['likedByMe'] = $likedbyme;
-            $postData[$i]['likes'] = count($likeDetails);
-            $postData[$i]['likeUsers'] = $likeUsers;
-            $postData[$i]['commentByMe'] = $commentByMe;
-            $postData[$i]['comments'] = count($commentDetails);
-            $postData[$i]['commentUsers'] = $commentUsers;
-            $i++;
+            $postData[$ID]['id'] = $postDetail['id'];
+            $postData[$ID]['firstName'] = $postDetail['first_name'];
+            $postData[$ID]['lastName'] = $postDetail['last_name'];
+            $postData[$ID]['displayName'] = $postDetail['display_name'];
+            $postData[$ID]['profile'] = $postDetail['profile'];
+            $postData[$ID]['banner'] = $postDetail['cover'];
+            $postData[$ID]['username'] = $postDetail['username'];
+            $postData[$ID]['title'] = $postDetail['title'];
+            $postData[$ID]['caption'] = $postDetail['caption'];
+            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$ID]['tags'] = $postDetail['tags'];
+            $postData[$ID]['publish'] = $postDetail['publish'];
+            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['created'] = $hours_created;
+            $postData[$ID]['updated'] = $hours_updated;
+            $postData[$ID]['likedByMe'] = $likedbyme;
+            $postData[$ID]['likes'] = count($likeDetails);
+            $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['commentByMe'] = $commentByMe;
+            $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['totalComments'] = $totalCount;
+            $postData[$ID]['commentUsers'] = $commentUsers;
+            $ID++;
         }
         if(count($posts)){
             return response()->json([
                 'message' => 'Most Viewed post list!',
                 'count' => count($allPost),
                 'data' => $postData,
+                'lastCommentId' => $lastCommenId,
                 'isError' => false
             ], 201);
         }else{
@@ -1817,11 +1866,13 @@ class PostController extends Controller
                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
 
-        $i=0;
+        $ID=0;
         $posts = json_decode($posts, true);
         foreach($posts as $postDetail){
             $likedbyme = 0;
             $commentByMe = 0;
+            $lastCommenId = 0;
+            $totalCount = 0;
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1829,10 +1880,7 @@ class PostController extends Controller
             $j = 0;
             if(count($likeDetails) > 0){
                 foreach($likeDetails as $likeDetail){
-                    if($loginUser == $likeDetail['user_id']){
-                        $likedbyme = 1;
-                    }
-
+                    $likeUserIds[] = $likeDetail['user_id'];
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
                     $likeUsers[$j]['profile'] = $likeDetail['profile'];
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
@@ -1841,26 +1889,41 @@ class PostController extends Controller
                     $likeUsers[$j]['userName'] = $likeDetail['username'];
                     $j++;
                 }
+                if(in_array($loginUser, $likeUserIds)){
+                    $likedbyme = 1;
+                }
             }
 
             $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
                                 ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
+
+            
+            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            $lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
+            $totalCount = count($commentDetails);
+                
             if(count($commentDetails) > 0){
                 foreach($commentDetails as $commentDetail){
-
-                    if($loginUser == $commentDetail['uid']){
-                        $commentByMe = 1;
-                    }
+                    $commentLikeByMe = 0;
+                    $commentReplyByMe = 0;
+                    
+                    $commentIds[] = $commentDetail['uid'];
+                    
                     $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
                     $commentcommentUsers = array();
+                    $commentCount = 0;
                     if(count($commentComentDetails) > 0){
                         $i = 0;
+                        $commentCount = $commentCount + count($commentComentDetails);
                         foreach($commentComentDetails as $commentComentDetail){
+                            $commentCommentUserIds[] = $commentComentDetail['user_id'];
+                            $commentcommentDate = \Carbon\Carbon::parse($commentComentDetail['created_at'])->isoFormat('D MMMM YYYY');
                             $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
                             $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
+                            $commentcommentUsers[$i]['commentDate'] = $commentcommentDate;
                             $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
                             $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
                             $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
@@ -1868,27 +1931,40 @@ class PostController extends Controller
                             $commentcommentUsers[$i]['userName'] = $commentComentDetail['username'];
                             $i++;
                         }
+                        if(in_array($loginUser, $commentCommentUserIds)){
+                            $commentReplyByMe = 1;
+                        }
                     }
 
-
+                    $totalCount = $totalCount+$commentCount;
+                        
                     $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
                     $commentLikeUsers = array();
                     if(count($commentLikeDetails) > 0){
                         $i1 = 0;
+                        
                         foreach($commentLikeDetails as $commentLikeDetail){
+                            $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
-                            $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
+                            $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
                             $commentLikeUsers[$i1]['userName'] = $commentLikeDetail['username'];
                             $i1++;
                         }
+                        if(in_array($loginUser, $commentUserIds)){
+                            $commentLikeByMe = 1;
+                        }
                     }
+                    
 
+                    $commentDate = \Carbon\Carbon::parse($commentDetail['created_at'])->isoFormat('D MMMM YYYY'); 
 
+                    $commentUsers[$k]['id'] = $commentDetail['id'];
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                    $commentUsers[$k]['commentDate'] = $commentDate;
                     $commentUsers[$k]['profile'] = $commentDetail['profile'];
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
@@ -1896,10 +1972,16 @@ class PostController extends Controller
                     $commentUsers[$k]['userName'] = $commentDetail['username'];
                     $commentUsers[$k]['comments'] = count($commentComentDetails);
                     $commentUsers[$k]['commentUsers'] = $commentcommentUsers;
+                    $commentUsers[$k]['likeByMe'] = $commentLikeByMe;
+                    $commentUsers[$k]['commentByMe'] = $commentReplyByMe;
                     $commentUsers[$k]['likes'] = count($commentLikeDetails);
                     $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
+                    
                     $j++;
                     $k++;
+                }
+                if(in_array($loginUser, $commentIds)){
+                    $commentByMe = 1;
                 }
             }
 
@@ -1909,36 +1991,38 @@ class PostController extends Controller
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
 
-            $postData[$i]['id'] = $postDetail['id'];
-            $postData[$i]['firstName'] = $postDetail['first_name'];
-            $postData[$i]['lastName'] = $postDetail['last_name'];
-            $postData[$i]['displayName'] = $postDetail['display_name'];
-            $postData[$i]['profile'] = $postDetail['profile'];
-            $postData[$i]['banner'] = $postDetail['cover'];
-            $postData[$i]['username'] = $postDetail['username'];
-            $postData[$i]['title'] = $postDetail['title'];
-            $postData[$i]['caption'] = $postDetail['caption'];
-            $postData[$i]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$i]['tags'] = $postDetail['tags'];
-            $postData[$i]['publish'] = $postDetail['publish'];
-            $postData[$i]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$i]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$i]['created'] = $hours_created;
-            $postData[$i]['updated'] = $hours_updated;
-            $postData[$i]['likedByMe'] = $likedbyme;
-            $postData[$i]['likes'] = count($likeDetails);
-            $postData[$i]['likeUsers'] = $likeUsers;
-            $postData[$i]['commentByMe'] = $commentByMe;
-            $postData[$i]['comments'] = count($commentDetails);
-            $postData[$i]['commentUsers'] = $commentUsers;
+            $postData[$ID]['id'] = $postDetail['id'];
+            $postData[$ID]['firstName'] = $postDetail['first_name'];
+            $postData[$ID]['lastName'] = $postDetail['last_name'];
+            $postData[$ID]['displayName'] = $postDetail['display_name'];
+            $postData[$ID]['profile'] = $postDetail['profile'];
+            $postData[$ID]['banner'] = $postDetail['cover'];
+            $postData[$ID]['username'] = $postDetail['username'];
+            $postData[$ID]['title'] = $postDetail['title'];
+            $postData[$ID]['caption'] = $postDetail['caption'];
+            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+            $postData[$ID]['tags'] = $postDetail['tags'];
+            $postData[$ID]['publish'] = $postDetail['publish'];
+            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['created'] = $hours_created;
+            $postData[$ID]['updated'] = $hours_updated;
+            $postData[$ID]['likedByMe'] = $likedbyme;
+            $postData[$ID]['likes'] = count($likeDetails);
+            $postData[$ID]['likeUsers'] = $likeUsers;
+            $postData[$ID]['commentByMe'] = $commentByMe;
+            $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['totalComments'] = $totalCount;
+            $postData[$ID]['commentUsers'] = $commentUsers;
 
-            $i++;
+            $ID++;
         }
         if(count($posts)){
             return response()->json([
                 'message' => 'Most Popular post list!',
                 'count' => count($allPost),
                 'data' => $postData,
+                'lastCommentId' => $lastCommenId,
                 'isError' => false
             ], 201);
         }else{
@@ -2693,7 +2777,7 @@ class PostController extends Controller
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         //echo '<pre>'; print_r($client); exit;
         $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
-            'merchantRefNum' => '5f8ea9fc534b5',
+            'merchantRefNum' => '5f8ea5b90e768',
             'amount' => $request->amount,
             'currency' => 'USD',
             'deviceFingerprintingId' => $request->deviceFingerprinting_Id,
