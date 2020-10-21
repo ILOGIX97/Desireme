@@ -846,13 +846,13 @@ class PostController extends Controller
                     if(count($commentLikeDetails) > 0){
                         $i1 = 0;
                         foreach($commentLikeDetails as $commentLikeDetail){
-                            // $commentLikeByMe = 0;
-                        
-                            // if($loginUser == $commentLikeDetail['user_id']){
-                            //     $commentLikeByMe = 1;
-                            // }
+                            $commentLikeByMe = 0;
+                            if($loginUser == $commentLikeDetail['user_id']){
+                                $commentLikeByMe = 1;
+                            }
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['likedByMe'] = $commentLikeByMe;
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
                             $commentLikeUsers[$i1]['displayName'] = $commentComentDetail['display_name'];
