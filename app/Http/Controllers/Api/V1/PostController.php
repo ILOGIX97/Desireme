@@ -2538,7 +2538,7 @@ class PostController extends Controller
         return response()->json([
             'count' => count($allPost),
             'data' => $postData,
-            'lastCommentId' => $lastCommenId,
+            //'lastCommentId' => $lastCommenId,
             'isError' => false
         ]);
     }
