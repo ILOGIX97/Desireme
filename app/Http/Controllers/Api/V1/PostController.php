@@ -376,8 +376,8 @@ class PostController extends Controller
             $userData['last_name'] = $user['last_name'];
             $userData['display_name'] = $user['display_name'];
             $userData['bio'] = $user['bio'];
-            $userData['profile'] = $user['profile'];
-            $userData['banner'] = $user['banner'];
+            $userData['profile'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+            $userData['banner'] = (!empty($user['cover']) ? url('storage/'.$user['cover']) : '');
             $userData['username'] = $user['username'];
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
@@ -399,8 +399,8 @@ class PostController extends Controller
                 foreach($likeDetails as $likeDetail){
                     $likeUserIds[] = $likeDetail['user_id'];
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
-                    $likeUsers[$j]['banner'] = $likeDetail['cover'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
+                    $likeUsers[$j]['banner'] = (!empty($likeDetail['cover']) ? url('storage/'.$likeDetail['cover']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
@@ -442,7 +442,7 @@ class PostController extends Controller
                             $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
                             $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
                             $commentcommentUsers[$i]['commentDate'] = $commentcommentDate;
-                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['profile'] = (!empty($commentComentDetail['profile']) ? url('storage/'.$commentComentDetail['profile']) : '');
                             $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
                             $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
                             $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
@@ -464,7 +464,7 @@ class PostController extends Controller
                         foreach($commentLikeDetails as $commentLikeDetail){
                             $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
-                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['profile'] = (!empty($commentLikeDetail['profile']) ? url('storage/'.$commentLikeDetail['profile']) : '');
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
                             $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
@@ -483,7 +483,7 @@ class PostController extends Controller
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['commentDate'] = $commentDate;
-                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['profile'] = (!empty($commentDetail['profile']) ? url('storage/'.$commentDetail['profile']) : '');
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
@@ -656,8 +656,8 @@ class PostController extends Controller
                         $likedbyme = 1;
                     }
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
-                    $likeUsers[$j]['banner'] = $likeDetail['cover'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
+                    $likeUsers[$j]['banner'] = (!empty($likeDetail['cover']) ? url('storage/'.$likeDetail['cover']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
@@ -823,7 +823,7 @@ class PostController extends Controller
                 foreach($likeDetails as $likeDetail){
                     $likeUserIds[] = $likeDetail['user_id'];
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
@@ -865,7 +865,7 @@ class PostController extends Controller
                             $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
                             $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
                             $commentcommentUsers[$i]['commentDate'] = $commentcommentDate;
-                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['profile'] = (!empty($commentComentDetail['profile']) ? url('storage/'.$commentComentDetail['profile']) : '');
                             $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
                             $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
                             $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
@@ -887,7 +887,7 @@ class PostController extends Controller
                         foreach($commentLikeDetails as $commentLikeDetail){
                             $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
-                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['profile'] = (!empty($commentLikeDetail['profile']) ? url('storage/'.$commentLikeDetail['profile']) : '');
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
                             $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
@@ -906,7 +906,7 @@ class PostController extends Controller
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['commentDate'] = $commentDate;
-                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['profile'] = (!empty($commentDetail['profile']) ? url('storage/'.$commentDetail['profile']) : '');
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
@@ -929,8 +929,8 @@ class PostController extends Controller
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
             $postData[$ID]['displayName'] = $UserDetails['display_name'];
-            $postData[$ID]['profile'] = $UserDetails['profile'];
-            $postData[$ID]['banner'] = $UserDetails['cover'];
+            $postData[$ID]['profile'] = (!empty($UserDetails['profile']) ? url('storage/'.$UserDetails['profile']) : '');
+            $postData[$ID]['banner'] = (!empty($UserDetails['cover']) ? url('storage/'.$UserDetails['cover']) : '');
             $postData[$ID]['username'] = $UserDetails['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
@@ -1636,7 +1636,7 @@ class PostController extends Controller
                 foreach($likeDetails as $likeDetail){
                     $likeUserIds[] = $likeDetail['user_id'];
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
@@ -1679,7 +1679,7 @@ class PostController extends Controller
                             $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
                             $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
                             $commentcommentUsers[$i]['commentDate'] = $commentcommentDate;
-                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['profile'] = (!empty($commentComentDetail['profile']) ? url('storage/'.$commentComentDetail['profile']) : '');
                             $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
                             $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
                             $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
@@ -1701,7 +1701,7 @@ class PostController extends Controller
                         foreach($commentLikeDetails as $commentLikeDetail){
                             $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
-                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['profile'] = (!empty($commentLikeDetail['profile']) ? url('storage/'.$commentLikeDetail['profile']) : '');
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
                             $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
@@ -1720,7 +1720,7 @@ class PostController extends Controller
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['commentDate'] = $commentDate;
-                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['profile'] = (!empty($commentDetail['profile']) ? url('storage/'.$commentDetail['profile']) : '');
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
@@ -1750,8 +1750,8 @@ class PostController extends Controller
             $postData[$ID]['firstName'] = $postDetail['first_name'];
             $postData[$ID]['lastName'] = $postDetail['last_name'];
             $postData[$ID]['displayName'] = $postDetail['display_name'];
-            $postData[$ID]['profile'] = $postDetail['profile'];
-            $postData[$ID]['banner'] = $postDetail['cover'];
+            $postData[$ID]['profile'] = (!empty($postDetail['profile']) ? url('storage/'.$postDetail['profile']) : '');
+            $postData[$ID]['banner'] = (!empty($postDetail['cover']) ? url('storage/'.$postDetail['cover']) : '');
             $postData[$ID]['username'] = $postDetail['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
@@ -1882,7 +1882,7 @@ class PostController extends Controller
                 foreach($likeDetails as $likeDetail){
                     $likeUserIds[] = $likeDetail['user_id'];
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
@@ -1924,7 +1924,7 @@ class PostController extends Controller
                             $commentcommentUsers[$i]['userid'] = $commentComentDetail['user_id'];
                             $commentcommentUsers[$i]['comment'] = $commentComentDetail['comment'];
                             $commentcommentUsers[$i]['commentDate'] = $commentcommentDate;
-                            $commentcommentUsers[$i]['profile'] = $commentComentDetail['profile'];
+                            $commentcommentUsers[$i]['profile'] = (!empty($commentComentDetail['profile']) ? url('storage/'.$commentComentDetail['profile']) : '');
                             $commentcommentUsers[$i]['firstName'] = $commentComentDetail['first_name'];
                             $commentcommentUsers[$i]['lastName'] = $commentComentDetail['last_name'];
                             $commentcommentUsers[$i]['displayName'] = $commentComentDetail['display_name'];
@@ -1946,7 +1946,7 @@ class PostController extends Controller
                         foreach($commentLikeDetails as $commentLikeDetail){
                             $commentUserIds[] = $commentLikeDetail['user_id'];
                             $commentLikeUsers[$i1]['userid'] = $commentLikeDetail['user_id'];
-                            $commentLikeUsers[$i1]['profile'] = $commentLikeDetail['profile'];
+                            $commentLikeUsers[$i1]['profile'] = (!empty($commentLikeDetail['profile']) ? url('storage/'.$commentLikeDetail['profile']) : '');
                             $commentLikeUsers[$i1]['firstName'] = $commentLikeDetail['first_name'];
                             $commentLikeUsers[$i1]['lastName'] = $commentLikeDetail['last_name'];
                             $commentLikeUsers[$i1]['displayName'] = $commentLikeDetail['display_name'];
@@ -1965,7 +1965,7 @@ class PostController extends Controller
                     $commentUsers[$k]['userid'] = $commentDetail['user_id'];
                     $commentUsers[$k]['comment'] = $commentDetail['comment'];
                     $commentUsers[$k]['commentDate'] = $commentDate;
-                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                    $commentUsers[$k]['profile'] = (!empty($commentDetail['profile']) ? url('storage/'.$commentDetail['profile']) : '');
                     $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
                     $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
                     $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
@@ -1995,8 +1995,8 @@ class PostController extends Controller
             $postData[$ID]['firstName'] = $postDetail['first_name'];
             $postData[$ID]['lastName'] = $postDetail['last_name'];
             $postData[$ID]['displayName'] = $postDetail['display_name'];
-            $postData[$ID]['profile'] = $postDetail['profile'];
-            $postData[$ID]['banner'] = $postDetail['cover'];
+            $postData[$ID]['profile'] = (!empty($postDetail['profile']) ? url('storage/'.$postDetail['profile']) : '');
+            $postData[$ID]['banner'] = (!empty($postDetail['cover']) ? url('storage/'.$postDetail['cover']) : '');
             $postData[$ID]['username'] = $postDetail['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
@@ -2400,7 +2400,7 @@ class PostController extends Controller
                         $likedbyme = 1;
                     }
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
@@ -2550,7 +2550,7 @@ class PostController extends Controller
                         $likedbyme = 1;
                     }
                     $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = $likeDetail['profile'];
+                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
                     $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
                     $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
                     $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
