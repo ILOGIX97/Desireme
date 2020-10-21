@@ -822,6 +822,8 @@ class PostController extends Controller
                                 ->get();
 
             
+            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            $lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
@@ -832,7 +834,7 @@ class PostController extends Controller
                     $commentReplyByMe = 0;
                     
                     $commentIds[] = $commentDetail['uid'];
-                    $lastCommenId = $commentDetail['id'];
+                    
                     $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
                     $commentcommentUsers = array();
                     $commentCount = 0;
@@ -928,7 +930,7 @@ class PostController extends Controller
             $postData[$ID]['comments'] = count($commentDetails);
             $postData[$ID]['totalComments'] = $totalCount;
             $postData[$ID]['commentUsers'] = $commentUsers;
-            $postData[$ID]['lastCommentId'] = $lastCommenId;
+            //$postData[$ID]['lastCommentId'] = $lastCommenId;
             $ID++;
         }
         if(count($postDetails)){
@@ -936,6 +938,7 @@ class PostController extends Controller
                 'message' => 'All post list!',
                 'count' => count($allPost),
                 'data' => $postData,
+                'lastCommentId' => $lastCommenId,
                 'isError' => false
             ], 201);
         }else{
