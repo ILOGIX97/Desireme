@@ -774,7 +774,9 @@ class PostController extends Controller
             //$ID = $postDetail['id'];
             $likedbyme = 0;
             $commentByMe = 0;
-                
+            $lastCommented = 0;
+            $totalCount = 0;
+                       
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
                 $UserDetails = $user;
@@ -815,15 +817,18 @@ class PostController extends Controller
             $commentUsers = array();
             $k = 0;
             if(count($commentDetails) > 0){
+                $totalCount = count($commentDetails);
                 foreach($commentDetails as $commentDetail){
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
+                    
                     $commentIds[] = $commentDetail['uid'];
+                    $lastCommented = $commentDetail['uid'];
                     $commentComentDetails = comment_comment::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_comments.user_id')->get();
                     $commentcommentUsers = array();
                     if(count($commentComentDetails) > 0){
                         $i = 0;
-                        
+                        $totalCount = count($commentComentDetails)+count($commentDetails);
                         foreach($commentComentDetails as $commentComentDetail){
                             $commentCommentUserIds[] = $commentComentDetail['user_id'];
                         
@@ -883,6 +888,7 @@ class PostController extends Controller
                     $commentUsers[$k]['commentByMe'] = $commentReplyByMe;
                     $commentUsers[$k]['likes'] = count($commentLikeDetails);
                     $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
+                    
                     $j++;
                     $k++;
                 }
@@ -890,7 +896,6 @@ class PostController extends Controller
                     $commentByMe = 1;
                 }
             }
-
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -912,7 +917,9 @@ class PostController extends Controller
             $postData[$ID]['likeUsers'] = $likeUsers;
             $postData[$ID]['commentByMe'] = $commentByMe;
             $postData[$ID]['comments'] = count($commentDetails);
+            $postData[$ID]['totalComments'] = $totalCount;
             $postData[$ID]['commentUsers'] = $commentUsers;
+            $postData[$ID]['lastCommentedUser'] = $lastCommented;
             $ID++;
         }
         if(count($postDetails)){
