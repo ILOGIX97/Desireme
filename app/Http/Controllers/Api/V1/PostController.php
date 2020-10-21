@@ -824,8 +824,9 @@ class PostController extends Controller
             
             $commentUsers = array();
             $k = 0;
+            $totalCount = count($commentDetails);
+                
             if(count($commentDetails) > 0){
-                $totalCount = count($commentDetails);
                 foreach($commentDetails as $commentDetail){
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
@@ -837,8 +838,7 @@ class PostController extends Controller
                     $commentCount = 0;
                     if(count($commentComentDetails) > 0){
                         $i = 0;
-                        $commentCount += count($commentComentDetails);
-                        $totalCount = count($commentComentDetails)+$commentCount;
+                        $commentCount = $commentCount + count($commentComentDetails);
                         foreach($commentComentDetails as $commentComentDetail){
                             $commentCommentUserIds[] = $commentComentDetail['user_id'];
                             $commentcommentDate = \Carbon\Carbon::parse($commentComentDetail['created_at'])->isoFormat('D MMMM YYYY');
@@ -857,7 +857,8 @@ class PostController extends Controller
                         }
                     }
 
-
+                    $totalCount = $totalCount+$commentCount;
+                        
                     $commentLikeDetails = comment_like::where('comment_id',$commentDetail['id'])->leftJoin('users', 'users.id', '=', 'comment_likes.user_id')->get();
                     $commentLikeUsers = array();
                     if(count($commentLikeDetails) > 0){
