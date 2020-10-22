@@ -495,7 +495,6 @@ class PostController extends Controller
                     $commentUsers[$k]['likes'] = count($commentLikeDetails);
                     $commentUsers[$k]['likeUsers'] = $commentLikeUsers;
                     
-                    $j++;
                     $k++;
                 }
                 if(in_array($loginUser, $commentIds)){
@@ -2538,7 +2537,7 @@ class PostController extends Controller
         return response()->json([
             'count' => count($allPost),
             'data' => $postData,
-            'lastCommentId' => $lastCommenId,
+            
             'isError' => false
         ]);
     }
