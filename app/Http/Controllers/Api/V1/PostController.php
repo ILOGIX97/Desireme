@@ -68,8 +68,8 @@ class PostController extends Controller
      *               @OA\Property(
      *                  property="Publish",
      *                  type="string",
-     *                  default="new",
-     *                  enum={"new", "draft", "schedule"}
+     *                  default="now",
+     *                  enum={"now", "draft", "schedule"}
      *               ),
      *               @OA\Property(
      *                  property="ScheduleDateTime",
@@ -202,8 +202,8 @@ class PostController extends Controller
      *               @OA\Property(
      *                  property="Publish",
      *                  type="string",
-     *                  default="new",
-     *                  enum={"new", "draft", "schedule"}
+     *                  default="now",
+     *                  enum={"now", "draft", "schedule"}
      *               ),
      *               @OA\Property(
      *                  property="ScheduleDateTime",
@@ -2854,7 +2854,7 @@ class PostController extends Controller
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         //echo '<pre>'; print_r($client); exit;
         $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
-            'merchantRefNum' => '5f8ea5b90e768',
+            'merchantRefNum' => '5f91217bae920',
             'amount' => $request->amount,
             'currency' => 'USD',
             'deviceFingerprintingId' => $request->deviceFingerprinting_Id,
@@ -2872,8 +2872,7 @@ class PostController extends Controller
             ),
         )
         ));
-        dd();
-        print_r('payment success');
+        print_r($auth->id);
     }
 
 
