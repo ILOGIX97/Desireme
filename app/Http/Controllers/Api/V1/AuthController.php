@@ -485,6 +485,7 @@ class AuthController extends Controller
             'message' => 'Registration process completed',
             'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
+            'currentTime' =>  Carbon::now(),
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
