@@ -629,8 +629,8 @@ class PostController extends Controller
             $userData['last_name'] = $user['last_name'];
             $userData['display_name'] = $user['display_name'];
             $userData['bio'] = $user['bio'];
-            $userData['profile'] = $user['profile'];
-            $userData['banner'] = $user['banner'];
+            $userData['profile'] = (!empty($user['profile']) ? url('storage/'.$user['profile']) : '');
+            $userData['banner'] = (!empty($user['banner']) ? url('storage/'.$user['banner']) : '');
             $userData['username'] = $user['username'];
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
