@@ -101,6 +101,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::post('getBlogs/{start}/{limit}', 'Api\V1\BlogController@getBlogs');
     Route::post('searchBlog/{search}/{start}/{limit}', 'Api\V1\BlogController@searchBlog');
+    Route::post('getBlogDetail/{id}', 'Api\V1\BlogController@getBlogDetail');
 });
 
     

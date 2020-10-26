@@ -156,6 +156,7 @@ class BlogController extends Controller
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
             $blogData[$ID]['content'] = $blog->content;
             $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
+            $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
             $ID++;
         }
 
@@ -256,6 +257,7 @@ class BlogController extends Controller
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
             $blogData[$ID]['content'] = $blog->content;
             $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
+            $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
             $ID++;
         }
 
@@ -264,6 +266,75 @@ class BlogController extends Controller
             'data' => $blogData,
             'isError' => false
         ]);
+    }
+
+     /**
+     * @OA\Post(
+     *          path="/api/v1/getBlogDetail/{id}",
+     *          operationId="Get Blog detail",
+     *          tags={"Blogs"},
+     *      summary="Get Blog detail",
+     *      description="data of Blog",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getBlogDetail($id){
+
+        $blogs = DB::table('blogs')->where('id',$id)->get();
+        $blogData = array();
+        $ID = 0;
+        foreach($blogs as $blog){
+            $blogData[$ID]['title'] = $blog->title;
+            $blogData[$ID]['caption'] = $blog->category;
+            $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
+            $blogData[$ID]['content'] = $blog->content;
+            $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
+            $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
+            $ID++;
+        }
+        if(count($blogs)){
+            return response()->json([
+                'message' => 'Blog Data!',
+                'data' => $blogData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Blog available','isError' => true]);
+        }
+
     }
 
     function createImage($image,$path){
