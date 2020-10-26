@@ -154,6 +154,7 @@ class BlogController extends Controller
             $blogData[$ID]['caption'] = $blog->category;
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
             $blogData[$ID]['content'] = $blog->content;
+            $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
             $ID++;
         }
 
