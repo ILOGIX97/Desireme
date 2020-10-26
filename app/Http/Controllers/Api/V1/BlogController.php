@@ -156,6 +156,7 @@ class BlogController extends Controller
             $blogData[$ID]['caption'] = $blog->category;
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
             $blogData[$ID]['content'] = $blog->content;
+            $blogData[$ID]['category'] = $blog->category;
             $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
             $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
             $ID++;
@@ -257,6 +258,7 @@ class BlogController extends Controller
             $blogData[$ID]['caption'] = $blog->category;
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
             $blogData[$ID]['content'] = $blog->content;
+            $blogData[$ID]['category'] = $blog->category;
             $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
             $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
             $ID++;
@@ -322,6 +324,7 @@ class BlogController extends Controller
             $blogData[$ID]['caption'] = $blog->category;
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
             $blogData[$ID]['content'] = $blog->content;
+            $blogData[$ID]['category'] = $blog->category;
             $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
             $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
             $ID++;
