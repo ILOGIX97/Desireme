@@ -149,6 +149,7 @@ class BlogController extends Controller
     public function getBlogs($start,$limit){
         $blogs = DB::table('blogs')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         $ID = 0;
+        $allBlog = DB::table('blogs')->get();
         $blogData = array();
         foreach($blogs as $blog){
             $blogData[$ID]['id'] = $blog->id;
@@ -165,7 +166,7 @@ class BlogController extends Controller
         if(count($blogs)){
             return response()->json([
                 'message' => 'Blog list!',
-                'count' => count($blogs),
+                'count' => count($allBlog),
                 'data' => $blogData,
                 'isError' => false
             ], 201);
