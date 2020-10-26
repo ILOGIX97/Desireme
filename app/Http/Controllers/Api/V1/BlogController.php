@@ -408,13 +408,13 @@ class BlogController extends Controller
 
         if(count($blogs)){
             return response()->json([
-                'message' => 'Blog list!',
+                'message' => 'Blog Category list!',
                 'count' => count($allBlog),
                 'data' => $blogData,
                 'isError' => false
             ], 201);
         }else{
-            return response()->json(['error'=>'No Blog available','isError' => true]);
+            return response()->json(['error'=>'No Blog Category available','isError' => true]);
         }
 
 
