@@ -337,6 +337,89 @@ class BlogController extends Controller
 
     }
 
+    /**
+     * @OA\Post(
+     *          path="/api/v1/getBlogCategories/{start}/{limit}",
+     *          operationId="Get Blog Categories",
+     *          tags={"Blogs"},
+     *      
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="Get Blog Categories",
+     *      description="data of Blog Categories",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getBlogCategories($start,$limit){
+        if(!empty($limit)){
+            $blogs = DB::table('blog_category')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
+        }else{
+            $blogs = DB::table('blog_category')->orderBy('id','DESC')->get();
+        }
+        $allBlog = DB::table('blog_category')->get();
+        $blogData = array();
+        $ID = 0;
+        $blogData = array();
+        foreach($blogs as $blog){
+            $blogData[$ID]['id'] = $blog->id;
+            $blogData[$ID]['category'] = $blog->category;
+            $ID++;
+        }
+
+        if(count($blogs)){
+            return response()->json([
+                'message' => 'Blog list!',
+                'count' => count($allBlog),
+                'data' => $blogData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Blog available','isError' => true]);
+        }
+
+
+    }
+
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);
