@@ -100,6 +100,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('CommentComment/{commentid}/{userid}', 'Api\V1\CommentController@CommentComment');
 
     Route::post('getBlogs/{start}/{limit}', 'Api\V1\BlogController@getBlogs');
+    Route::post('searchBlog/{search}/{start}/{limit}', 'Api\V1\BlogController@searchBlog');
 });
 
     
