@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('updateProfile/{id}', 'Api\V1\UserController@updateProfile');
     Route::post('addPaymentDetails/{id}', 'Api\V1\UserController@addPaymentDetails');
     Route::post('/desirerRegister', 'Api\V1\AuthController@desirerRegister');
+    Route::post('addBlog', 'Api\V1\BlogController@addBlog');
 
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
     Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
@@ -97,6 +98,8 @@ use Illuminate\Support\Facades\Route;
     //Comment routes
     Route::post('likeComment/{commentid}/{userid}', 'Api\V1\CommentController@likeComment');
     Route::post('CommentComment/{commentid}/{userid}', 'Api\V1\CommentController@CommentComment');
+
+    Route::post('getBlogs/{start}/{limit}', 'Api\V1\BlogController@getBlogs');
 });
 
     
