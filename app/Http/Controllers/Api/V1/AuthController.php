@@ -724,11 +724,18 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     ** path="/api/v1/logout",
+     ** path="/api/v1/logout/{id}",
      *   tags={"Logout"},
      *   summary="Logout",
      *   operationId="Logout",
-     *   
+     *   @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *   @OA\Response(
      *      response=201,
      *       description="Success",
@@ -761,8 +768,10 @@ class AuthController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function logout(Request $request){
-        
+    public function logout(Request $request,$id){
+        $user = User::where('id', $id)->update([
+            'remember_me' => 0
+         ]);
         $request->user()->token()->revoke();
         return response()->json([
             'message' => 'Successfully logged out'
