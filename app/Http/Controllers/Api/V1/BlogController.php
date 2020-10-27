@@ -425,6 +425,91 @@ class BlogController extends Controller
 
     }
 
+
+     /**
+     * @OA\Post(
+     *          path="/api/v1/getRecentBlogs/{start}/{limit}",
+     *          operationId="Get Recent Blogs",
+     *          tags={"Blogs"},
+     *      
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *
+     *      summary="Get Recent Blogs",
+     *      description="data of Recent Blogs",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getRecentBlogs($start,$limit){
+        $blogs = DB::table('blogs')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
+        $ID = 0;
+        $allBlog = DB::table('blogs')->get();
+        $blogData = array();
+        foreach($blogs as $blog){
+            $blogData[$ID]['id'] = $blog->id;
+            $blogData[$ID]['title'] = $blog->title;
+            $blogData[$ID]['caption'] = $blog->category;
+            $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
+            $blogData[$ID]['content'] = $blog->content;
+            $blogData[$ID]['category'] = $blog->category;
+            $blogData[$ID]['created'] = \Carbon\Carbon::parse($blog->created_at)->isoFormat('D MMMM YYYY');
+            $blogData[$ID]['slug'] = str_replace(" ","-",$blog->title);
+            $ID++;
+        }
+
+        if(count($blogs)){
+            return response()->json([
+                'message' => 'Blog list!',
+                'count' => count($allBlog),
+                'data' => $blogData,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'No Blog available','isError' => true]);
+        }
+
+
+    }
+
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);
