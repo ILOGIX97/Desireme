@@ -342,7 +342,7 @@ class AuthController extends Controller
      *   tags={"Login"},
      *   summary="Login",
      *   operationId="login",
-     *
+     *   
      *   @OA\RequestBody(
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
@@ -475,9 +475,13 @@ class AuthController extends Controller
         if (isset($request->remember_me) && $request->remember_me == 'Yes'){
             $token->expires_at = Carbon::now()->addHours(6);
             $token->save();
+            $user->remember_me = 1;
+            $user->save();
         }else{
             $token->expires_at = Carbon::now()->addHours(6);
             $token->save();
+            $user->remember_me = 0;
+            $user->save();
         }
             
         
@@ -489,6 +493,7 @@ class AuthController extends Controller
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString(),
+            'remember_me' => $request->remember_me,
             'data' => $userData,
             'isError' => false
         ]);
@@ -714,6 +719,54 @@ class AuthController extends Controller
                 'isError' => false
             ], 201);
         }
+    }
+
+
+    /**
+     * @OA\Post(
+     ** path="/api/v1/logout/",
+     *   tags={"Logout"},
+     *   summary="Logout",
+     *   operationId="Logout",
+     *   
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      security={ {"passport": {}} },
+     *)
+     **/
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function logout(Request $request){
+        
+        $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ]);
     }
 
     function createImage($image,$path){

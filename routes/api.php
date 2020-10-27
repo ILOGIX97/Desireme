@@ -104,6 +104,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('getBlogDetail/{id}', 'Api\V1\BlogController@getBlogDetail');
     Route::post('getBlogCategories/{start}/{limit}', 'Api\V1\BlogController@getBlogCategories');
     Route::post('getRecentBlogs/{start}/{limit}', 'Api\V1\BlogController@getRecentBlogs');
+
+    Route::post('logout', 'Api\V1\AuthController@logout');
 });
 
     
