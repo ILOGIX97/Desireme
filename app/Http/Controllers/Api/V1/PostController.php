@@ -531,7 +531,14 @@ class PostController extends Controller
             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
 
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
+             
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
@@ -738,6 +745,13 @@ class PostController extends Controller
             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
 
             $postData[$ID]['id'] = $postDetail['id'];
             // $postData[$ID]['firstName'] = $UserDetails['first_name'];
@@ -863,6 +877,13 @@ class PostController extends Controller
             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1794,7 +1815,13 @@ class PostController extends Controller
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
 
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
 
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $postDetail['first_name'];
             $postData[$ID]['lastName'] = $postDetail['last_name'];
@@ -2040,6 +2067,13 @@ class PostController extends Controller
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
 
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $postDetail['first_name'];
             $postData[$ID]['lastName'] = $postDetail['last_name'];
@@ -2558,6 +2592,14 @@ class PostController extends Controller
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
 
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
+
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -2710,6 +2752,14 @@ class PostController extends Controller
             $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
+
+            if(empty($hours_created)){
+                $hours_created = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(empty($hours_updated)){
+                $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
 
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
