@@ -642,13 +642,36 @@ class PostController extends Controller
 
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
+        $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
+        $videoTypes = array('mp4','webm','ogg');
+        $videoCount = 0;
+        $imageCount = 0;
         if(!empty($loginUser)){
             $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         }else{
             $postDetails = array();
         }
+
+        if(count($allPost) > 0){
+            foreach($allPost as $post){
+                if(!empty($post['media'])){
+                   //$getMedia = explode(".",$post['media']);
+                   //$extMedia = end($getMedia);
+                   $path = $post['media'];
+                   $ext = pathinfo($path, PATHINFO_EXTENSION);
+                   if (in_array($ext, $imageTypes)){
+                     $imageCount++;
+                   }
+
+                   if (in_array($ext, $videoTypes)){
+                    $videoCount++;
+                  }
+                }
+            }
+        }
         //$postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
-        $userData['first_name'] = $user['first_name'];
+            $userData['userId'] = $user['id'];
+            $userData['first_name'] = $user['first_name'];
             $userData['last_name'] = $user['last_name'];
             $userData['display_name'] = $user['display_name'];
             $userData['bio'] = $user['bio'];
@@ -741,6 +764,8 @@ class PostController extends Controller
             return response()->json([
                 'message' => 'User post list!',
                 'count' => count($allPost),
+                'imageCount' => $imageCount,
+                'videoCount' => $videoCount,
                 'data' => $postData,
                 'userData' => $userData,
                 'isError' => false
