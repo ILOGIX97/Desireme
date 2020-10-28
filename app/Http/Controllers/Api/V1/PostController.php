@@ -48,7 +48,7 @@ class PostController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Title","Caption","Publish"},
+     *               required={"Title","Caption","Publish","PhotoorVideo"},
      *               @OA\Property(
      *                  property="Title",
      *                  type="string"
@@ -117,6 +117,7 @@ class PostController extends Controller
             'Title' => 'required',
             'Caption' => 'required',
             'Publish' => 'required',
+            'PhotoorVideo' => 'required',
             'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d/m/Y H:i'
         ]);
 
