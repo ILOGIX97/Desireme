@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('addPaymentDetails/{id}', 'Api\V1\UserController@addPaymentDetails');
     Route::post('/desirerRegister', 'Api\V1\AuthController@desirerRegister');
     Route::post('addBlog', 'Api\V1\BlogController@addBlog');
+    Route::post('logout/{id}', 'Api\V1\AuthController@logout');
 
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
     Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
@@ -105,7 +106,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('getBlogCategories/{start}/{limit}', 'Api\V1\BlogController@getBlogCategories');
     Route::post('getRecentBlogs/{start}/{limit}', 'Api\V1\BlogController@getRecentBlogs');
 
-    Route::post('logout/{id}', 'Api\V1\AuthController@logout');
+    
 });
 
     

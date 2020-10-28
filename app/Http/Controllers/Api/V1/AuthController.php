@@ -759,20 +759,13 @@ class AuthController extends Controller
      *          response=403,
      *          description="Forbidden"
      *      ),
-     *      security={ {"passport": {}} },
+     *      
      *)
      **/
-    /**
-     * Register api
-     *
-     * @return \Illuminate\Http\Response
-     */
-
     public function logout(Request $request,$id){
         $user = User::where('id', $id)->update([
             'remember_me' => 0
          ]);
-        $request->user()->token()->revoke();
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
