@@ -928,13 +928,15 @@ class PostController extends Controller
                                 ->get();
 
             
-            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            $lastCommenId = $getlastCommenId[0]['id']; 
+            //$getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            //$lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
                 
             if(count($commentDetails) > 0){
+                $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+                $lastCommenId = $getlastCommenId[0]['id'];
                 foreach($commentDetails as $commentDetail){
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
@@ -1742,13 +1744,15 @@ class PostController extends Controller
                                 ->get();
 
             
-            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            $lastCommenId = $getlastCommenId[0]['id']; 
+            //$getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            //$lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
                 
             if(count($commentDetails) > 0){
+                $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+                $lastCommenId = $getlastCommenId[0]['id'];
                 foreach($commentDetails as $commentDetail){
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
@@ -2002,13 +2006,15 @@ class PostController extends Controller
                                 ->get();
 
             
-            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            $lastCommenId = $getlastCommenId[0]['id']; 
+            //$getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            //$lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
                 
             if(count($commentDetails) > 0){
+                $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+                $lastCommenId = $getlastCommenId[0]['id'];
                 foreach($commentDetails as $commentDetail){
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
@@ -2534,13 +2540,15 @@ class PostController extends Controller
                                 ->get();
 
             
-            $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            $lastCommenId = $getlastCommenId[0]['id']; 
+            //$getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+            //$lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
                 
             if(count($commentDetails) > 0){
+                $getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
+                $lastCommenId = $getlastCommenId[0]['id'];
                 foreach($commentDetails as $commentDetail){
                     $commentLikeByMe = 0;
                     $commentReplyByMe = 0;
