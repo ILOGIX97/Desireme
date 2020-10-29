@@ -74,7 +74,7 @@ class PostController extends Controller
      *               @OA\Property(
      *                  property="ScheduleDateTime",
      *                  type="string",
-     *                  description = "d/m/Y H:i",
+     *                  description = "d-m-Y H:i",
      *                  format="date-time"
      *               ),
      *               @OA\Property(
@@ -118,7 +118,7 @@ class PostController extends Controller
             'Caption' => 'required',
             'Publish' => 'required',
             'PhotoorVideo' => 'required',
-            'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d/m/Y H:i'
+            'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d-m-Y H:i'
         ]);
 
         if ($validator->fails()) {
@@ -133,8 +133,6 @@ class PostController extends Controller
         }else{
             $media = '';
         }
-
-        //echo $request->ScheduleDateTime; exit;
         $post =  new Post([
             'title' => $request->Title,
             'caption' => $request->Caption,
@@ -144,8 +142,6 @@ class PostController extends Controller
             'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
             'add_to_album' => (!empty($request->ChooseAlbum)) ? $request->ChooseAlbum : '0',
         ]);
-        //echo '<pre>'; print_r($post); exit;
-        //$user = User::find($id)->posts()->save($post);
         if($post->save()){
             $post->users()->sync($id);
             $postData = $this->getPostResponse($post->id);
@@ -209,7 +205,7 @@ class PostController extends Controller
      *               @OA\Property(
      *                  property="ScheduleDateTime",
      *                  type="string",
-     *                  description = "d/m/Y H:i",
+     *                  description = "d-m-Y H:i",
      *                  format="date-time"
      *               ),
      *               @OA\Property(
@@ -253,7 +249,7 @@ class PostController extends Controller
             'Caption' => 'required',
             'Publish' => 'required',
             'PhotoorVideo' => 'required',
-            'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d/m/Y H:i'
+            'ScheduleDateTime' => 'nullable|required_if:Publish,==,schedule|date_format:d-m-Y H:i'
         ]);
 
         if ($validator->fails()) {
@@ -538,6 +534,14 @@ class PostController extends Controller
             if(empty($hours_updated)){
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
             }
+
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+            }
              
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['title'] = $postDetail['title'];
@@ -754,13 +758,15 @@ class PostController extends Controller
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
             }
 
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+            }
+
             $postData[$ID]['id'] = $postDetail['id'];
-            // $postData[$ID]['firstName'] = $UserDetails['first_name'];
-            // $postData[$ID]['lastName'] = $UserDetails['last_name'];
-            // $postData[$ID]['displayName'] = $UserDetails['display_name'];
-            // $postData[$ID]['profile'] = $UserDetails['profile'];
-            // $postData[$ID]['banner'] = $UserDetails['cover'];
-            // $postData[$ID]['username'] = $UserDetails['username'];
             $postData[$ID]['title'] = $postDetail['title'];
             $postData[$ID]['caption'] = $postDetail['caption'];
             $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
@@ -886,6 +892,15 @@ class PostController extends Controller
             if(empty($hours_updated)){
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
             }
+
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+            }
+
             $likeDetails = Like::where('post_id',$postDetail['id'])
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
@@ -1824,6 +1839,15 @@ class PostController extends Controller
             if(empty($hours_updated)){
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
             }
+
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+            }
+
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $postDetail['first_name'];
             $postData[$ID]['lastName'] = $postDetail['last_name'];
@@ -2075,6 +2099,14 @@ class PostController extends Controller
 
             if(empty($hours_updated)){
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
             }
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $postDetail['first_name'];
@@ -2602,6 +2634,14 @@ class PostController extends Controller
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
             }
 
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+            }
+
             $postData[$ID]['id'] = $postDetail['id'];
             $postData[$ID]['firstName'] = $UserDetails['first_name'];
             $postData[$ID]['lastName'] = $UserDetails['last_name'];
@@ -2761,6 +2801,14 @@ class PostController extends Controller
 
             if(empty($hours_updated)){
                 $hours_updated = $created_at->diffInMinutes($today) . ' min';
+            }
+
+            if(!empty($hours_created) && $hours_created > 240){
+                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+            }
+
+            if(!empty($hours_updated && $hours_updated > 240)){
+                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
             }
 
             $postData[$ID]['id'] = $postDetail['id'];
