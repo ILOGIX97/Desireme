@@ -570,7 +570,8 @@ class PostController extends Controller
                 'isError' => false
             ], 201);
         }else{
-            return response()->json(['error'=>'No Post available','userData' => $userData,'isError' => true]);
+            return response()->json(['error'=>'No Post available','userData' => $userData,'imageCount' => $imageCount,
+            'videoCount' => $videoCount,'isError' => true]);
         }
 
 
@@ -787,7 +788,8 @@ class PostController extends Controller
                 'isError' => false
             ], 201);
         }else{
-            return response()->json(['error'=>'No Post available','userData' => $userData,'isError' => true]);
+            return response()->json(['error'=>'No Post available','userData' => $userData,'imageCount' => $imageCount,
+            'videoCount' => $videoCount,'isError' => true]);
         }
 
 
