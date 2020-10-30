@@ -253,14 +253,14 @@ return [
     |
     */
 
-    'paysafeApiKeyId' => env('paysafeApiKeyId', 'test_rahulmac'),
+    'paysafeApiKeyId' => env('paysafeApiKeyId', 'test_desireme_test'),
 
-    'paysafeApiKeySecret' => env('paysafeApiKeySecret', 'B-qa2-0-5f87f613-0-302c021460e93c1658e460194db7c3793edb40c61a7fba9b021471e588e1dab8837cb72c12c76c376ade2b592f35'),
+    'paysafeApiKeySecret' => env('paysafeApiKeySecret', 'B-qa2-0-5f9ab656-0-302c02140bdc1e6ebebd63c98489a385635153328dffee5102145ed6fe85f1493cdba620b2674cf5680613d65e3a'),
 
-    'paysafeAccountNumber' => env('paysafeAccountNumber', '1001838040'),
+    'paysafeAccountNumber' => env('paysafeAccountNumber', '1001849380'),
 
-    'currencyCode' => env('currencyCode', 'USD'),
+    'currencyCode' => env('currencyCode', 'GBP'),
 
-    'currencyBaseUnitsMultiplier' => env('currencyBaseUnitsMultiplier', '100'),
+    'currencyBaseUnitsMultiplier' => env('currencyBaseUnitsMultiplier', '1'),
 
 ];

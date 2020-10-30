@@ -3013,7 +3013,7 @@ class PostController extends Controller
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         //echo '<pre>'; print_r($client); exit;
         $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
-            'merchantRefNum' => '5f91217bae920',
+            'merchantRefNum' => uniqid(date('')),
             'amount' => $request->amount,
             'currency' => 'USD',
             'deviceFingerprintingId' => $request->deviceFingerprinting_Id,
