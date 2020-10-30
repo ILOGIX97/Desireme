@@ -3013,7 +3013,7 @@ class PostController extends Controller
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         
         $user = User::findOrFail($userId);
-
+        $follower = User::findOrFail($followerId);
         $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
             'merchantRefNum' => uniqid(date('')),
             'amount' => $request->amount,
@@ -3043,8 +3043,9 @@ class PostController extends Controller
                 $vatToPay = ($new_amount / 100) * $vat;
                 $new_amount = $new_amount + $vatToPay;
             }
+            $final_amount = $follower['account_balance'] + $new_amount;
             $UpdateDetails = User::where('id', $followerId)->update([
-                'account_balance' => $new_amount,
+                'account_balance' => $final_amount,
               ]);
 
             $data = DB::table('follow')
