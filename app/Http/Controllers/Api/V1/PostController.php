@@ -1703,6 +1703,7 @@ class PostController extends Controller
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        ->whereNull('posts.deleted_at')
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
@@ -1969,6 +1970,7 @@ class PostController extends Controller
                               GROUP BY likes.post_id) as totalCount"))
                 ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                ->whereNull('posts.deleted_at')
                 ->orderBy('totalCount', 'DESC')
                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
@@ -2540,8 +2542,6 @@ class PostController extends Controller
                                 ->get();
 
             
-            //$getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            //$lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
@@ -2680,7 +2680,7 @@ class PostController extends Controller
         return response()->json([
             'count' => count($allPost),
             'data' => $postData,
-            
+            'lastCommentId' => $lastCommenId,
             'isError' => false
         ]);
     }
