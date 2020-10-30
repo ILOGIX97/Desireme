@@ -2939,7 +2939,7 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/followContent",
+     *          path="/api/v1/followContent/{userId}/{followerId}",
      *          operationId="store check",
      *          tags={"Posts"},
      *      @OA\Parameter(
@@ -2964,24 +2964,8 @@ class PostController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"holder_Name","card_number","card_exp_month","card_exp_year","deviceFingerprinting_Id"},
-     *               @OA\Property(
-     *                  property="holder_Name",
-     *                  type="string"
-     *               ),
-     *               @OA\Property(
-     *                  property="card_number",
-     *                  type="string"
-     *               ),
-     *               @OA\Property(
-     *                  property="card_exp_month",
-     *                  type="string"
-     *               ),
-     *               @OA\Property(
-     *                  property="card_exp_year",
-     *                  type="string"
-     *               ),
-     *               @OA\Property(
+     *               required={"amount","deviceFingerprinting_Id"},
+     *              @OA\Property(
      *                  property="amount",
      *                  type="string"
      *               ),
@@ -3027,27 +3011,55 @@ class PostController extends Controller
         $paysafeApiKeySecret = config('app.paysafeApiKeySecret');
         $paysafeAccountNumber = config('app.paysafeAccountNumber');
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
-        //echo '<pre>'; print_r($client); exit;
+        
+        $user = User::findOrFail($userId);
+
         $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
             'merchantRefNum' => uniqid(date('')),
             'amount' => $request->amount,
-            'currency' => 'USD',
+            'currency' => 'GBP',
             'deviceFingerprintingId' => $request->deviceFingerprinting_Id,
             'merchantUrl' => 'https://mysite.com',
             'authenticationPurpose' => 'PAYMENT_TRANSACTION',
             'deviceChannel' => 'BROWSER',
             'messageCategory' => 'PAYMENT',
             'card' => array(
-                'holderName' => $request->holder_Name,
-                'cardNum' => $request->card_number,
+                'holderName' => $user['account_name'],
+                'cardNum' => $user['card_number'],
                 'cardExpiry' => array(
-                    'month' => $request->card_exp_month,
-                    'year' => $request->card_exp_year
+                    'month' => $user['card_exp_month'],
+                    'year' => $user['card_exp_year']
                 )
             ),
         )
         ));
-        print_r($auth->id);
+        
+        if(isset($auth->id)){
+            $percentage = 80;
+            $new_amount = ($percentage / 100) * $request->amount;
+            if($user['country'] == 'UK')
+            {
+                $vat = 20;
+                $vatToPay = ($new_amount / 100) * $vat;
+                $new_amount = $new_amount + $vatToPay;
+            }
+            $UpdateDetails = User::where('id', $followerId)->update([
+                'account_balance' => $new_amount,
+              ]);
+
+            $data = DB::table('follow')
+              ->insert([
+               'user_id' => $userId,
+               'follower_id' => $followerId,
+            ]);
+            return response()->json([
+                'message' => 'Successfully Followed',
+                'data' => $data,
+                'isError' => false
+            ], 201);
+        }else{
+            return response()->json(['error'=>'Error in payment','isError' => true]);
+        }
     }
 
 
