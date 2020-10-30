@@ -400,6 +400,7 @@ class PostController extends Controller
             $userData['username'] = $user['username'];
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
+            $userData['subscription_price'] = $user['subscription_price'];
 
         $ID = 0;
         foreach($postDetails as $postDetail){
@@ -695,6 +696,7 @@ class PostController extends Controller
             $userData['username'] = $user['username'];
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
+            $userData['subscription_price'] = $user['subscription_price'];
 
         $ID = 0;
         foreach($postDetails as $postDetail){
@@ -2939,7 +2941,7 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/followContent/{userId}/{followerId}",
+     *          path="/api/v1/followContent/{userId}/{followerId}/{subscriptionPlan}",
      *          operationId="store check",
      *          tags={"Posts"},
      *      @OA\Parameter(
@@ -2952,6 +2954,14 @@ class PostController extends Controller
      *      ),
      *      @OA\Parameter(
      *          name="followerId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="subscriptionPlan",
      *          in="path",
      *          required=true,
      *          @OA\Schema(
@@ -3005,7 +3015,7 @@ class PostController extends Controller
 
 
 
-    public function store(Request $request,$userId,$followerId)
+    public function store(Request $request,$userId,$followerId,$subscriptionPlan)
     {
         $paysafeApiKeyId = config('app.paysafeApiKeyId');
         $paysafeApiKeySecret = config('app.paysafeApiKeySecret');
@@ -3052,6 +3062,7 @@ class PostController extends Controller
               ->insert([
                'user_id' => $userId,
                'follower_id' => $followerId,
+               'subscription_plan' => $subscriptionPlan,
             ]);
             return response()->json([
                 'message' => 'Successfully Followed',

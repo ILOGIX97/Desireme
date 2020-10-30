@@ -351,7 +351,7 @@ class UserController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"ProfilePic"},
+     *               required={"ProfilePic","SubscriptionPrice"},
      *               @OA\Property(
      *                  property="ProfilePic",
      *                  type="string"
@@ -428,7 +428,7 @@ class UserController extends Controller
             'TwitterURL' => 'nullable:regex:'.$regex,
             'AmazonURL' => 'nullable:regex:'.$regex,
             'Bio' => 'nullable:min:20|max:200',
-            'SubscriptionPrice' => 'integer|between:3,100|nullable',
+            'SubscriptionPrice' => 'required|integer|between:3,100|nullable',
         ]);
 
         if ($validator->fails()) {

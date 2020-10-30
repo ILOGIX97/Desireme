@@ -51,7 +51,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('getGuestUserPost/{userid}/{loginUser}/{start}/{limit}', 'Api\V1\PostController@getGuestUserPost');
     Route::post('guestMostPopular/{loginUser}/{start}/{limit}', 'Api\V1\PostController@guestMostPopular');
 
-    Route::post('followContent/{userId}/{followerId}', 'Api\V1\PostController@store');
+    Route::post('followContent/{userId}/{followerId}/{subscriptionPlan}', 'Api\V1\PostController@store');
     
 
     //Homepage apis
