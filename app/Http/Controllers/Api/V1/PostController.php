@@ -2939,9 +2939,25 @@ class PostController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/store",
+     *          path="/api/v1/followContent",
      *          operationId="store check",
      *          tags={"Posts"},
+     *      @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="followerId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      summary="store check",
      *      description="store check",
      *      @OA\RequestBody(
@@ -3005,7 +3021,7 @@ class PostController extends Controller
 
 
 
-    public function store(Request $request)
+    public function store(Request $request,$userId,$followerId)
     {
         $paysafeApiKeyId = config('app.paysafeApiKeyId');
         $paysafeApiKeySecret = config('app.paysafeApiKeySecret');

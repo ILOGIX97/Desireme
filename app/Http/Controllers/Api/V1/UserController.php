@@ -705,6 +705,18 @@ class UserController extends Controller
      *                  property="AccountNumber",
      *                  type="number"
      *               ),
+     *               @OA\Property(
+     *                  property="cardNumber",
+     *                  type="number"
+     *               ),
+     *               @OA\Property(
+     *                  property="cardExpMonth",
+     *                  type="number"
+     *               ),
+     *               @OA\Property(
+     *                  property="cardExpYear",
+     *                  type="number"
+     *               ),
      *           )
      *       ),
      *   ),
@@ -753,6 +765,9 @@ class UserController extends Controller
             'account_name' => $request->AccountName,
             'sort_code'=> $request->SortCode,
             'account_number'=>$request->AccountNumber,
+            'card_number'=>$request->cardNumber,
+            'card_exp_month'=>$request->cardExpMonth,
+            'card_exp_year'=>$request->cardExpYear,
             'check_registration'=>1,
          ]);
 
@@ -984,6 +999,18 @@ class UserController extends Controller
      *                  property="AccountNumber",
      *                  type="number"
      *               ),
+     *               @OA\Property(
+     *                  property="cardNumber",
+     *                  type="number"
+     *               ),
+     *               @OA\Property(
+     *                  property="cardExpMonth",
+     *                  type="number"
+     *               ),
+     *               @OA\Property(
+     *                  property="cardExpYear",
+     *                  type="number"
+     *               ),
      *           )
      *       ),
      *   ),
@@ -1032,6 +1059,9 @@ class UserController extends Controller
             'account_name' => $request->AccountName,
             'sort_code'=> $request->SortCode,
             'account_number'=>$request->AccountNumber,
+            'card_number'=>$request->cardNumber,
+            'card_exp_month'=>$request->cardExpMonth,
+            'card_exp_year'=>$request->cardExpYear,
           ]);
 
         $userData = $this->getResponse($id); 
@@ -1091,6 +1121,10 @@ class UserController extends Controller
          $userData['AccountName'] = $user['account_name'];
          $userData['SortCode'] = $user['sort_code'];
          $userData['AccountNumber'] = $user['account_number'];
+         $userData['cardNumber'] = $user['card_number'];
+         $userData['cardEcpMonth'] = $user['card_exp_month'];
+         $userData['cardEcpYear'] = $user['card_exp_year'];
+
          $userData['PhotoId'] = (!empty($user['photo_id']) ? url('storage/'.$user['photo_id']) : '');
          $userData['PhotowithId'] = (!empty($user['photo_id_1']) ? url('storage/'.$user['photo_id_1']) : '');
          $userData['Category'] = $user['category'];
