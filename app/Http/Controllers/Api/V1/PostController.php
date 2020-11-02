@@ -3028,6 +3028,7 @@ class PostController extends Controller
 
         $plan = DB::table('subscription_plans')->where('id',$subscriptionPlan)->get();
         $discount = $plan[0]->discount;
+        $amount = $request->amount;
         if($plan[0]->id == 2){
             $amount = $request->amount * 3;
         }
