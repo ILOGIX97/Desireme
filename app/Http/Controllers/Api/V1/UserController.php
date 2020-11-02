@@ -1255,6 +1255,7 @@ class UserController extends Controller
         }
 
         //echo $user->roles->first()->name; exit;
+        $userData['userId'] = $user['id'];
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
