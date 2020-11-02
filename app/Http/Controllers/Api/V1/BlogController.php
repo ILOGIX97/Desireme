@@ -255,6 +255,7 @@ class BlogController extends Controller
         $blogData = array();
         $ID = 0;
         foreach($blogs as $blog){
+            $blogData[$ID]['id'] = $blog->id;
             $blogData[$ID]['title'] = $blog->title;
             $blogData[$ID]['caption'] = $blog->category;
             $blogData[$ID]['image'] = (!empty($blog->image) ? url('storage/'.$blog->image) : '');
