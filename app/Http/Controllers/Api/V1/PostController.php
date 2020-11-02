@@ -3022,11 +3022,28 @@ class PostController extends Controller
         $paysafeAccountNumber = config('app.paysafeAccountNumber');
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         
+        
         $user = User::findOrFail($userId);
         $follower = User::findOrFail($followerId);
-        $auth = $client->threeDSecureV2Service()->authentications(new Authentications(array(
+
+        $plan = DB::table('subscription_plans')->where('id',$subscriptionPlan)->get();
+        $discount = $plan[0]->discount;
+        if($plan[0]->id == 2){
+            $amount = $request->amount * 3;
+        }
+        if($plan[0]->id == 3){
+            $amount = $request->amount * 6;
+        }
+        if(!empty($discount)){
+            $new_amount = $amount - ($amount * ($discount / 100));
+        }else{
+            $new_amount = $amount;
+        } 
+        
+
+        $test = array(
             'merchantRefNum' => uniqid(date('')),
-            'amount' => $request->amount,
+            'amount' => $new_amount,
             'currency' => 'GBP',
             'deviceFingerprintingId' => $request->deviceFingerprinting_Id,
             'merchantUrl' => 'https://mysite.com',
@@ -3040,20 +3057,22 @@ class PostController extends Controller
                     'month' => $user['card_exp_month'],
                     'year' => $user['card_exp_year']
                 )
-            ),
-        )
-        ));
+            ));
         
+
+        $auth = $client->threeDSecureV2Service()->authentications(new Authentications($test));
+        //echo '<pre>'; print_r($auth);
         if(isset($auth->id)){
             $percentage = 80;
-            $new_amount = ($percentage / 100) * $request->amount;
+            $get_amount = ($percentage / 100) * $amount;
             if($user['country'] == 'UK')
             {
                 $vat = 20;
-                $vatToPay = ($new_amount / 100) * $vat;
-                $new_amount = $new_amount + $vatToPay;
+                $vatToPay = ($get_amount / 100) * $vat;
+                $new_amount = $get_amount + $vatToPay;
             }
-            $final_amount = $follower['account_balance'] + $new_amount;
+            
+            $final_amount = $follower['account_balance'] + $get_amount;
             $UpdateDetails = User::where('id', $followerId)->update([
                 'account_balance' => $final_amount,
               ]);
