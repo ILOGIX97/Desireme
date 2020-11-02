@@ -16,6 +16,7 @@ use App\Mail\IdVerification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -1076,6 +1077,152 @@ class UserController extends Controller
 
     }
 
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/addToWishList/{userId}/{writerId}",
+     *          operationId="Add to wish list",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="writerId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="Add to wish list",
+     *      description="Add to wish list",
+     *      
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function addToWishList(Request $request,$userId,$writerId){
+        $checkList = DB::table('wish_list')->where('user_id',$userId)->where('contentwriter_id',$writerId)->get();
+
+        if(count($checkList)>0){
+            return response()->json(['error'=>'Already added in wish list','isError' => true]);
+        }
+        $data = DB::table('wish_list')
+            ->insert([
+            'user_id' => $userId,
+            'contentwriter_id' => $writerId,
+        ]);
+        $wishList = array();
+        $getUsers = DB::table('wish_list')->where('user_id',$userId)->get();
+            foreach($getUsers as $getUser){
+                $wishList[] = $getUser->contentwriter_id;
+            }
+        return response()->json([
+            'message' => 'Wish list updated successfully',
+            'data' => $wishList,
+            'isError' => false
+        ]);
+
+        //return response()->json(User::find($id));
+
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/getWishList/{userId}",
+     *          operationId="Get user wish list",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      summary="Get user wish list",
+     *      description="Get user wish list",
+     *      
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getWishList(Request $request,$userId){
+        $wishList = array();
+        $wishList = DB::table('wish_list')->where('user_id',$userId)->get();
+
+            foreach($wishList as $User){
+                //$UserList[] = $User->contentwriter_id;
+                //$userDetails = User::find($User->contentwriter_id);
+                $userData[] = $this->getResponse($User->contentwriter_id); 
+            }
+        
+        return response()->json([
+            'message' => 'Wish List Details',
+            'data' => $userData,
+            'isError' => false
+        ]);
+
+        //return response()->json(User::find($id));
+
+    }
+
+    
+
     function createImage($image,$path){
         if (preg_match('/^data:image\/\w+;base64,/', $image)) {
             $ext = explode(';base64',$image);
@@ -1100,6 +1247,13 @@ class UserController extends Controller
 
     function getResponse($userId){
         $user = User::findOrFail($userId);
+
+        if(!empty($user['card_number'])){
+            $cardDetails = 1;
+        }else{
+            $cardDetails = 0;
+        }
+
         //echo $user->roles->first()->name; exit;
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
@@ -1133,6 +1287,9 @@ class UserController extends Controller
          $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
          $userData['Location'] = $user['location'];
          $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
+         $userData['cardDetails'] = $cardDetails;
+
+        
          return $userData;
     }
 

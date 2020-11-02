@@ -69,6 +69,9 @@ use Illuminate\Support\Facades\Route;
     Route::post('/closeAccount/{id}', 'Api\V1\UserController@closeAccount');
     Route::post('updatePaymentDetails/{id}', 'Api\V1\UserController@updatePaymentDetails');
 
+    Route::post('addToWishList/{userId}/{writerId}', 'Api\V1\UserController@addToWishList');
+    Route::post('getWishList/{userId}', 'Api\V1\UserController@getWishList');
+
     Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
     
     //Post related routes
