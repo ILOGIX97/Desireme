@@ -105,6 +105,30 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
+            $allPost = $user->posts()->get();
+            $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
+            $videoTypes = array('mp4','webm','ogg');
+            $videoCount = 0;
+            $imageCount = 0;
+
+            if(count($allPost) > 0){
+                foreach($allPost as $post){
+                    if(!empty($post['media'])){
+                       //$getMedia = explode(".",$post['media']);
+                       //$extMedia = end($getMedia);
+                       $path = $post['media'];
+                       $ext = pathinfo($path, PATHINFO_EXTENSION);
+                       if (in_array($ext, $imageTypes)){
+                         $imageCount++;
+                       }
+    
+                       if (in_array($ext, $videoTypes)){
+                        $videoCount++;
+                      }
+                    }
+                }
+            }
+
             $userData[$i]['id'] = $user['id'];
             $userData[$i]['Forename'] = $user['first_name'];
             $userData[$i]['Surname'] = $user['last_name'];
@@ -133,6 +157,8 @@ class HomeController extends Controller
             $userData[$i]['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
             $userData[$i]['Location'] = $user['location'];
             $userData[$i]['Role'] = !empty($user->roles->first()->name) ? $user->roles->first()->name : '';
+            $userData[$i]['imageCount'] = $imageCount;
+            $userData[$i]['videoCount'] = $videoCount;
             $i++;
         }
         return response()->json([
@@ -227,6 +253,30 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
+            $allPost = $user->posts()->get();
+            $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
+            $videoTypes = array('mp4','webm','ogg');
+            $videoCount = 0;
+            $imageCount = 0;
+
+            if(count($allPost) > 0){
+                foreach($allPost as $post){
+                    if(!empty($post['media'])){
+                       //$getMedia = explode(".",$post['media']);
+                       //$extMedia = end($getMedia);
+                       $path = $post['media'];
+                       $ext = pathinfo($path, PATHINFO_EXTENSION);
+                       if (in_array($ext, $imageTypes)){
+                         $imageCount++;
+                       }
+    
+                       if (in_array($ext, $videoTypes)){
+                        $videoCount++;
+                      }
+                    }
+                }
+            }
+
             $userData[$i]['id'] = $user['id'];
             $userData[$i]['Forename'] = $user['first_name'];
             $userData[$i]['Surname'] = $user['last_name'];
@@ -255,6 +305,8 @@ class HomeController extends Controller
             $userData[$i]['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
             $userData[$i]['Location'] = $user['location'];
             $userData[$i]['Role'] = !empty($user->roles->first()->name) ? $user->roles->first()->name : '';
+            $userData[$i]['imageCount'] = $imageCount;
+            $userData[$i]['videoCount'] = $videoCount;
             $i++;
         }
         return response()->json([
