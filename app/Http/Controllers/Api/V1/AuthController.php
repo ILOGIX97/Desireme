@@ -418,6 +418,11 @@ class AuthController extends Controller
             ], 401);
         }
         $user = $request->user();
+        if(!empty($user['card_number'])){
+            $cardDetails = 1;
+        }else{
+            $cardDetails = 0;
+        }
         $userData['userId'] = $user['id'];
         $userData['Forename'] = $user['first_name'];
         $userData['Surname'] = $user['last_name'];
@@ -446,6 +451,7 @@ class AuthController extends Controller
         $userData['twoFactor'] = (!empty($user['two_factor']) ?  'Yes': 'No');
         $userData['Location'] = $user['location'];
         $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
+        $userData['cardDetails'] = $cardDetails;
         
         if(!empty($user->email_verified) && !empty($user->check_registration) && !empty($user->check_activation))
         {
