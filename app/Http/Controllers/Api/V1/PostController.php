@@ -368,6 +368,7 @@ class PostController extends Controller
         $videoTypes = array('mp4','webm','ogg');
         $videoCount = 0;
         $imageCount = 0;
+        $followerList = array();
         if(!empty($loginUser)){
             $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         }else{
@@ -390,6 +391,13 @@ class PostController extends Controller
                 }
             }
         }
+
+            $userId = $user['id'];
+            $Followers = DB::table('follow')->where('user_id',$userId)->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
+            }
+
             $userData['userId'] = $user['id'];    
             $userData['first_name'] = $user['first_name'];
             $userData['last_name'] = $user['last_name'];
@@ -401,6 +409,7 @@ class PostController extends Controller
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
             $userData['subscription_price'] = $user['subscription_price'];
+            $userData['followerList'] = $followerList;
 
         $ID = 0;
         foreach($postDetails as $postDetail){
@@ -3022,9 +3031,15 @@ class PostController extends Controller
         $paysafeAccountNumber = config('app.paysafeAccountNumber');
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         
-        
+        $followerList = array();
         $user = User::findOrFail($userId);
         $follower = User::findOrFail($followerId);
+
+        $checkFollows = DB::table('follow')->where('user_id',$userId)->where('follower_id',$followerId)->get();
+
+        if(count($checkFollows)>0){
+            return response()->json(['error'=>'Already Following','isError' => true]);
+        }
 
         $plan = DB::table('subscription_plans')->where('id',$subscriptionPlan)->get();
         $discount = $plan[0]->discount;
@@ -3084,9 +3099,15 @@ class PostController extends Controller
                'follower_id' => $followerId,
                'subscription_plan' => $subscriptionPlan,
             ]);
+
+            $Followers = DB::table('follow')->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
+            }
             return response()->json([
                 'message' => 'Successfully Followed',
                 'data' => $data,
+                'followerList' => $followerList,
                 'isError' => false
             ], 201);
         }else{

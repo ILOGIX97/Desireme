@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -110,7 +111,7 @@ class HomeController extends Controller
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;
             $imageCount = 0;
-
+            $followerList = array();
             if(count($allPost) > 0){
                 foreach($allPost as $post){
                     if(!empty($post['media'])){
@@ -127,6 +128,11 @@ class HomeController extends Controller
                       }
                     }
                 }
+            }
+            $userId = $user['id'];
+            $Followers = DB::table('follow')->where('user_id',$userId)->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
             }
 
             $userData[$i]['id'] = $user['id'];
@@ -159,6 +165,7 @@ class HomeController extends Controller
             $userData[$i]['Role'] = !empty($user->roles->first()->name) ? $user->roles->first()->name : '';
             $userData[$i]['imageCount'] = $imageCount;
             $userData[$i]['videoCount'] = $videoCount;
+            $userData[$i]['followerList'] = $followerList;
             $i++;
         }
         return response()->json([
@@ -258,7 +265,7 @@ class HomeController extends Controller
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;
             $imageCount = 0;
-
+            $followerList = array();
             if(count($allPost) > 0){
                 foreach($allPost as $post){
                     if(!empty($post['media'])){
@@ -275,6 +282,12 @@ class HomeController extends Controller
                       }
                     }
                 }
+            }
+
+            $userId = $user['id'];
+            $Followers = DB::table('follow')->where('user_id',$userId)->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
             }
 
             $userData[$i]['id'] = $user['id'];
@@ -307,6 +320,7 @@ class HomeController extends Controller
             $userData[$i]['Role'] = !empty($user->roles->first()->name) ? $user->roles->first()->name : '';
             $userData[$i]['imageCount'] = $imageCount;
             $userData[$i]['videoCount'] = $videoCount;
+            $userData[$i]['followerList'] = $followerList;
             $i++;
         }
         return response()->json([
