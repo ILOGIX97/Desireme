@@ -3100,7 +3100,7 @@ class PostController extends Controller
                'subscription_plan' => $subscriptionPlan,
             ]);
 
-            $Followers = DB::table('follow')->get();
+            $Followers = DB::table('follow')->where('user_id',$userId)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
             }
