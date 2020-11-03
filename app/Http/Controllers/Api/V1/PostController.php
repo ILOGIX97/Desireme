@@ -394,12 +394,12 @@ class PostController extends Controller
         }
 
             //$userId = $user['id'];
-            $Followers = DB::table('follow')->where('follower_id',$id)->get();
+            $Followers = DB::table('follow')->where('follower_id',$loginUser)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->user_id;
             }
 
-            $Wish_users = DB::table('wish_list')->where('user_id',$id)->get();
+            $Wish_users = DB::table('wish_list')->where('user_id',$loginUser)->get();
             foreach($Wish_users as $Wish_user){
                 $wishList[] = $Wish_user->contentwriter_id;
             }
@@ -883,8 +883,8 @@ class PostController extends Controller
 
     public function getAllPost($loginUser,$start,$limit){
 
-        $allPost = Post::all();
-        $postDetails = Post::orderBy('id','DESC')->offset($start)->limit($limit)->get();
+        $allPost = Post::where('publish','now')->get();
+        $postDetails = Post::where('publish','now')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         $ID = 0;
         foreach($postDetails as $postDetail){
             //$ID = $postDetail['id'];
@@ -2509,17 +2509,20 @@ class PostController extends Controller
             $posts = Post::where('title','LIKE', '%' . $search . '%')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
+            ->where('publish','=', 'now')
             ->offset($start)->limit($limit)
             ->get();
         }else{
             $posts = Post::where('title','LIKE', '%' . $search . '%')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
+            ->where('publish','=','now')
             ->get();
         }
         $allPost = Post::where('title','LIKE', '%' . $search . '%')
         ->orWhere('caption', 'LIKE','%' . $search . '%')
         ->orWhere('tags', 'LIKE','%' . $search . '%')
+        ->where('publish', '=', 'now')
         ->get();
         $postData = array();
         $ID = 0;
