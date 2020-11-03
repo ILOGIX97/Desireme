@@ -1256,13 +1256,9 @@ class UserController extends Controller
 
         $followerList = array();
 
-        $userId = $user['id'];
-            $Followers = DB::table('follow')->where('user_id',$userId)->get();
-            foreach($Followers as $follow){
-                $followerList[] = $follow->follower_id;
-            }
+        
 
-        $userData['userId'] = $user['id'];
+         $userData['userId'] = $user['id'];
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
@@ -1296,7 +1292,23 @@ class UserController extends Controller
          $userData['Location'] = $user['location'];
          $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
          $userData['cardDetails'] = $cardDetails;
+         $desirerList = array();
+         $followerList = array();
+         if($userData['Role'] == 'ContentCreator'){
+            $userId = $user['id'];
+            $Followers = DB::table('follow')->select('user_id','follower_id')->where('follower_id',$userId)->distinct()->get();
+            foreach($Followers as $follow){
+                $desirerList[] = $follow->user_id;
+            }
+         }else{
+            $userId = $user['id'];
+            $Followers = DB::table('follow')->where('user_id',$userId)->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
+            }
+         }
          $userData['followerList'] = $followerList;
+         $userData['desirerList'] = $desirerList;
 
         
          return $userData;

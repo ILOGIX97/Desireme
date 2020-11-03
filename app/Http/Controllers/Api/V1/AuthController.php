@@ -32,7 +32,7 @@ class AuthController extends Controller
      *       @OA\MediaType(
      *           mediaType="multipart/form-data",
      *           @OA\Schema(
-     *               required={"Forename","Surname","Email","Password","Category","ConfirmPassword","Username","AgreeTerms","YearsOld","Role"},
+     *               required={"Email","Password","Category","ConfirmPassword","Username","AgreeTerms","YearsOld","Role"},
      *               @OA\Property(
      *                  property="Forename",
      *                  type="string"
@@ -181,13 +181,13 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             $failedRules = $validator->failed();
-            //echo '<pre>'; print_r($validator->errors()); exit;
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
 
         if(isset($request->DisplayName)){ $dpName = $request->DisplayName; }else{ $dpName = ''; }
         
         if(empty($request->UserId)){
+            
             if($request->Role == 'ContentCreator'){
                 $user =  new User([
                     'first_name' => $request->Forename,
