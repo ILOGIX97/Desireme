@@ -1254,7 +1254,14 @@ class UserController extends Controller
             $cardDetails = 0;
         }
 
-        //echo $user->roles->first()->name; exit;
+        $followerList = array();
+
+        $userId = $user['id'];
+            $Followers = DB::table('follow')->where('user_id',$userId)->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
+            }
+
         $userData['userId'] = $user['id'];
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
@@ -1289,6 +1296,7 @@ class UserController extends Controller
          $userData['Location'] = $user['location'];
          $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
          $userData['cardDetails'] = $cardDetails;
+         $userData['followerList'] = $followerList;
 
         
          return $userData;
