@@ -148,8 +148,8 @@ class AuthController extends Controller
         
         $messages = array(
             //'required' => 'The :attribute field is required.',
-            'Forename' => 'First name required',
-            'Surname' => 'Last name required',
+            'Forename.required' => 'First name required',
+            'Surname.required' => 'Last name required',
             'AgreeTerms.gt' => 'please agree terms and conditions',
             'YearsOld.gt' => 'Years must be 18 or over',
         );

@@ -1159,11 +1159,27 @@ class UserController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getWishList/{userId}",
+     *          path="/api/v1/getWishList/{userId}/{start}/{limit}",
      *          operationId="Get user wish list",
      *          tags={"Users"},
      *      @OA\Parameter(
      *          name="userId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="start",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="limit",
      *          in="path",
      *          required=true,
      *          @OA\Schema(
@@ -1201,9 +1217,10 @@ class UserController extends Controller
      *  )
      */
 
-    public function getWishList(Request $request,$userId){
+    public function getWishList(Request $request,$userId,$start,$limit){
         $wishList = array();
-        $wishList = DB::table('wish_list')->where('user_id',$userId)->get();
+        $all = $wishList = DB::table('wish_list')->where('user_id',$userId)->get();;
+        $wishList = DB::table('wish_list')->where('user_id',$userId)->offset($start)->limit($limit)->get();
 
             foreach($wishList as $User){
                 //$UserList[] = $User->contentwriter_id;
@@ -1213,6 +1230,7 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'Wish List Details',
+            'count' => count($all),
             'data' => $userData,
             'isError' => false
         ]);
@@ -1267,7 +1285,7 @@ class UserController extends Controller
                 $wishList[] = $Wish_user->contentwriter_id;
             }
 
-        $userData['userId'] = $user['id'];
+         $userData['userId'] = $user['id'];
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
          $userData['DisplayName'] = $user['display_name'];
