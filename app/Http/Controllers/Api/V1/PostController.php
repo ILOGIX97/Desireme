@@ -394,9 +394,9 @@ class PostController extends Controller
         }
 
             //$userId = $user['id'];
-            $Followers = DB::table('follow')->where('follower_id',$loginUser)->get();
+            $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
             foreach($Followers as $follow){
-                $followerList[] = $follow->user_id;
+                $followerList[] = $follow->follower_id;
             }
 
             $Wish_users = DB::table('wish_list')->where('user_id',$loginUser)->get();
