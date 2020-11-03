@@ -2513,23 +2513,20 @@ class PostController extends Controller
      */
     public function searchActivity($search,$loginUser,$start,$limit){
         if(!empty($limit)){
-            $posts = Post::where('title','LIKE', '%' . $search . '%')
+            $posts = Post::where('title','LIKE', '%' . $search . '%') ->where('publish', 'now')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
-            ->where('publish', 'now')
             ->offset($start)->limit($limit)
             ->get();
         }else{
-            $posts = Post::where('title','LIKE', '%' . $search . '%')
+            $posts = Post::where('title','LIKE', '%' . $search . '%')->where('publish','now')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
-            ->where('publish','now')
             ->get();
         }
-        $allPost = Post::where('title','LIKE', '%' . $search . '%')
+        $allPost = Post::where('title','LIKE', '%' . $search . '%')->where('publish','now')
         ->orWhere('caption', 'LIKE','%' . $search . '%')
         ->orWhere('tags', 'LIKE','%' . $search . '%')
-        ->where('publish','now')
         ->get();
         $postData = array();
         $ID = 0;
