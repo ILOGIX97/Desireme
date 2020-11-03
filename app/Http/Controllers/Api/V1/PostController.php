@@ -2533,10 +2533,11 @@ class PostController extends Controller
         ->get();
         $postData = array();
         $ID = 0;
+        $lastCommenId = 0;
         foreach($posts as $postDetail){
             $likedbyme = 0;
             $commentByMe = 0;
-            $lastCommenId = 0;
+            
             $totalCount = 0;
             $Users = $postDetail->users()->get();
             foreach($Users as $user){
