@@ -1721,6 +1721,8 @@ class PostController extends Controller
     public function mostViewed($loginUser,$start,$limit){
         $allPost = Views::select('posts.*', DB::raw('count(post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
+        ->where('posts.publish','now')
+        ->whereNull('posts.deleted_at')
         ->groupBy('views.post_id')
         ->get();
 
@@ -1729,6 +1731,7 @@ class PostController extends Controller
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
+        ->where('posts.publish','now')
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
@@ -1979,7 +1982,7 @@ class PostController extends Controller
      */
 
     public function mostPopular($loginUser,$start,$limit){
-       $allPost = Post::all();
+       $allPost = Post::where('publish','now')->get();
        $posts = DB::table("posts")
         ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
                 DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
@@ -1996,6 +1999,7 @@ class PostController extends Controller
                 ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereNull('posts.deleted_at')
+                ->where('posts.publish','now')
                 ->orderBy('totalCount', 'DESC')
                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
@@ -2513,7 +2517,7 @@ class PostController extends Controller
      */
     public function searchActivity($search,$loginUser,$start,$limit){
         if(!empty($limit)){
-            $posts = Post::where('publish', 'now')->orwhere('title','LIKE', '%' . $search . '%')
+            $posts = Post::where('publish', 'now')->where('title','LIKE', '%' . $search . '%')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
             
@@ -2521,15 +2525,14 @@ class PostController extends Controller
             ->get();
         }else{
             $posts = Post::where('title','LIKE', '%' . $search . '%')
-            ->orWhere('caption', 'LIKE','%' . $search . '%')
+            ->Where('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
             ->where('publish','now')
             ->get();
         }
-        $allPost = Post::where('publish','now')->orwhere('title','LIKE', '%' . $search . '%')
+        $allPost = Post::where('publish','now')->where('title','LIKE', '%' . $search . '%')
         ->orWhere('caption', 'LIKE','%' . $search . '%')
         ->orWhere('tags', 'LIKE','%' . $search . '%')
-        
         ->get();
         $postData = array();
         $ID = 0;
