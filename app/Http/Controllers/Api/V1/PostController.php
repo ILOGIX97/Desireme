@@ -417,6 +417,13 @@ class PostController extends Controller
             $userData['subscription_price'] = $user['subscription_price'];
             $userData['followerList'] = $followerList;
             $userData['wishList'] = $wishList;
+            if(!empty($user['card_number'])){
+                $cardDetails = 1;
+            }else{
+                $cardDetails = 0;
+            }
+            $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
+            $userData['cardDetails'] = $cardDetails;
 
         $ID = 0;
         foreach($postDetails as $postDetail){
@@ -2509,20 +2516,20 @@ class PostController extends Controller
             $posts = Post::where('title','LIKE', '%' . $search . '%')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
-            ->where('publish','=', 'now')
+            ->where('publish', 'now')
             ->offset($start)->limit($limit)
             ->get();
         }else{
             $posts = Post::where('title','LIKE', '%' . $search . '%')
             ->orWhere('caption', 'LIKE','%' . $search . '%')
             ->orWhere('tags', 'LIKE','%' . $search . '%')
-            ->where('publish','=','now')
+            ->where('publish','now')
             ->get();
         }
         $allPost = Post::where('title','LIKE', '%' . $search . '%')
         ->orWhere('caption', 'LIKE','%' . $search . '%')
         ->orWhere('tags', 'LIKE','%' . $search . '%')
-        ->where('publish', '=', 'now')
+        ->where('publish','now')
         ->get();
         $postData = array();
         $ID = 0;
