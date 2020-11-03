@@ -52,9 +52,9 @@ class User extends Authenticatable
         $linktoken = $token;
         $notification = new ResetPassword($token);
         // Then use the createUrlUsing method for pass custom url
-        $notification->createUrlUsing(function ($token) use ($linktoken) {
-            return config('app.forgotPassword').'?token='.$linktoken.'&email='.$token->email;
-        });
+        //$notification->createUrlUsing(function ($token) use ($linktoken) {
+            //return config('app.forgotPassword').'?token='.$linktoken.'&email='.//$token->email;
+        //});
 
         //enable it when use the custom template
         /*$notification->toMailUsing(function ($token) use ($linktoken){
