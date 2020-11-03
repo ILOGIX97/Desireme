@@ -392,8 +392,8 @@ class PostController extends Controller
             }
         }
 
-            $userId = $user['id'];
-            $Followers = DB::table('follow')->where('user_id',$userId)->get();
+            //$userId = $user['id'];
+            $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
             }
