@@ -112,6 +112,7 @@ class HomeController extends Controller
             $videoCount = 0;
             $imageCount = 0;
             $followerList = array();
+            $wishList = array();
             if(count($allPost) > 0){
                 foreach($allPost as $post){
                     if(!empty($post['media'])){
@@ -133,6 +134,10 @@ class HomeController extends Controller
             $Followers = DB::table('follow')->where('user_id',$userId)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
+            }
+            $Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+            foreach($Wish_users as $Wish_user){
+                $wishList[] = $Wish_user->contentwriter_id;
             }
 
             $userData[$i]['id'] = $user['id'];
@@ -166,6 +171,7 @@ class HomeController extends Controller
             $userData[$i]['imageCount'] = $imageCount;
             $userData[$i]['videoCount'] = $videoCount;
             $userData[$i]['followerList'] = $followerList;
+            $userData[$i]['wishList'] = $wishList;
             $i++;
         }
         return response()->json([
@@ -266,6 +272,7 @@ class HomeController extends Controller
             $videoCount = 0;
             $imageCount = 0;
             $followerList = array();
+            $wishList = array();
             if(count($allPost) > 0){
                 foreach($allPost as $post){
                     if(!empty($post['media'])){
@@ -288,6 +295,11 @@ class HomeController extends Controller
             $Followers = DB::table('follow')->where('user_id',$userId)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
+            }
+
+            $Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+            foreach($Wish_users as $Wish_user){
+                $wishList[] = $Wish_user->contentwriter_id;
             }
 
             $userData[$i]['id'] = $user['id'];
@@ -321,6 +333,7 @@ class HomeController extends Controller
             $userData[$i]['imageCount'] = $imageCount;
             $userData[$i]['videoCount'] = $videoCount;
             $userData[$i]['followerList'] = $followerList;
+            $userData[$i]['wishList'] = $wishList;
             $i++;
         }
         return response()->json([

@@ -369,6 +369,7 @@ class PostController extends Controller
         $videoCount = 0;
         $imageCount = 0;
         $followerList = array();
+        $wishList = array();
         if(!empty($loginUser)){
             $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         }else{
@@ -398,6 +399,11 @@ class PostController extends Controller
                 $followerList[] = $follow->user_id;
             }
 
+            $Wish_users = DB::table('wish_list')->where('user_id',$id)->get();
+            foreach($Wish_users as $Wish_user){
+                $wishList[] = $Wish_user->contentwriter_id;
+            }
+
             $userData['userId'] = $user['id'];    
             $userData['first_name'] = $user['first_name'];
             $userData['last_name'] = $user['last_name'];
@@ -410,6 +416,7 @@ class PostController extends Controller
             $userData['state'] = $user['state'];
             $userData['subscription_price'] = $user['subscription_price'];
             $userData['followerList'] = $followerList;
+            $userData['wishList'] = $wishList;
 
         $ID = 0;
         foreach($postDetails as $postDetail){
@@ -3032,6 +3039,7 @@ class PostController extends Controller
         $client = new PaysafeApiClient($paysafeApiKeyId, $paysafeApiKeySecret, Environment::TEST, $paysafeAccountNumber);
         
         $followerList = array();
+        $wishList = array();
         $user = User::findOrFail($userId);
         $follower = User::findOrFail($followerId);
 
@@ -3104,10 +3112,17 @@ class PostController extends Controller
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
             }
+
+            $Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+            foreach($Wish_users as $Wish_user){
+                $wishList[] = $Wish_user->contentwriter_id;
+            }
+
             return response()->json([
                 'message' => 'Successfully Followed',
                 'data' => $data,
                 'followerList' => $followerList,
+                'wishList' => $wishList,
                 'isError' => false
             ], 201);
         }else{

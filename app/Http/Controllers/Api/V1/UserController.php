@@ -1255,11 +1255,16 @@ class UserController extends Controller
         }
 
         $followerList = array();
-
+        $wishList = array();
         $userId = $user['id'];
             $Followers = DB::table('follow')->where('user_id',$userId)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
+            }
+
+            $Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+            foreach($Wish_users as $Wish_user){
+                $wishList[] = $Wish_user->contentwriter_id;
             }
 
         $userData['userId'] = $user['id'];
@@ -1297,6 +1302,7 @@ class UserController extends Controller
          $userData['Role'] = (isset($user->roles->first()->name)) ? $user->roles->first()->name : '';
          $userData['cardDetails'] = $cardDetails;
          $userData['followerList'] = $followerList;
+         $userData['wishList'] = $wishList;
 
         
          return $userData;
