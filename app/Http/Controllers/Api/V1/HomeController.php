@@ -19,7 +19,7 @@ class HomeController extends Controller
 {
     /**
      * @OA\Post(
-     *          path="/api/v1/getUsersbyCategory/{category}/{start}/{limit}",
+     *          path="/api/v1/getUsersbyCategory/{category}/{loginUser}/{start}/{limit}",
      *          operationId="User category",
      *          tags={"Homepage"},
      *      @OA\Parameter(
@@ -28,6 +28,14 @@ class HomeController extends Controller
      *          required=true,
      *          @OA\Schema(
      *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
      *          )
      *      ),
      *      @OA\Parameter(
@@ -74,7 +82,7 @@ class HomeController extends Controller
      *      ),
      *  )
      */
-    public function getUsersbyCategory($category,$start,$limit){
+    public function getUsersbyCategory($category,$loginUser,$start,$limit){
         if(strtolower($category) != 'all'){
             $all = User::whereHas(
                 'roles', function($q){
@@ -106,7 +114,10 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
-            $allPost = $user->posts()->where('publish','now')->get();
+            if(!empty($loginUser))
+                $allPost = $user->posts()->get();
+            else
+                $allPost = $user->posts()->where('publish','now')->get();
             $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;
@@ -183,7 +194,7 @@ class HomeController extends Controller
 
     /**
      * @OA\Post(
-     *          path="/api/v1/getUsersbyName/{name}/{start}/{limit}",
+     *          path="/api/v1/getUsersbyName/{name}/{loginUser}/{start}/{limit}",
      *          operationId="User profile",
      *          tags={"Homepage"},
      *      @OA\Parameter(
@@ -192,6 +203,14 @@ class HomeController extends Controller
      *          required=true,
      *          @OA\Schema(
      *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="loginUser",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
      *          )
      *      ),
      *      @OA\Parameter(
@@ -238,7 +257,7 @@ class HomeController extends Controller
      *      ),
      *  )
      */
-    public function getUsersbyName($name,$start,$limit){
+    public function getUsersbyName($name,$loginUser,$start,$limit){
         if(!empty($limit)){
             $users = User::whereHas(
                 'roles', function($q){
@@ -266,7 +285,11 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
-            $allPost = $user->posts()->where('publish','now')->get();
+            //$allPost = $user->posts()->where('publish','now')->get();
+            if(!empty($loginUser))
+                $allPost = $user->posts()->get();
+            else
+                $allPost = $user->posts()->where('publish','now')->get();
             $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;
