@@ -55,8 +55,8 @@ use Illuminate\Support\Facades\Route;
     
 
     //Homepage apis
-    Route::post('getUsersbyCategory/{category}/{start}/{limit}', 'Api\V1\HomeController@getUsersbyCategory');
-    Route::post('getUsersbyName/{name}/{start}/{limit}', 'Api\V1\HomeController@getUsersbyName');
+    Route::post('getUsersbyCategory/{category}/{loginUser}/{start}/{limit}', 'Api\V1\HomeController@getUsersbyCategory');
+    Route::post('getUsersbyName/{name}/{loginUser}/{start}/{limit}', 'Api\V1\HomeController@getUsersbyName');
 
     Route::group([
         'middleware' => 'auth:api'
