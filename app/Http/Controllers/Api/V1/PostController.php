@@ -364,6 +364,7 @@ class PostController extends Controller
 
         $user = User::findOrFail($id);
         $allPost = $user->posts()->get();
+        $allPublishPost = $user->posts()->where('publish','now')->get();
         $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
         $videoTypes = array('mp4','webm','ogg');
         $videoCount = 0;
@@ -378,8 +379,6 @@ class PostController extends Controller
         if(count($allPost) > 0){
             foreach($allPost as $post){
                 if(!empty($post['media'])){
-                   //$getMedia = explode(".",$post['media']);
-                   //$extMedia = end($getMedia);
                    $path = $post['media'];
                    $ext = pathinfo($path, PATHINFO_EXTENSION);
                    if (in_array($ext, $imageTypes)){
@@ -591,6 +590,7 @@ class PostController extends Controller
             return response()->json([
                 'message' => 'User post list!',
                 'count' => count($allPost),
+                'publishCount' => count($allPublishPost),
                 'imageCount' => $imageCount,
                 'videoCount' => $videoCount,
                 'data' => $postData,
@@ -890,8 +890,28 @@ class PostController extends Controller
 
     public function getAllPost($loginUser,$start,$limit){
 
-        $allPost = Post::where('publish','now')->get();
-        $postDetails = Post::where('publish','now')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
+        $followerList = array();
+        $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
+            foreach($Followers as $follow){
+                $followerList[] = $follow->follower_id;
+            }
+        //print_r($followerList); exit;
+
+        $allPost = Post::where('publish','now')
+                   ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                   ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                   ->whereIn('post_user.user_id',$followerList)
+                   ->get();
+        $postDetails = Post::select('posts.*','post_user.user_id','post_user.post_id')->where('publish','now')
+                        ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                        ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                        ->whereIn('post_user.user_id',$followerList)
+                        ->groupBy('post_user.post_id')
+                        ->groupBy('post_user.user_id')
+                        ->orderBy('posts.id','DESC')
+                        ->offset($start)
+                        ->limit($limit)
+                        ->get();
         $ID = 0;
         foreach($postDetails as $postDetail){
             //$ID = $postDetail['id'];
