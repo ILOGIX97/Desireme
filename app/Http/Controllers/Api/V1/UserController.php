@@ -1221,10 +1221,9 @@ class UserController extends Controller
         $wishList = array();
         $all = $wishList = DB::table('wish_list')->where('user_id',$userId)->get();;
         $wishList = DB::table('wish_list')->where('user_id',$userId)->offset($start)->limit($limit)->get();
-
+        $userData = array();
             foreach($wishList as $User){
-                //$UserList[] = $User->contentwriter_id;
-                //$userDetails = User::find($User->contentwriter_id);
+               
                 $userData[] = $this->getResponse($User->contentwriter_id); 
             }
         
