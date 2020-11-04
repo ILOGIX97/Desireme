@@ -3128,6 +3128,7 @@ class PostController extends Controller
         
         $followerList = array();
         $wishList = array();
+        $newWishList = array();
         $user = User::findOrFail($userId);
         $follower = User::findOrFail($followerId);
 
@@ -3206,11 +3207,20 @@ class PostController extends Controller
                 $wishList[] = $Wish_user->contentwriter_id;
             }
 
+            if (in_array($followerId, $wishList)){
+                DB::table('wish_list')->where('user_id',$userId)->where('contentwriter_id',$followerId)->delete();
+            }
+
+            $new_Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+            foreach($new_Wish_users as $new_Wish_user){
+                $newWishList[] = $new_Wish_user->contentwriter_id;
+            }
+
             return response()->json([
                 'message' => 'Successfully Followed',
                 'data' => $data,
                 'followerList' => $followerList,
-                'wishList' => $wishList,
+                'wishList' => $newWishList,
                 'isError' => false
             ], 201);
         }else{
