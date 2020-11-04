@@ -114,7 +114,7 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
-            if(!empty($loginUser))
+            if(!empty($loginUser) && $user['id'] === $loginUser)
                 $allPost = $user->posts()->get();
             else
                 $allPost = $user->posts()->where('publish','now')->get();
@@ -286,7 +286,7 @@ class HomeController extends Controller
         $i = 0;
         foreach($users as $user){
             //$allPost = $user->posts()->where('publish','now')->get();
-            if(!empty($loginUser))
+            if(!empty($loginUser) && $user['id'] === $loginUser)
                 $allPost = $user->posts()->get();
             else
                 $allPost = $user->posts()->where('publish','now')->get();
