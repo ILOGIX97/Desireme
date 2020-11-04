@@ -106,7 +106,7 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
-            $allPost = $user->posts()->get();
+            $allPost = $user->posts()->where('publish','now')->get();
             $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;
@@ -266,7 +266,7 @@ class HomeController extends Controller
         $userData = array();
         $i = 0;
         foreach($users as $user){
-            $allPost = $user->posts()->get();
+            $allPost = $user->posts()->where('publish','now')->get();
             $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;

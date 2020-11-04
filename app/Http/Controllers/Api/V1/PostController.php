@@ -432,6 +432,8 @@ class PostController extends Controller
             $userData['country'] = $user['country'];
             $userData['state'] = $user['state'];
             $userData['subscription_price'] = $user['subscription_price'];
+            $userData['twitter_url'] = $user['twitter_url'];
+            $userData['amazon_url'] = $user['amazon_url'];
             $userData['followerList'] = $followerList;
             $userData['wishList'] = $wishList;
             if(!empty($user['card_number'])){
