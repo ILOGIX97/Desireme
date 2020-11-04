@@ -363,8 +363,8 @@ class PostController extends Controller
 
 
         $user = User::findOrFail($id);
-        $allPost = $user->posts()->get();
-        $allPublishPost = $user->posts()->where('publish','now')->get();
+        //$allPost = $user->posts()->get();
+        //$allPublishPost = $user->posts()->where('publish','now')->get();
         $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
         $videoTypes = array('mp4','webm','ogg');
         $videoCount = 0;
@@ -372,7 +372,25 @@ class PostController extends Controller
         $followerList = array();
         $wishList = array();
         if(!empty($loginUser)){
-            $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
+            if($id === $loginUser){
+                $allPost = $user->posts()->get();
+                $allPublishPost = $user->posts()->where('publish','now')->get();
+                $postDetails = $user->posts()->orderBy('id','DESC')->offset($start)->limit($limit)->get();
+            }else{
+               $allPost = Post::select('posts.*',DB::raw('post_user.post_id,post_user.user_id'))->where('publish','now')
+                           ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                           ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                           ->where('post_user.user_id',$id)
+                           ->get();
+                $allPublishPost = $user->posts()->where('publish','now')->get();
+                $postDetails = Post::select('posts.*',DB::raw('post_user.post_id,post_user.user_id'))->where('publish','now')
+                                ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                                ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                                ->where('post_user.user_id',$id)
+                                ->orderBy('posts.id','DESC')
+                               ->offset($start)->limit($limit)->get();
+            }
+            
         }else{
             $postDetails = array();
         }
