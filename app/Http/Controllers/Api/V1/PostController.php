@@ -895,7 +895,9 @@ class PostController extends Controller
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
             }
-        //print_r($followerList); exit;
+        if(count($Followers)<=0){
+            return response()->json(['error'=>'No Post available','isError' => true]);
+        }
 
         $allPost = Post::where('publish','now')
                    ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
@@ -1746,12 +1748,9 @@ class PostController extends Controller
             $followerList[] = $follow->follower_id;
         }
         
-        // $allPost = Views::select('posts.*', DB::raw('count(post_id) as count'))
-        // ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
-        // ->where('posts.publish','now')
-        // ->whereNull('posts.deleted_at')
-        // ->groupBy('views.post_id')
-        // ->get();
+        if(count($Followers)<=0){
+            return response()->json(['error'=>'No Post available','isError' => true]);
+        }
 
         $allPost = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
@@ -2030,6 +2029,9 @@ class PostController extends Controller
         $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
         foreach($Followers as $follow){
             $followerList[] = $follow->follower_id;
+        }
+        if(count($Followers)<=0){
+            return response()->json(['error'=>'No Post available','isError' => true]);
         }
         $allPost = Post::where('publish','now')
         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
