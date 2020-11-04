@@ -1739,12 +1739,34 @@ class PostController extends Controller
      */
 
     public function mostViewed($loginUser,$start,$limit){
-        $allPost = Views::select('posts.*', DB::raw('count(post_id) as count'))
+
+        $followerList = array();
+        $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
+        foreach($Followers as $follow){
+            $followerList[] = $follow->follower_id;
+        }
+        
+        // $allPost = Views::select('posts.*', DB::raw('count(post_id) as count'))
+        // ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
+        // ->where('posts.publish','now')
+        // ->whereNull('posts.deleted_at')
+        // ->groupBy('views.post_id')
+        // ->get();
+
+        $allPost = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
-        ->where('posts.publish','now')
+        ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
+        ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
+        ->where('posts.publish','now')
+        ->whereIn('post_user.user_id',$followerList)
         ->groupBy('views.post_id')
+        ->groupBy('post_user.user_id')
+        ->orderBy('count','DESC')
+        ->orderBy('posts.id','DESC')
         ->get();
+
+        //echo '<pre>'; print_r($allPost); exit;
 
         $posts = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
         ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
@@ -1752,6 +1774,7 @@ class PostController extends Controller
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
         ->where('posts.publish','now')
+        ->whereIn('post_user.user_id',$followerList)
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
@@ -2002,7 +2025,17 @@ class PostController extends Controller
      */
 
     public function mostPopular($loginUser,$start,$limit){
-       $allPost = Post::where('publish','now')->get();
+        
+        $followerList = array();
+        $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
+        foreach($Followers as $follow){
+            $followerList[] = $follow->follower_id;
+        }
+        $allPost = Post::where('publish','now')
+        ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+        ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        ->whereIn('post_user.user_id',$followerList)
+        ->get();
        $posts = DB::table("posts")
         ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
                 DB::raw("(SELECT ifnull(COUNT(likes.post_id),0) FROM likes
@@ -2020,6 +2053,7 @@ class PostController extends Controller
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereNull('posts.deleted_at')
                 ->where('posts.publish','now')
+                ->whereIn('post_user.user_id',$followerList)
                 ->orderBy('totalCount', 'DESC')
                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
@@ -2536,23 +2570,43 @@ class PostController extends Controller
      *  )
      */
     public function searchActivity($search,$loginUser,$start,$limit){
+        $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
+        foreach($Followers as $follow){
+            $followerList[] = $follow->follower_id;
+        }
         if(!empty($limit)){
-            $posts = Post::where('publish', 'now')->where('title','LIKE', '%' . $search . '%')
-            ->orWhere('caption', 'LIKE','%' . $search . '%')
-            ->orWhere('tags', 'LIKE','%' . $search . '%')
-            
+            $posts = Post::where('publish','now')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->whereIn('post_user.user_id',$followerList)
+            ->where('posts.publish','now')
+            ->where('posts.title','LIKE', '%' . $search . '%')
+            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
             ->offset($start)->limit($limit)
             ->get();
         }else{
-            $posts = Post::where('title','LIKE', '%' . $search . '%')
-            ->Where('caption', 'LIKE','%' . $search . '%')
-            ->orWhere('tags', 'LIKE','%' . $search . '%')
-            ->where('publish','now')
+            $posts = Post::where('publish','now')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->whereIn('post_user.user_id',$followerList)
+            ->where('posts.publish','now')
+            ->where('posts.title','LIKE', '%' . $search . '%')
+            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
             ->get();
         }
-        $allPost = Post::where('publish','now')->where('title','LIKE', '%' . $search . '%')
-        ->orWhere('caption', 'LIKE','%' . $search . '%')
-        ->orWhere('tags', 'LIKE','%' . $search . '%')
+
+
+
+        $allPost = Post::where('publish','now')
+        ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+        ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        ->whereIn('post_user.user_id',$followerList)
+        ->where('posts.publish','now')
+        ->where('posts.title','LIKE', '%' . $search . '%')
+        ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+        ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
         ->get();
         $postData = array();
         $ID = 0;
