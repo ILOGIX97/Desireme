@@ -912,7 +912,7 @@ class PostController extends Controller
     public function getAllPost($loginUser,$start,$limit){
 
         $followerList = array();
-        $followerList[] = $loginUser;
+        
         $postCount = 0;
         $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
             foreach($Followers as $follow){
@@ -922,17 +922,23 @@ class PostController extends Controller
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
 
+        $user = User::findOrFail($loginUser);
+
+        $loginUserPost = $user->posts()->get();
+         
         $allPost = Post::where('publish','now')
                    ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                    ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                    ->whereIn('post_user.user_id',$followerList)
                    ->get();
+        $allCount = count($loginUserPost)+count($allPost);           
+        $followerList[] = $loginUser;
         $postDetails = Post::select('posts.*','post_user.user_id','post_user.post_id')
                         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                         ->whereIn('post_user.user_id',$followerList)
-                        ->groupBy('post_user.post_id')
                         ->groupBy('post_user.user_id')
+                        ->groupBy('post_user.post_id')
                         ->orderBy('posts.id','DESC')
                         ->offset($start)
                         ->limit($limit)
@@ -1084,7 +1090,6 @@ class PostController extends Controller
                     $commentByMe = 1;
                 }
             }
-
             if($Users[0]['id'] == $loginUser)
             {
                 $postData[$ID]['id'] = $postDetail['id'];
@@ -1110,46 +1115,42 @@ class PostController extends Controller
                 $postData[$ID]['comments'] = count($commentDetails);
                 $postData[$ID]['totalComments'] = $totalCount;
                 $postData[$ID]['commentUsers'] = $commentUsers;
-                $postCount++;
+                $ID++;
                 
-            }else{
-                if($postDetail['publish'] == 'now')
-                {
-                    $postData[$ID]['id'] = $postDetail['id'];
-                    $postData[$ID]['firstName'] = $UserDetails['first_name'];
-                    $postData[$ID]['lastName'] = $UserDetails['last_name'];
-                    $postData[$ID]['displayName'] = $UserDetails['display_name'];
-                    $postData[$ID]['profile'] = (!empty($UserDetails['profile']) ? url('storage/'.$UserDetails['profile']) : '');
-                    $postData[$ID]['banner'] = (!empty($UserDetails['cover']) ? url('storage/'.$UserDetails['cover']) : '');
-                    $postData[$ID]['username'] = $UserDetails['username'];
-                    $postData[$ID]['title'] = $postDetail['title'];
-                    $postData[$ID]['caption'] = $postDetail['caption'];
-                    $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-                    $postData[$ID]['tags'] = $postDetail['tags'];
-                    $postData[$ID]['publish'] = $postDetail['publish'];
-                    $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-                    $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-                    $postData[$ID]['created'] = $hours_created;
-                    $postData[$ID]['updated'] = $hours_updated;
-                    $postData[$ID]['likedByMe'] = $likedbyme;
-                    $postData[$ID]['likes'] = count($likeDetails);
-                    $postData[$ID]['likeUsers'] = $likeUsers;
-                    $postData[$ID]['commentByMe'] = $commentByMe;
-                    $postData[$ID]['comments'] = count($commentDetails);
-                    $postData[$ID]['totalComments'] = $totalCount;
-                    $postData[$ID]['commentUsers'] = $commentUsers;
-                    $postCount++;
-                    
-                }
             }
-            
-            //$postData[$ID]['lastCommentId'] = $lastCommenId;
-            $ID++;
+            else if($Users[0]['id'] != $loginUser && $postDetail['publish'] == 'now')
+            {
+                $postData[$ID]['id'] = $postDetail['id'];
+                $postData[$ID]['firstName'] = $UserDetails['first_name'];
+                $postData[$ID]['lastName'] = $UserDetails['last_name'];
+                $postData[$ID]['displayName'] = $UserDetails['display_name'];
+                $postData[$ID]['profile'] = (!empty($UserDetails['profile']) ? url('storage/'.$UserDetails['profile']) : '');
+                $postData[$ID]['banner'] = (!empty($UserDetails['cover']) ? url('storage/'.$UserDetails['cover']) : '');
+                $postData[$ID]['username'] = $UserDetails['username'];
+                $postData[$ID]['title'] = $postDetail['title'];
+                $postData[$ID]['caption'] = $postDetail['caption'];
+                $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+                $postData[$ID]['tags'] = $postDetail['tags'];
+                $postData[$ID]['publish'] = $postDetail['publish'];
+                $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+                $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+                $postData[$ID]['created'] = $hours_created;
+                $postData[$ID]['updated'] = $hours_updated;
+                $postData[$ID]['likedByMe'] = $likedbyme;
+                $postData[$ID]['likes'] = count($likeDetails);
+                $postData[$ID]['likeUsers'] = $likeUsers;
+                $postData[$ID]['commentByMe'] = $commentByMe;
+                $postData[$ID]['comments'] = count($commentDetails);
+                $postData[$ID]['totalComments'] = $totalCount;
+                $postData[$ID]['commentUsers'] = $commentUsers;
+                $ID++;
+                
+            }
         }
         if(count($postDetails)){
             return response()->json([
                 'message' => 'All post list!',
-                'count' => $postCount,
+                'count' => $allCount,
                 'data' => $postData,
                 'lastCommentId' => $lastCommenId,
                 'isError' => false
