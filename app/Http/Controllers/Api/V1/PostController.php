@@ -1115,7 +1115,7 @@ class PostController extends Controller
                 $postData[$ID]['comments'] = count($commentDetails);
                 $postData[$ID]['totalComments'] = $totalCount;
                 $postData[$ID]['commentUsers'] = $commentUsers;
-                $ID++;
+               
                 
             }
             else if($Users[0]['id'] != $loginUser && $postDetail['publish'] == 'now')
@@ -1143,9 +1143,11 @@ class PostController extends Controller
                 $postData[$ID]['comments'] = count($commentDetails);
                 $postData[$ID]['totalComments'] = $totalCount;
                 $postData[$ID]['commentUsers'] = $commentUsers;
-                $ID++;
+               
                 
             }
+
+            $ID++;
         }
         if(count($postDetails)){
             return response()->json([
