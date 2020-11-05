@@ -1273,7 +1273,7 @@ class UserController extends Controller
 
         $followerList = array();
         $wishList = array();
-        $userId = $user['id'];
+        
             $Followers = DB::table('follow')->where('user_id',$userId)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
@@ -1288,8 +1288,6 @@ class UserController extends Controller
          $videoTypes = array('mp4','webm','ogg');
          $videoCount = 0;
          $imageCount = 0;
-         $followerList = array();
-         $wishList = array();
          if(count($allPost) > 0){
             foreach($allPost as $post){
                 if(!empty($post['media'])){

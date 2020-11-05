@@ -2877,101 +2877,101 @@ class PostController extends Controller
         $allPost = Post::all();
         $postDetails = Post::orderBy('created_at','DESC')->offset($start)->limit($limit)->get();
         $ID = 0;
-        foreach($postDetails as $postDetail){
-
-            $likedbyme = 0;
-            $Users = $postDetail->users()->get();
-            foreach($Users as $user){
-                $UserDetails = $user;
-            }
-            //echo '<pre>'; print_r($UserDetails); exit;
-
-
-            $likeDetails = Like::where('post_id',$postDetail['id'])
-                            ->join('users', 'users.id', '=', 'likes.user_id')
-                            ->get();
-            $likeUsers = array();
-            $j = 0;
-            if(count($likeDetails) > 0){
-                foreach($likeDetails as $likeDetail){
-                    if($loginUser == $likeDetail['user_id']){
-                        $likedbyme = 1;
-                    }
-                    $likeUsers[$j]['id'] = $likeDetail['user_id'];
-                    $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
-                    $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
-                    $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
-                    $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
-                    $likeUsers[$j]['userName'] = $likeDetail['username'];
-                    $j++;
-                }
-            }
-
-            $commentDetails = Comment::where('post_id',$postDetail['id'])
-                                ->join('users', 'users.id', '=', 'comments.user_id')
-                                ->get();
-            $commentUsers = array();
-            $k = 0;
-            if(count($commentDetails) > 0){
-                foreach($commentDetails as $commentDetail){
-                    $commentUsers[$k]['userid'] = $commentDetail['user_id'];
-                    $commentUsers[$k]['comment'] = $commentDetail['comment'];
-                    $commentUsers[$k]['profile'] = $commentDetail['profile'];
-                    $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
-                    $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
-                    $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
-                    $commentUsers[$k]['userName'] = $commentDetail['username'];
-                    $j++;
-                    $k++;
-                }
-            }
-
-            $today = Carbon::now();
-            $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
-            $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
-            $hours_created = $created_at->diffInHours($today);
-            $hours_updated = $updated_at->diffInHours($today);
-
-            if(empty($hours_created)){
-                $hours_created = $created_at->diffInMinutes($today) . ' min';
-            }
-
-            if(empty($hours_updated)){
-                $hours_updated = $created_at->diffInMinutes($today) . ' min';
-            }
-
-            if(!empty($hours_created) && $hours_created > 240){
-                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
-            }
-
-            if(!empty($hours_updated && $hours_updated > 240)){
-                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
-            }
-
-            $postData[$ID]['id'] = $postDetail['id'];
-            $postData[$ID]['firstName'] = $UserDetails['first_name'];
-            $postData[$ID]['lastName'] = $UserDetails['last_name'];
-            $postData[$ID]['displayName'] = $UserDetails['display_name'];
-            $postData[$ID]['profile'] = $UserDetails['profile'];
-            $postData[$ID]['banner'] = $UserDetails['cover'];
-            $postData[$ID]['username'] = $UserDetails['username'];
-            $postData[$ID]['title'] = $postDetail['title'];
-            $postData[$ID]['caption'] = $postDetail['caption'];
-            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$ID]['tags'] = $postDetail['tags'];
-            $postData[$ID]['publish'] = $postDetail['publish'];
-            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = $hours_created;
-            $postData[$ID]['updated'] = $hours_updated;
-            $postData[$ID]['likedByMe'] = $likedbyme;
-            $postData[$ID]['likes'] = count($likeDetails);
-            $postData[$ID]['likeUsers'] = $likeUsers;
-            $postData[$ID]['comments'] = count($commentDetails);
-            $postData[$ID]['commentUsers'] = $commentUsers;
-            $ID++;
-        }
         if(count($postDetails)){
+            foreach($postDetails as $postDetail){
+
+                $likedbyme = 0;
+                $Users = $postDetail->users()->get();
+                foreach($Users as $user){
+                    $UserDetails = $user;
+                }
+                //echo '<pre>'; print_r($UserDetails); exit;
+    
+    
+                $likeDetails = Like::where('post_id',$postDetail['id'])
+                                ->join('users', 'users.id', '=', 'likes.user_id')
+                                ->get();
+                $likeUsers = array();
+                $j = 0;
+                if(count($likeDetails) > 0){
+                    foreach($likeDetails as $likeDetail){
+                        if($loginUser == $likeDetail['user_id']){
+                            $likedbyme = 1;
+                        }
+                        $likeUsers[$j]['id'] = $likeDetail['user_id'];
+                        $likeUsers[$j]['profile'] = (!empty($likeDetail['profile']) ? url('storage/'.$likeDetail['profile']) : '');
+                        $likeUsers[$j]['firstName'] = $likeDetail['first_name'];
+                        $likeUsers[$j]['lastName'] = $likeDetail['last_name'];
+                        $likeUsers[$j]['displayName'] = $likeDetail['display_name'];
+                        $likeUsers[$j]['userName'] = $likeDetail['username'];
+                        $j++;
+                    }
+                }
+    
+                $commentDetails = Comment::where('post_id',$postDetail['id'])
+                                    ->join('users', 'users.id', '=', 'comments.user_id')
+                                    ->get();
+                $commentUsers = array();
+                $k = 0;
+                if(count($commentDetails) > 0){
+                    foreach($commentDetails as $commentDetail){
+                        $commentUsers[$k]['userid'] = $commentDetail['user_id'];
+                        $commentUsers[$k]['comment'] = $commentDetail['comment'];
+                        $commentUsers[$k]['profile'] = $commentDetail['profile'];
+                        $commentUsers[$k]['firstName'] = $commentDetail['first_name'];
+                        $commentUsers[$k]['lastName'] = $commentDetail['last_name'];
+                        $commentUsers[$k]['displayName'] = $commentDetail['display_name'];
+                        $commentUsers[$k]['userName'] = $commentDetail['username'];
+                        $j++;
+                        $k++;
+                    }
+                }
+    
+                $today = Carbon::now();
+                $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
+                $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
+                $hours_created = $created_at->diffInHours($today);
+                $hours_updated = $updated_at->diffInHours($today);
+    
+                if(empty($hours_created)){
+                    $hours_created = $created_at->diffInMinutes($today) . ' min';
+                }
+    
+                if(empty($hours_updated)){
+                    $hours_updated = $created_at->diffInMinutes($today) . ' min';
+                }
+    
+                if(!empty($hours_created) && $hours_created > 240){
+                    $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+                }
+    
+                if(!empty($hours_updated && $hours_updated > 240)){
+                    $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+                }
+    
+                $postData[$ID]['id'] = $postDetail['id'];
+                $postData[$ID]['firstName'] = $UserDetails['first_name'];
+                $postData[$ID]['lastName'] = $UserDetails['last_name'];
+                $postData[$ID]['displayName'] = $UserDetails['display_name'];
+                $postData[$ID]['profile'] = $UserDetails['profile'];
+                $postData[$ID]['banner'] = $UserDetails['cover'];
+                $postData[$ID]['username'] = $UserDetails['username'];
+                $postData[$ID]['title'] = $postDetail['title'];
+                $postData[$ID]['caption'] = $postDetail['caption'];
+                $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+                $postData[$ID]['tags'] = $postDetail['tags'];
+                $postData[$ID]['publish'] = $postDetail['publish'];
+                $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+                $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+                $postData[$ID]['created'] = $hours_created;
+                $postData[$ID]['updated'] = $hours_updated;
+                $postData[$ID]['likedByMe'] = $likedbyme;
+                $postData[$ID]['likes'] = count($likeDetails);
+                $postData[$ID]['likeUsers'] = $likeUsers;
+                $postData[$ID]['comments'] = count($commentDetails);
+                $postData[$ID]['commentUsers'] = $commentUsers;
+                $ID++;
+            }
             return response()->json([
                 'message' => 'All post list!',
                 'count' => count($allPost),
