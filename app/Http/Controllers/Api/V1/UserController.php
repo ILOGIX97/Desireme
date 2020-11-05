@@ -1355,20 +1355,16 @@ class UserController extends Controller
      */
 
     public function withdrawBalance(Request $request,$userId,$amount){
-        $user = DB::table('users')->where('id',$userId)->get();
-        if(count($user) > 0){
-            $amount = $user[0]->account_balance;
+        if($amount > 20)
+        {
+
+        }else{
+            return response()->json([
+                'message' => 'Amount should be more than 20',
+                'isError' => false
+            ]);
         }
         
-        return response()->json([
-            'message' => 'Wish List Details',
-            'balance' => $amount,
-            'data' => $user[0],
-            'isError' => false
-        ]);
-
-        //return response()->json(User::find($id));
-
     }
 
     

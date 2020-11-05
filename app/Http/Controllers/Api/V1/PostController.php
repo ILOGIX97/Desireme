@@ -912,6 +912,7 @@ class PostController extends Controller
     public function getAllPost($loginUser,$start,$limit){
 
         $followerList = array();
+        $followerList[] = $loginUser;
         $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
