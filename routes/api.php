@@ -48,6 +48,8 @@ use Illuminate\Support\Facades\Route;
     Route::get('getCountries', 'Api\V1\UserController@getCountries');
     Route::get('getStates/{countryName}', 'Api\V1\UserController@getStates');
 
+    Route::get('getAccountBalance/{userId}', 'Api\V1\UserController@getAccountBalance');
+
     Route::post('getGuestUserPost/{userid}/{loginUser}/{start}/{limit}', 'Api\V1\PostController@getGuestUserPost');
     Route::post('guestMostPopular/{loginUser}/{start}/{limit}', 'Api\V1\PostController@guestMostPopular');
 

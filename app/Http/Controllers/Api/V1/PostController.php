@@ -2599,7 +2599,7 @@ class PostController extends Controller
             $followerList[] = $follow->follower_id;
         }
         if(!empty($limit)){
-            $posts = Post::where('publish','now')
+            $posts = Post::select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'))->where('publish','now')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('post_user.user_id',$followerList)
@@ -2610,7 +2610,7 @@ class PostController extends Controller
             ->offset($start)->limit($limit)
             ->get();
         }else{
-            $posts = Post::where('publish','now')
+            $posts = Post::select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'))->where('publish','now')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('post_user.user_id',$followerList)
