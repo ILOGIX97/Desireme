@@ -1283,7 +1283,30 @@ class UserController extends Controller
             foreach($Wish_users as $Wish_user){
                 $wishList[] = $Wish_user->contentwriter_id;
             }
+         $allPost = $user->posts()->where('publish','now')->get();
+         $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
+         $videoTypes = array('mp4','webm','ogg');
+         $videoCount = 0;
+         $imageCount = 0;
+         $followerList = array();
+         $wishList = array();
+         if(count($allPost) > 0){
+            foreach($allPost as $post){
+                if(!empty($post['media'])){
+                   //$getMedia = explode(".",$post['media']);
+                   //$extMedia = end($getMedia);
+                   $path = $post['media'];
+                   $ext = pathinfo($path, PATHINFO_EXTENSION);
+                   if (in_array($ext, $imageTypes)){
+                     $imageCount++;
+                   }
 
+                   if (in_array($ext, $videoTypes)){
+                    $videoCount++;
+                  }
+                }
+            }
+        }
          $userData['userId'] = $user['id'];
          $userData['Forename'] = $user['first_name'];
          $userData['Surname'] = $user['last_name'];
@@ -1320,6 +1343,8 @@ class UserController extends Controller
          $userData['cardDetails'] = $cardDetails;
          $userData['followerList'] = $followerList;
          $userData['wishList'] = $wishList;
+         $userData['imageCount'] = $imageCount;
+         $userData['videoCount'] = $videoCount;
 
         
          return $userData;
