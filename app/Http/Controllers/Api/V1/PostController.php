@@ -2593,6 +2593,7 @@ class PostController extends Controller
      *  )
      */
     public function searchActivity($search,$loginUser,$start,$limit){
+        $followerList = array();
         $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
         foreach($Followers as $follow){
             $followerList[] = $follow->follower_id;

@@ -1238,6 +1238,139 @@ class UserController extends Controller
 
     }
 
+
+    /**
+     * @OA\Get(
+     *          path="/api/v1/getAccountBalance/{userId}",
+     *          operationId="Get user account balance",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="Get user wish list",
+     *      description="Get user wish list",
+     *      
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function getAccountBalance(Request $request,$userId){
+        $user = DB::table('users')->where('id',$userId)->get();
+        if(count($user) > 0){
+            $amount = $user[0]->account_balance;
+        }
+        
+        return response()->json([
+            'message' => 'Wish List Details',
+            'balance' => $amount,
+            'data' => $user[0],
+            'isError' => false
+        ]);
+
+        //return response()->json(User::find($id));
+
+    }
+
+    /**
+     * @OA\Post(
+     *          path="/api/v1/withdrawBalance/{userId}/{amount}",
+     *          operationId="Withdraw user account balance",
+     *          tags={"Users"},
+     *      @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="amount",
+     *          in="path",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      
+     *      summary="Withdraw user account balance",
+     *      description="Withdraw user account balance",
+     *      
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="not found"
+     *      ),
+     *      security={ {"passport": {}} },
+     *  )
+     */
+
+    public function withdrawBalance(Request $request,$userId,$amount){
+        $user = DB::table('users')->where('id',$userId)->get();
+        if(count($user) > 0){
+            $amount = $user[0]->account_balance;
+        }
+        
+        return response()->json([
+            'message' => 'Wish List Details',
+            'balance' => $amount,
+            'data' => $user[0],
+            'isError' => false
+        ]);
+
+        //return response()->json(User::find($id));
+
+    }
+
     
 
     function createImage($image,$path){
