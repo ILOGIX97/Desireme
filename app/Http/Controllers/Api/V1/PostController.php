@@ -133,30 +133,31 @@ class PostController extends Controller
         }else{
             $media = '';
         }
-        $post =  new Post([
-            'title' => $request->Title,
-            'caption' => $request->Caption,
-            'tags' => (!empty($request->Tags)) ? $request->Tags : '',
-            'media' => $media,
-    		'publish' => $request->Publish,
-            'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
-            'add_to_album' => (!empty($request->ChooseAlbum)) ? $request->ChooseAlbum : '0',
-        ]);
-        if($post->save()){
-            $post->users()->sync($id);
-            $postData = $this->getPostResponse($post->id);
-            return response()->json([
-                'message' => 'Post created user!',
-                'data' => $postData,
-                'isError' => false
-            ], 201);
+        if(!empty($id)){
+            $post =  new Post([
+                'title' => $request->Title,
+                'caption' => $request->Caption,
+                'tags' => (!empty($request->Tags)) ? $request->Tags : '',
+                'media' => $media,
+                'publish' => $request->Publish,
+                'schedule_at' => (!empty($request->ScheduleDateTime && $request->Publish == 'schedule')) ? strtotime($request->ScheduleDateTime) : 0,
+                'add_to_album' => (!empty($request->ChooseAlbum)) ? $request->ChooseAlbum : '0',
+            ]);
+            if($post->save()){
+                $post->users()->sync($id);
+                $postData = $this->getPostResponse($post->id);
+                return response()->json([
+                    'message' => 'Post created user!',
+                    'data' => $postData,
+                    'isError' => false
+                ], 201);
+            }else{
+                
+            }
         }else{
             return response()->json(['error'=>'Provide proper details','isError' => true]);
         }
-
-
-        return response()->json(Post::find($id));
-
+        
     }
 
     /**
