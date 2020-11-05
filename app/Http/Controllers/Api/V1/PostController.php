@@ -913,6 +913,7 @@ class PostController extends Controller
 
         $followerList = array();
         $followerList[] = $loginUser;
+        $postCount = 0;
         $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
             foreach($Followers as $follow){
                 $followerList[] = $follow->follower_id;
@@ -926,7 +927,7 @@ class PostController extends Controller
                    ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                    ->whereIn('post_user.user_id',$followerList)
                    ->get();
-        $postDetails = Post::select('posts.*','post_user.user_id','post_user.post_id')->where('publish','now')
+        $postDetails = Post::select('posts.*','post_user.user_id','post_user.post_id')
                         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                         ->whereIn('post_user.user_id',$followerList)
@@ -938,7 +939,7 @@ class PostController extends Controller
                         ->get();
         $ID = 0;
         foreach($postDetails as $postDetail){
-            //$ID = $postDetail['id'];
+            
             $likedbyme = 0;
             $commentByMe = 0;
             $lastCommenId = 0;
@@ -948,7 +949,8 @@ class PostController extends Controller
             foreach($Users as $user){
                 $UserDetails = $user;
             }
-            //echo '<pre>'; print_r($UserDetails); exit;
+
+            
 
             $today = Carbon::now();
             $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
@@ -997,8 +999,6 @@ class PostController extends Controller
                                 ->get();
 
             
-            //$getlastCommenId = Comment::limit(1)->orderBy('id','DESC')->get();
-            //$lastCommenId = $getlastCommenId[0]['id']; 
             $commentUsers = array();
             $k = 0;
             $totalCount = count($commentDetails);
@@ -1084,36 +1084,72 @@ class PostController extends Controller
                     $commentByMe = 1;
                 }
             }
-            $postData[$ID]['id'] = $postDetail['id'];
-            $postData[$ID]['firstName'] = $UserDetails['first_name'];
-            $postData[$ID]['lastName'] = $UserDetails['last_name'];
-            $postData[$ID]['displayName'] = $UserDetails['display_name'];
-            $postData[$ID]['profile'] = (!empty($UserDetails['profile']) ? url('storage/'.$UserDetails['profile']) : '');
-            $postData[$ID]['banner'] = (!empty($UserDetails['cover']) ? url('storage/'.$UserDetails['cover']) : '');
-            $postData[$ID]['username'] = $UserDetails['username'];
-            $postData[$ID]['title'] = $postDetail['title'];
-            $postData[$ID]['caption'] = $postDetail['caption'];
-            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$ID]['tags'] = $postDetail['tags'];
-            $postData[$ID]['publish'] = $postDetail['publish'];
-            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
-            $postData[$ID]['created'] = $hours_created;
-            $postData[$ID]['updated'] = $hours_updated;
-            $postData[$ID]['likedByMe'] = $likedbyme;
-            $postData[$ID]['likes'] = count($likeDetails);
-            $postData[$ID]['likeUsers'] = $likeUsers;
-            $postData[$ID]['commentByMe'] = $commentByMe;
-            $postData[$ID]['comments'] = count($commentDetails);
-            $postData[$ID]['totalComments'] = $totalCount;
-            $postData[$ID]['commentUsers'] = $commentUsers;
+
+            if($Users[0]['id'] == $loginUser)
+            {
+                $postData[$ID]['id'] = $postDetail['id'];
+                $postData[$ID]['firstName'] = $UserDetails['first_name'];
+                $postData[$ID]['lastName'] = $UserDetails['last_name'];
+                $postData[$ID]['displayName'] = $UserDetails['display_name'];
+                $postData[$ID]['profile'] = (!empty($UserDetails['profile']) ? url('storage/'.$UserDetails['profile']) : '');
+                $postData[$ID]['banner'] = (!empty($UserDetails['cover']) ? url('storage/'.$UserDetails['cover']) : '');
+                $postData[$ID]['username'] = $UserDetails['username'];
+                $postData[$ID]['title'] = $postDetail['title'];
+                $postData[$ID]['caption'] = $postDetail['caption'];
+                $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+                $postData[$ID]['tags'] = $postDetail['tags'];
+                $postData[$ID]['publish'] = $postDetail['publish'];
+                $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+                $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+                $postData[$ID]['created'] = $hours_created;
+                $postData[$ID]['updated'] = $hours_updated;
+                $postData[$ID]['likedByMe'] = $likedbyme;
+                $postData[$ID]['likes'] = count($likeDetails);
+                $postData[$ID]['likeUsers'] = $likeUsers;
+                $postData[$ID]['commentByMe'] = $commentByMe;
+                $postData[$ID]['comments'] = count($commentDetails);
+                $postData[$ID]['totalComments'] = $totalCount;
+                $postData[$ID]['commentUsers'] = $commentUsers;
+                $postCount++;
+                
+            }else{
+                if($postDetail['publish'] == 'now')
+                {
+                    $postData[$ID]['id'] = $postDetail['id'];
+                    $postData[$ID]['firstName'] = $UserDetails['first_name'];
+                    $postData[$ID]['lastName'] = $UserDetails['last_name'];
+                    $postData[$ID]['displayName'] = $UserDetails['display_name'];
+                    $postData[$ID]['profile'] = (!empty($UserDetails['profile']) ? url('storage/'.$UserDetails['profile']) : '');
+                    $postData[$ID]['banner'] = (!empty($UserDetails['cover']) ? url('storage/'.$UserDetails['cover']) : '');
+                    $postData[$ID]['username'] = $UserDetails['username'];
+                    $postData[$ID]['title'] = $postDetail['title'];
+                    $postData[$ID]['caption'] = $postDetail['caption'];
+                    $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
+                    $postData[$ID]['tags'] = $postDetail['tags'];
+                    $postData[$ID]['publish'] = $postDetail['publish'];
+                    $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
+                    $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+                    $postData[$ID]['created'] = $hours_created;
+                    $postData[$ID]['updated'] = $hours_updated;
+                    $postData[$ID]['likedByMe'] = $likedbyme;
+                    $postData[$ID]['likes'] = count($likeDetails);
+                    $postData[$ID]['likeUsers'] = $likeUsers;
+                    $postData[$ID]['commentByMe'] = $commentByMe;
+                    $postData[$ID]['comments'] = count($commentDetails);
+                    $postData[$ID]['totalComments'] = $totalCount;
+                    $postData[$ID]['commentUsers'] = $commentUsers;
+                    $postCount++;
+                    
+                }
+            }
+            
             //$postData[$ID]['lastCommentId'] = $lastCommenId;
             $ID++;
         }
         if(count($postDetails)){
             return response()->json([
                 'message' => 'All post list!',
-                'count' => count($allPost),
+                'count' => $postCount,
                 'data' => $postData,
                 'lastCommentId' => $lastCommenId,
                 'isError' => false
