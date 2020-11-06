@@ -1793,7 +1793,20 @@ class PostController extends Controller
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
         ->where('posts.publish','now')
-        ->whereIn('post_user.user_id',$followerList)
+        //->whereIn('post_user.user_id',$followerList)
+        ->whereIn('posts.id',function ($query)  use ($followerList) {
+            $query->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->whereIn('post_user.user_id',$followerList)
+            ->Where('posts.publish','=','now');
+        })
+        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            $query1->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->Where('post_user.user_id',$loginUser);
+        })
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
@@ -1808,7 +1821,20 @@ class PostController extends Controller
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
         ->where('posts.publish','now')
-        ->whereIn('post_user.user_id',$followerList)
+        //->whereIn('post_user.user_id',$followerList)
+        ->whereIn('posts.id',function ($query)  use ($followerList) {
+            $query->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->whereIn('post_user.user_id',$followerList)
+            ->Where('posts.publish','=','now');
+        })
+        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            $query1->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->Where('post_user.user_id',$loginUser);
+        })
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
@@ -2071,7 +2097,20 @@ class PostController extends Controller
         $allPost = Post::where('publish','now')
         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        ->whereIn('post_user.user_id',$followerList)
+        ->whereIn('posts.id',function ($query)  use ($followerList) {
+            $query->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->whereIn('post_user.user_id',$followerList)
+            ->Where('posts.publish','=','now');
+        })
+        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            $query1->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->Where('post_user.user_id',$loginUser);
+        })
+        ->whereNull('posts.deleted_at')
         ->get();
        $posts = DB::table("posts")
         ->select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'),
@@ -2090,7 +2129,20 @@ class PostController extends Controller
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereNull('posts.deleted_at')
                 ->where('posts.publish','now')
-                ->whereIn('post_user.user_id',$followerList)
+                //->whereIn('post_user.user_id',$followerList)
+                ->whereIn('posts.id',function ($query)  use ($followerList) {
+                    $query->select('posts.id')->from('posts')
+                    ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                    ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                    ->whereIn('post_user.user_id',$followerList)
+                    ->Where('posts.publish','=','now');
+                })
+                ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+                    $query1->select('posts.id')->from('posts')
+                    ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                    ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                    ->Where('post_user.user_id',$loginUser);
+                })
                 ->orderBy('totalCount', 'DESC')
                 ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
 
