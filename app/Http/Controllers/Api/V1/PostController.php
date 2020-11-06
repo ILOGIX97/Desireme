@@ -1795,60 +1795,48 @@ class PostController extends Controller
         if(count($Followers)<=0){
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
-
-        $allPost = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
-        ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
-        ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
+        $allPost = $posts = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
+        ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        ->whereNull('posts.deleted_at')
-        ->where('posts.publish','now')
-        ->whereIn('post_user.user_id',$followerList)
-        // ->whereIn('posts.id',function ($query)  use ($followerList) {
-        //     $query->select('posts.id')->from('posts')
-        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        //     ->whereIn('post_user.user_id',$followerList)
-        //     ->Where('posts.publish','=','now');
-        // })
-        // ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
-        //     $query1->select('posts.id')->from('posts')
-        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        //     ->Where('post_user.user_id',$loginUser);
-        // })
-        ->groupBy('views.post_id')
-        ->groupBy('post_user.user_id')
-        ->orderBy('count','DESC')
+        ->whereIn('posts.id',function ($query)  use ($followerList) {
+            $query->select('posts.id')->from('posts')
+            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->whereIn('views.user_id',$followerList)
+            ->Where('posts.publish','=','now');
+        })
+        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            $query1->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->Where('views.user_id',$loginUser);
+        })
         ->orderBy('posts.id','DESC')
+        ->whereNull('posts.deleted_at')
         ->get();
-
-        //echo '<pre>'; print_r($allPost); exit;
-
-        $posts = Views::select('posts.*',DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'), DB::raw('count(views.post_id) as count'))
-        ->leftJoin('posts', 'posts.id', '=', 'views.post_id')
-        ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
+        
+        $posts = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
+        ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        ->whereNull('posts.deleted_at')
-        ->where('posts.publish','now')
-        ->whereIn('post_user.user_id',$followerList)
-        // ->whereIn('posts.id',function ($query)  use ($followerList) {
-        //     $query->select('posts.id')->from('posts')
-        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        //     ->whereIn('post_user.user_id',$followerList)
-        //     ->Where('posts.publish','=','now');
-        // })
-        // ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
-        //     $query1->select('posts.id')->from('posts')
-        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-        //     ->Where('post_user.user_id',$loginUser);
-        // })
-        ->groupBy('views.post_id')
-        ->groupBy('post_user.user_id')
-        ->orderBy('count','DESC')
+        ->whereIn('posts.id',function ($query)  use ($followerList) {
+            $query->select('posts.id')->from('posts')
+            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->whereIn('views.user_id',$followerList)
+            ->Where('posts.publish','=','now');
+        })
+        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            $query1->select('posts.id')->from('posts')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->Where('views.user_id',$loginUser);
+        })
         ->orderBy('posts.id','DESC')
-        ->offset($start)->limit($limit)->get();
+        ->whereNull('posts.deleted_at')
+        ->offset($start)
+        ->limit($limit)
+        ->get();
+        //->toSql();
+
+        //dd($posts); exit;
 
         //echo '<pre>'; print_r($posts); exit;
         $ID = 0;
@@ -1858,7 +1846,7 @@ class PostController extends Controller
             $commentByMe = 0;
             $lastCommenId = 0;
             $totalCount = 0;
-            $likeDetails = Like::where('post_id',$postDetail['id'])
+            $likeDetails = Like::where('post_id',$postDetail->id)
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
             $likeUsers = array();
@@ -1880,7 +1868,7 @@ class PostController extends Controller
                 }
             }
 
-            $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail['id'])
+            $commentDetails = Comment::select('comments.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover','users.id as uid')->where('post_id',$postDetail->id)
                                 ->leftJoin('users', 'users.id', '=', 'comments.user_id')
                                 ->get();
 
@@ -1973,8 +1961,8 @@ class PostController extends Controller
                 }
             }
             $today = Carbon::now();
-            $created_at = \Carbon\Carbon::parse($postDetail['created_at']);
-            $updated_at = \Carbon\Carbon::parse($postDetail['updated_at']);
+            $created_at = \Carbon\Carbon::parse($postDetail->created_at);
+            $updated_at = \Carbon\Carbon::parse($postDetail->updated_at);
             $hours_created = $created_at->diffInHours($today);
             $hours_updated = $updated_at->diffInHours($today);
 
@@ -1987,27 +1975,27 @@ class PostController extends Controller
             }
 
             if(!empty($hours_created) && $hours_created > 240){
-                $hours_created = \Carbon\Carbon::parse($postDetail['created_at'])->isoFormat('D MMMM YYYY');
+                $hours_created = \Carbon\Carbon::parse($postDetail->created_at)->isoFormat('D MMMM YYYY');
             }
 
             if(!empty($hours_updated && $hours_updated > 240)){
-                $hours_updated = \Carbon\Carbon::parse($postDetail['updated_at'])->isoFormat('D MMMM YYYY');
+                $hours_updated = \Carbon\Carbon::parse($postDetail->updated_at)->isoFormat('D MMMM YYYY');
             }
 
-            $postData[$ID]['id'] = $postDetail['id'];
-            $postData[$ID]['firstName'] = $postDetail['first_name'];
-            $postData[$ID]['lastName'] = $postDetail['last_name'];
-            $postData[$ID]['displayName'] = $postDetail['display_name'];
-            $postData[$ID]['profile'] = (!empty($postDetail['profile']) ? url('storage/'.$postDetail['profile']) : '');
-            $postData[$ID]['banner'] = (!empty($postDetail['cover']) ? url('storage/'.$postDetail['cover']) : '');
-            $postData[$ID]['username'] = $postDetail['username'];
-            $postData[$ID]['title'] = $postDetail['title'];
-            $postData[$ID]['caption'] = $postDetail['caption'];
-            $postData[$ID]['media'] = (!empty($postDetail['media']) ? url('storage/'.$postDetail['media']) : '');
-            $postData[$ID]['tags'] = $postDetail['tags'];
-            $postData[$ID]['publish'] = $postDetail['publish'];
-            $postData[$ID]['schedule_at'] = (!empty($postDetail['schedule_at']))?date('m/d/Y H:i', $postDetail['schedule_at']) : 0 ;
-            $postData[$ID]['add_to_album'] = $postDetail['add_to_album'];
+            $postData[$ID]['id'] = $postDetail->id;
+            $postData[$ID]['firstName'] = $postDetail->first_name;
+            $postData[$ID]['lastName'] = $postDetail->last_name;
+            $postData[$ID]['displayName'] = $postDetail->display_name;
+            $postData[$ID]['profile'] = (!empty($postDetail->profile) ? url('storage/'.$postDetail->profile) : '');
+            $postData[$ID]['banner'] = (!empty($postDetail->cover) ? url('storage/'.$postDetail->cover) : '');
+            $postData[$ID]['username'] = $postDetail->username;
+            $postData[$ID]['title'] = $postDetail->title;
+            $postData[$ID]['caption'] = $postDetail->caption;
+            $postData[$ID]['media'] = (!empty($postDetail->media) ? url('storage/'.$postDetail->media) : '');
+            $postData[$ID]['tags'] = $postDetail->tags;
+            $postData[$ID]['publish'] = $postDetail->publish;
+            $postData[$ID]['schedule_at'] = (!empty($postDetail->schedule_at))?date('m/d/Y H:i', $postDetail->schedule_at) : 0 ;
+            $postData[$ID]['add_to_album'] = $postDetail->add_to_album;
             $postData[$ID]['created'] = $hours_created;
             $postData[$ID]['updated'] = $hours_updated;
             $postData[$ID]['likedByMe'] = $likedbyme;
