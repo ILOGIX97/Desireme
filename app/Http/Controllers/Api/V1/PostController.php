@@ -2631,12 +2631,13 @@ class PostController extends Controller
                 ->Where('post_user.user_id',$loginUser);
             })
             ->whereNull('posts.deleted_at')
-            ->where('posts.title','LIKE', '%' . $search . '%')
-            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
-            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
+            ->where(function ($query) use ($search){
+                $query->where('posts.title', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+            })
             ->offset($start)->limit($limit)
             ->get();
-            //->toSql(); 
         }else{
             $posts =  DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
@@ -2655,9 +2656,11 @@ class PostController extends Controller
                 ->Where('post_user.user_id',$loginUser);
             })
             ->whereNull('posts.deleted_at')
-            ->where('posts.title','LIKE', '%' . $search . '%')
-            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
-            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
+            ->where(function ($query) use ($search){
+                $query->where('posts.title', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+            })
             ->get();
         }
 
@@ -2678,9 +2681,11 @@ class PostController extends Controller
             ->Where('post_user.user_id',$loginUser);
         })
         ->whereNull('posts.deleted_at')
-        ->where('posts.title','LIKE', '%' . $search . '%')
-        ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
-        ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
+        ->where(function ($query) use ($search){
+            $query->where('posts.title', 'LIKE', '%'.$search.'%')
+                  ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                  ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+        })
         ->get();
 
         $postData = array();
@@ -2691,12 +2696,6 @@ class PostController extends Controller
             $commentByMe = 0;
             
             $totalCount = 0;
-            // $Users = $postDetail->users()->get();
-            // foreach($Users as $user){
-            //     $UserDetails = $user;
-            // }
-            
-
             $likeDetails = Like::where('post_id',$postDetail->id)
                             ->join('users', 'users.id', '=', 'likes.user_id')
                             ->get();
