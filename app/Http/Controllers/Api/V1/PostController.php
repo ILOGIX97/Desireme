@@ -1810,7 +1810,7 @@ class PostController extends Controller
             $query1->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->join('views', 'posts.id', '=', 'views.post_id')
-            ->leftJoin('post_user', 'users.id', '=', 'post_user.user_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->Where('views.user_id',$loginUser);
         })
         ->orderBy('posts.id','DESC')
