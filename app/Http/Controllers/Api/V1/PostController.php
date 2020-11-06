@@ -1703,8 +1703,14 @@ class PostController extends Controller
             'user_id' => $userid,
             'ip_addr' => $ip,
         ]);
+        $checkView = DB::table('views')
+                    ->where('post_id',$postid)
+                    ->where('user_id',$userid)
+                    ->where('ip_addr',$ip)
+                    ->get();
         $postData = $this->getPostResponse($postid);
-        if($post_view->save()){
+        if(count($checkView) == 0){
+            if($post_view->save()){
                 return response()->json([
                     'message' => 'Post Viewed successfully!',
                     'data' => $postData,
@@ -1713,6 +1719,9 @@ class PostController extends Controller
             }else{
                 return response()->json(['error'=>'Provide proper details','isError' => true]);
             }
+        }else{
+            return response()->json(['message'=>'Post Viewed successfully!','data' => $postData,'isError' => false]);
+        }
     }
 
     /**
