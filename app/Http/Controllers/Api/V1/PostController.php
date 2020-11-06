@@ -2628,25 +2628,29 @@ class PostController extends Controller
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             //->whereIn('post_user.user_id',$followerList)
-            ->whereIn('posts.id',function ($query)  use ($followerList) {
+            ->whereIn('posts.id',function ($query)  use ($followerList,$search) {
                 $query->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereIn('post_user.user_id',$followerList)
+                ->where('posts.title','LIKE', '%' . $search . '%')
+                ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+                ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
                 ->Where('posts.publish','=','now');
             })
-            ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
                 $query1->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                ->where('posts.title','LIKE', '%' . $search . '%')
+                ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+                ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
                 ->Where('post_user.user_id',$loginUser);
             })
             ->whereNull('posts.deleted_at')
-            ->where('posts.title','LIKE', '%' . $search . '%')
-            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
-            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
             ->offset($start)->limit($limit)
             ->get();
+            //->toSql(); 
         }else{
             // $posts = Post::select("posts.*",DB::raw('users.first_name,users.last_name,users.display_name,users.username,users.profile,users.cover'))->where('publish','now')
             // ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
@@ -2662,23 +2666,26 @@ class PostController extends Controller
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             //->whereIn('post_user.user_id',$followerList)
-            ->whereIn('posts.id',function ($query)  use ($followerList) {
+            ->whereIn('posts.id',function ($query)  use ($followerList,$search) {
                 $query->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereIn('post_user.user_id',$followerList)
+                ->where('posts.title','LIKE', '%' . $search . '%')
+                ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+                ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
                 ->Where('posts.publish','=','now');
             })
-            ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+            ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
                 $query1->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+                ->where('posts.title','LIKE', '%' . $search . '%')
+                ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+                ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
                 ->Where('post_user.user_id',$loginUser);
             })
             ->whereNull('posts.deleted_at')
-            ->where('posts.title','LIKE', '%' . $search . '%')
-            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
-            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
             ->get();
         }
 
@@ -2695,27 +2702,31 @@ class PostController extends Controller
         // ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
         // ->get();
 
+        //dd($posts); exit;
         $allPost = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         //->whereIn('post_user.user_id',$followerList)
-        ->whereIn('posts.id',function ($query)  use ($followerList) {
+        ->whereIn('posts.id',function ($query)  use ($followerList,$search) {
             $query->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('post_user.user_id',$followerList)
+            ->where('posts.title','LIKE', '%' . $search . '%')
+            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
             ->Where('posts.publish','=','now');
         })
-        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+        ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
             $query1->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+            ->where('posts.title','LIKE', '%' . $search . '%')
+            ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
+            ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
             ->Where('post_user.user_id',$loginUser);
         })
         ->whereNull('posts.deleted_at')
-        ->where('posts.title','LIKE', '%' . $search . '%')
-        ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
-        ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
         ->get();
 
         $postData = array();
