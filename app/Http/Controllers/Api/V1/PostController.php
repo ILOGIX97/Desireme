@@ -1800,14 +1800,17 @@ class PostController extends Controller
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereIn('posts.id',function ($query)  use ($followerList) {
             $query->select('posts.id')->from('posts')
-            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->join('views', 'posts.id', '=', 'views.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('views.user_id',$followerList)
             ->Where('posts.publish','=','now');
         })
         ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
             $query1->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->join('views', 'posts.id', '=', 'views.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->Where('views.user_id',$loginUser);
         })
         ->orderBy('posts.id','DESC')
@@ -1819,14 +1822,17 @@ class PostController extends Controller
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereIn('posts.id',function ($query)  use ($followerList) {
             $query->select('posts.id')->from('posts')
-            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+            ->join('views', 'posts.id', '=', 'views.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('views.user_id',$followerList)
             ->Where('posts.publish','=','now');
         })
         ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
             $query1->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-            ->leftJoin('views', 'posts.id', '=', 'views.post_id')
+            ->join('views', 'posts.id', '=', 'views.post_id')
+            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->Where('views.user_id',$loginUser);
         })
         ->orderBy('posts.id','DESC')
