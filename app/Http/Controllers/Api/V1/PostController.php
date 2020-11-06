@@ -1811,7 +1811,7 @@ class PostController extends Controller
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->join('views', 'posts.id', '=', 'views.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            ->Where('views.user_id',$loginUser);
+            ->Where('post_user.user_id',$loginUser);
         })
         ->orderBy('posts.id','DESC')
         ->whereNull('posts.deleted_at')
