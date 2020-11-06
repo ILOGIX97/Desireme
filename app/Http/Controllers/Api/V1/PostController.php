@@ -951,10 +951,11 @@ class PostController extends Controller
             ->Where('post_user.user_id',$loginUser);
         })
         ->orderBy('posts.id','DESC')
+        ->whereNull('posts.deleted_at')
         ->offset($start)
         ->limit($limit)
         ->get();
-            
+        //->toSql();    
         
         
         $ID = 0;
@@ -2617,6 +2618,7 @@ class PostController extends Controller
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('post_user.user_id',$followerList)
             ->where('posts.publish','now')
+            ->whereNull('posts.deleted_at')
             ->where('posts.title','LIKE', '%' . $search . '%')
             ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
             ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
@@ -2628,6 +2630,7 @@ class PostController extends Controller
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('post_user.user_id',$followerList)
             ->where('posts.publish','now')
+            ->whereNull('posts.deleted_at')
             ->where('posts.title','LIKE', '%' . $search . '%')
             ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
             ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
@@ -2641,6 +2644,7 @@ class PostController extends Controller
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereIn('post_user.user_id',$followerList)
         ->where('posts.publish','now')
+        ->whereNull('posts.deleted_at')
         ->where('posts.title','LIKE', '%' . $search . '%')
         ->orWhere('posts.caption', 'LIKE','%' . $search . '%')
         ->orWhere('posts.tags', 'LIKE','%' . $search . '%')
