@@ -1795,7 +1795,7 @@ class PostController extends Controller
         if(count($Followers)<=0){
             return response()->json(['error'=>'No Post available','isError' => true]);
         }
-        $allPost = $posts = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
+        $allPost = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereIn('posts.id',function ($query)  use ($followerList) {
@@ -1816,6 +1816,10 @@ class PostController extends Controller
         ->orderBy('posts.id','DESC')
         ->whereNull('posts.deleted_at')
         ->get();
+        //->toSql();
+
+        //dd($posts); exit;
+
         
         $posts = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
