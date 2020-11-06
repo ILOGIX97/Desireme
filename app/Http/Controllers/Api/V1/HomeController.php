@@ -88,29 +88,37 @@ class HomeController extends Controller
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->where('category', ucfirst($category))->get();
+            )
+            ->where('id_verified', 1)
+            ->where('category', ucfirst($category))->get();
         }else{
             $all = User::whereHas(
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->get();
+            )->where('id_verified', 1)->get();
         }
         if(strtolower($category) != 'all'){
             $users = User::whereHas(
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->where('category', ucfirst($category))->offset($start)->limit($limit)->get();
+            )
+            ->where('id_verified', 1)
+            ->where('category', ucfirst($category))->offset($start)->limit($limit)
+            ->get();
+            //->toSql();
         }else{
             $users = User::whereHas(
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->offset($start)->limit($limit)->get();
+            )
+            ->where('id_verified', 1)
+            ->offset($start)->limit($limit)->get();
         }
         
-        //echo '<pre>'; print_r($users); exit();
+        //dd($users); exit();
         $userData = array();
         $i = 0;
         foreach($users as $user){
@@ -263,24 +271,33 @@ class HomeController extends Controller
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->where('first_name','LIKE', '%' . $name . '%')
-            ->orWhere('last_name', 'LIKE','%' . $name . '%')
-            ->orWhere('username', 'LIKE','%' . $name . '%')
-            ->orWhere('email', 'LIKE','%' . $name . '%')
+            )
+            ->where('id_verified', 1)
+            ->where(function ($query) use ($name){
+                $query->where('first_name', 'LIKE', '%'.$name.'%')
+                      ->orWhere('last_name', 'LIKE', '%'.$name.'%')
+                      ->orWhere('username', 'LIKE', '%'.$name.'%')
+                      ->orWhere('email', 'LIKE', '%'.$name.'%)');
+            })
             ->offset($start)->limit($limit)
+            //->toSql();
             ->get();
         }else{
             $users = User::whereHas(
                 'roles', function($q){
                     $q->where('name', 'ContentCreator');
                 }
-            )->where('first_name','LIKE', '%' . $name . '%')
-            ->orWhere('last_name', 'LIKE','%' . $name . '%')
-            ->orWhere('username', 'LIKE','%' . $name . '%')
-            ->orWhere('email', 'LIKE','%' . $name . '%')
+            )
+            ->where('id_verified', 1)
+            ->where(function ($query) use ($name){
+                $query->where('first_name', 'LIKE', '%'.$name.'%')
+                      ->orWhere('last_name', 'LIKE', '%'.$name.'%')
+                      ->orWhere('username', 'LIKE', '%'.$name.'%')
+                      ->orWhere('email', 'LIKE', '%'.$name.'%)');
+            })
             ->get();
         }
-        
+        //dd($users); exit;
         //echo '<pre>'; print_r($users); exit();
         $userData = array();
         $i = 0;

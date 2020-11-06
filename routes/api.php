@@ -48,9 +48,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('getCountries', 'Api\V1\UserController@getCountries');
     Route::get('getStates/{countryName}', 'Api\V1\UserController@getStates');
 
-    Route::get('getAccountBalance/{userId}', 'Api\V1\UserController@getAccountBalance');
-
-    Route::post('getGuestUserPost/{userid}/{loginUser}/{start}/{limit}', 'Api\V1\PostController@getGuestUserPost');
+   Route::post('getGuestUserPost/{userid}/{loginUser}/{start}/{limit}', 'Api\V1\PostController@getGuestUserPost');
     Route::post('guestMostPopular/{loginUser}/{start}/{limit}', 'Api\V1\PostController@guestMostPopular');
 
     Route::post('followContent/{userId}/{followerId}/{subscriptionPlan}', 'Api\V1\PostController@store');
@@ -75,6 +73,9 @@ use Illuminate\Support\Facades\Route;
     Route::post('getWishList/{userId}/{start}/{limit}', 'Api\V1\UserController@getWishList');
 
     Route::post('/changePassword/{id}', 'Api\V1\PasswordController@change');
+
+    Route::get('getAccountBalance/{userId}', 'Api\V1\UserController@getAccountBalance');
+    Route::post('withdrawBalance/{userId}/{amount}', 'Api\V1\UserController@withdrawBalance');
     
     //Post related routes
     Route::post('addPost/{userid}', 'Api\V1\PostController@addPost');

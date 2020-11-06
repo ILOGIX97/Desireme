@@ -1357,10 +1357,25 @@ class UserController extends Controller
     public function withdrawBalance(Request $request,$userId,$amount){
         if($amount > 20)
         {
-            if($amount > 20 && $amount <= 100){
-                $newamount = $amount + 3;
+            $data = DB::table('withdraw_request')
+               ->insert([
+                'user_id' => $userId,
+                'amount' => $amount,
+                'status'=>1,
+                'created_at' => now(),
+                'updated_at' => now()
+             ]);
+            if($data){
+                return response()->json([
+                    'message' => 'Payout request created successfully!',
+                    'data' => $data,
+                    'isError' => false
+                ], 201);
             }else{
-                $newamount = $amount;
+                return response()->json([
+                    'message' => 'Request Failed. Try after sometime',
+                    'isError' => false
+                ]);
             }
             
         }else{
