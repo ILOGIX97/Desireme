@@ -117,7 +117,7 @@ class HomeController extends Controller
             if(!empty($loginUser) && $user['id'] == $loginUser)
                 $allPost = $user->posts()->get();
             else
-                $allPost = $user->posts()->where('publish','now')->get();
+            $allPost = $user->posts()->where('publish','now')->get();
             $imageTypes = array('jpg','jpeg','png','bmp','gif','webp');
             $videoTypes = array('mp4','webm','ogg');
             $videoCount = 0;
