@@ -1801,21 +1801,21 @@ class PostController extends Controller
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
-        //->where('posts.publish','now')
-        //->whereIn('post_user.user_id',$followerList)
-        ->whereIn('posts.id',function ($query)  use ($followerList) {
-            $query->select('posts.id')->from('posts')
-            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            ->whereIn('post_user.user_id',$followerList)
-            ->Where('posts.publish','=','now');
-        })
-        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
-            $query1->select('posts.id')->from('posts')
-            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            ->Where('post_user.user_id',$loginUser);
-        })
+        ->where('posts.publish','now')
+        ->whereIn('post_user.user_id',$followerList)
+        // ->whereIn('posts.id',function ($query)  use ($followerList) {
+        //     $query->select('posts.id')->from('posts')
+        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        //     ->whereIn('post_user.user_id',$followerList)
+        //     ->Where('posts.publish','=','now');
+        // })
+        // ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+        //     $query1->select('posts.id')->from('posts')
+        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        //     ->Where('post_user.user_id',$loginUser);
+        // })
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
@@ -1829,21 +1829,21 @@ class PostController extends Controller
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
-        //->where('posts.publish','now')
-        //->whereIn('post_user.user_id',$followerList)
-        ->whereIn('posts.id',function ($query)  use ($followerList) {
-            $query->select('posts.id')->from('posts')
-            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            ->whereIn('post_user.user_id',$followerList)
-            ->Where('posts.publish','=','now');
-        })
-        ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
-            $query1->select('posts.id')->from('posts')
-            ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
-            ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            ->Where('post_user.user_id',$loginUser);
-        })
+        ->where('posts.publish','now')
+        ->whereIn('post_user.user_id',$followerList)
+        // ->whereIn('posts.id',function ($query)  use ($followerList) {
+        //     $query->select('posts.id')->from('posts')
+        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        //     ->whereIn('post_user.user_id',$followerList)
+        //     ->Where('posts.publish','=','now');
+        // })
+        // ->orWhereIn('posts.id',function ($query1) use ($loginUser) {
+        //     $query1->select('posts.id')->from('posts')
+        //     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+        //     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+        //     ->Where('post_user.user_id',$loginUser);
+        // })
         ->groupBy('views.post_id')
         ->groupBy('post_user.user_id')
         ->orderBy('count','DESC')
