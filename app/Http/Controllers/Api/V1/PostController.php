@@ -1801,7 +1801,7 @@ class PostController extends Controller
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
-        ->where('posts.publish','now')
+        //->where('posts.publish','now')
         //->whereIn('post_user.user_id',$followerList)
         ->whereIn('posts.id',function ($query)  use ($followerList) {
             $query->select('posts.id')->from('posts')
@@ -1829,7 +1829,7 @@ class PostController extends Controller
         ->leftJoin('post_user', 'post_user.post_id', '=', 'posts.id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
         ->whereNull('posts.deleted_at')
-        ->where('posts.publish','now')
+        //->where('posts.publish','now')
         //->whereIn('post_user.user_id',$followerList)
         ->whereIn('posts.id',function ($query)  use ($followerList) {
             $query->select('posts.id')->from('posts')
