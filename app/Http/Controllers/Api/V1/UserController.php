@@ -1357,7 +1357,12 @@ class UserController extends Controller
     public function withdrawBalance(Request $request,$userId,$amount){
         if($amount > 20)
         {
-
+            if($amount > 20 && $amount <= 100){
+                $newamount = $amount + 3;
+            }else{
+                $newamount = $amount;
+            }
+            
         }else{
             return response()->json([
                 'message' => 'Amount should be more than 20',
