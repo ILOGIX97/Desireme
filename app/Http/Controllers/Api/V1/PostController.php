@@ -3308,9 +3308,13 @@ class PostController extends Controller
                 )
             ));
         
-
-        $auth = $client->threeDSecureV2Service()->authentications(new Authentications($test));
-        //echo '<pre>'; print_r($auth);
+        try{
+            $auth = $client->threeDSecureV2Service()->authentications(new Authentications($test));
+        } catch (\Exception $e){
+            return response()->json(['error'=>'Something went wrong .Some fields are missing or not properly entered','isError' => true]);
+        }
+        
+        //echo '<pre>'; print_r($auth->message); exit;
         if(isset($auth->id)){
             $percentage = 80;
             $get_amount = ($percentage / 100) * $amount;
