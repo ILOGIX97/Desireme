@@ -3310,61 +3310,59 @@ class PostController extends Controller
         
         try{
             $auth = $client->threeDSecureV2Service()->authentications(new Authentications($test));
+            if(isset($auth->id)){
+                $percentage = 80;
+                $get_amount = ($percentage / 100) * $amount;
+                if($user['country'] == 'UK')
+                {
+                    $vat = 20;
+                    $vatToPay = ($get_amount / 100) * $vat;
+                    $new_amount = $get_amount + $vatToPay;
+                }
+                
+                $final_amount = $follower['account_balance'] + $get_amount;
+                $UpdateDetails = User::where('id', $followerId)->update([
+                    'account_balance' => $final_amount,
+                  ]);
+    
+                $data = DB::table('follow')
+                  ->insert([
+                   'user_id' => $userId,
+                   'follower_id' => $followerId,
+                   'subscription_plan' => $subscriptionPlan,
+                ]);
+    
+                $Followers = DB::table('follow')->where('user_id',$userId)->get();
+                foreach($Followers as $follow){
+                    $followerList[] = $follow->follower_id;
+                }
+    
+                $Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+                foreach($Wish_users as $Wish_user){
+                    $wishList[] = $Wish_user->contentwriter_id;
+                }
+    
+                if (in_array($followerId, $wishList)){
+                    DB::table('wish_list')->where('user_id',$userId)->where('contentwriter_id',$followerId)->delete();
+                }
+    
+                $new_Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
+                foreach($new_Wish_users as $new_Wish_user){
+                    $newWishList[] = $new_Wish_user->contentwriter_id;
+                }
+    
+                return response()->json([
+                    'message' => 'Successfully Followed',
+                    'data' => $data,
+                    'followerList' => $followerList,
+                    'wishList' => $newWishList,
+                    'isError' => false
+                ], 201);
+            }else{
+                return response()->json(['error'=>'Error in payment','isError' => true]);
+            }
         } catch (\Exception $e){
             return response()->json(['error'=>'Something went wrong .Some fields are missing or not properly entered','isError' => true]);
-        }
-        
-        //echo '<pre>'; print_r($auth->message); exit;
-        if(isset($auth->id)){
-            $percentage = 80;
-            $get_amount = ($percentage / 100) * $amount;
-            if($user['country'] == 'UK')
-            {
-                $vat = 20;
-                $vatToPay = ($get_amount / 100) * $vat;
-                $new_amount = $get_amount + $vatToPay;
-            }
-            
-            $final_amount = $follower['account_balance'] + $get_amount;
-            $UpdateDetails = User::where('id', $followerId)->update([
-                'account_balance' => $final_amount,
-              ]);
-
-            $data = DB::table('follow')
-              ->insert([
-               'user_id' => $userId,
-               'follower_id' => $followerId,
-               'subscription_plan' => $subscriptionPlan,
-            ]);
-
-            $Followers = DB::table('follow')->where('user_id',$userId)->get();
-            foreach($Followers as $follow){
-                $followerList[] = $follow->follower_id;
-            }
-
-            $Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
-            foreach($Wish_users as $Wish_user){
-                $wishList[] = $Wish_user->contentwriter_id;
-            }
-
-            if (in_array($followerId, $wishList)){
-                DB::table('wish_list')->where('user_id',$userId)->where('contentwriter_id',$followerId)->delete();
-            }
-
-            $new_Wish_users = DB::table('wish_list')->where('user_id',$userId)->get();
-            foreach($new_Wish_users as $new_Wish_user){
-                $newWishList[] = $new_Wish_user->contentwriter_id;
-            }
-
-            return response()->json([
-                'message' => 'Successfully Followed',
-                'data' => $data,
-                'followerList' => $followerList,
-                'wishList' => $newWishList,
-                'isError' => false
-            ], 201);
-        }else{
-            return response()->json(['error'=>'Error in payment','isError' => true]);
         }
     }
 
