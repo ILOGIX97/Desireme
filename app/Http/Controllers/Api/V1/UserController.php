@@ -1374,14 +1374,14 @@ class UserController extends Controller
             }else{
                 return response()->json([
                     'message' => 'Request Failed. Try after sometime',
-                    'isError' => false
+                    'isError' => true
                 ]);
             }
             
         }else{
             return response()->json([
                 'message' => 'Amount should be more than 20',
-                'isError' => false
+                'isError' => true
             ]);
         }
         

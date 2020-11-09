@@ -2138,8 +2138,9 @@ class PostController extends Controller
                 ->where('posts.publish','now')
                 //->whereIn('post_user.user_id',$followerList)
                 ->whereIn('posts.id',function ($query)  use ($followerList) {
-                    $query->select('posts.id')->from('posts')
+                    $query->select('posts.id','ifnull(COUNT(comments.post_id),0')->from('posts')
                     ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
+                    ->leftJoin('comments', 'comments.post_id', '=', 'posts.id')
                     ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                     ->whereIn('post_user.user_id',$followerList)
                     ->Where('posts.publish','=','now');
@@ -2151,8 +2152,10 @@ class PostController extends Controller
                     ->Where('post_user.user_id',$loginUser);
                 })
                 ->orderBy('totalCount', 'DESC')
-                ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)->get();
-
+                ->orderBy('likeCount', 'DESC')->orderBy('commentCount', 'DESC')->orderBy('posts.id','DESC')->offset($start)->limit($limit)
+                //->get();
+                ->toSql();
+                dd($posts); exit;
 
         $ID=0;
         $posts = json_decode($posts, true);
