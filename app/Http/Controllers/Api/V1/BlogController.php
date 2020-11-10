@@ -398,11 +398,11 @@ class BlogController extends Controller
 
     public function getBlogCategories($start,$limit){
         if(!empty($limit)){
-            $blogs = DB::table('blog_category')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
+            $blogs = DB::table('blog_categories')->orderBy('id','DESC')->offset($start)->limit($limit)->get();
         }else{
-            $blogs = DB::table('blog_category')->orderBy('id','DESC')->get();
+            $blogs = DB::table('blog_categories')->orderBy('id','DESC')->get();
         }
-        $allBlog = DB::table('blog_category')->get();
+        $allBlog = DB::table('blog_categories')->get();
         $blogData = array();
         $ID = 0;
         $blogData = array();
