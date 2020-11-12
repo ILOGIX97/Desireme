@@ -1361,7 +1361,7 @@ class UserController extends Controller
                ->insert([
                 'user_id' => $userId,
                 'amount' => $amount,
-                'status'=>1,
+                'status'=>0,
                 'created_at' => now(),
                 'updated_at' => now()
              ]);
