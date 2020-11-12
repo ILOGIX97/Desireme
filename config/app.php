@@ -263,4 +263,6 @@ return [
 
     'currencyBaseUnitsMultiplier' => env('currencyBaseUnitsMultiplier', '1'),
 
+    'CONTACTUS_MAIL' => env('CONTACTUS_MAIL', 'ilogix.trainee5@gmail.com'),
+
 ];

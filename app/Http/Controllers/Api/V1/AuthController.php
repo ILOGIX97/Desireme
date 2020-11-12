@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\SendMailable;
+use App\Mail\contactUs;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
@@ -860,6 +861,7 @@ class AuthController extends Controller
      */
 
     public function contactus(Request $request){
+        $sendTo = config('app.CONTACTUS_MAIL');
         $validator = Validator::make($request->all(),[
             'Fullname' => 'required|string',
             'Email' => 'required|string|email',
@@ -868,10 +870,22 @@ class AuthController extends Controller
             $failedRules = $validator->failed();
             return response()->json(['error'=>$validator->errors(),'isError' => true]);
         }
-        return response()->json([
-            'message' => 'Message sent succesfully! We will get back to you soon !',
-            'isError' => false
-        ], 201);
+
+        $data['name'] = $request->Fullname;
+        $data['message'] = $request->message;
+        $data['email'] = $request->Email;
+       
+        try{
+            Mail::to($sendTo)->send(new contactUs($data));
+            return response()->json([
+                'message' => 'Message sent succesfully! We will get back to you soon !',
+                'isError' => false
+            ], 201);
+        }catch (\Exception $e){
+            return response()->json(['error'=>'Something went wrong .Please try after sometime','isError' => true]);
+        }
+
+        
     }
 
 
