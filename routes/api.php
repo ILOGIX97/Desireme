@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\Route;
 
     Route::post('/forgotPassword', 'Api\V1\PasswordController@forgot');
     Route::post('/resetPassword', 'Api\V1\PasswordController@reset');
+    Route::post('/contactus', 'Api\V1\AuthController@contactus');
     Route::get('getCountries', 'Api\V1\UserController@getCountries');
     Route::get('getStates/{countryName}', 'Api\V1\UserController@getStates');
 

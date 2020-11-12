@@ -801,6 +801,82 @@ class AuthController extends Controller
     }
 
 
+     /**
+     * @OA\Post(
+     ** path="/api/v1/contactus",
+     *   tags={"General"},
+     *   summary="Contact Us",
+     *   operationId="contactus",
+     *
+     *   @OA\RequestBody(
+     *       @OA\MediaType(
+     *           mediaType="multipart/form-data",
+     *           @OA\Schema(
+     *               required={"Fullname","Email"},
+     *               @OA\Property(
+     *                  property="Fullname",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="message",
+     *                  type="string"
+     *               ),
+     *               @OA\Property(
+     *                  property="Email",
+     *                  type="string"
+     *               ),
+     *           )
+     *       ),
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     * Contact Us api
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function contactus(Request $request){
+        $validator = Validator::make($request->all(),[
+            'Fullname' => 'required|string',
+            'Email' => 'required|string|email',
+        ]);
+        if ($validator->fails()) {
+            $failedRules = $validator->failed();
+            return response()->json(['error'=>$validator->errors(),'isError' => true]);
+        }
+        return response()->json([
+            'message' => 'Message sent succesfully! We will get back to you soon !',
+            'isError' => false
+        ], 201);
+    }
+
+
+
+
 
 
 }
