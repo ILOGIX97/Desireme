@@ -1281,76 +1281,9 @@ class PostController extends Controller
         }
     }
 
+    
+
     /**
-     * @OA\Post(
-     *          path="/api/v1/dislikePost/{postid}/{userid}",
-     *          operationId="DisLike User Post",
-     *          tags={"Posts"},
-     *      @OA\Parameter(
-     *          name="postid",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *      @OA\Parameter(
-     *          name="userid",
-     *          in="path",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
-     *
-     *      summary="DisLike User Post",
-     *      description="DisLike User Post",
-     *
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\MediaType(
-     *           mediaType="application/json",
-     *      )
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="Bad Request"
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="not found"
-     *      ),
-     *      security={ {"passport": {}} },
-     *  )
-     */
-
-    public function dislikePost($postid,$userid){
-
-
-
-        if(Like::where('post_id',$postid)->where('user_id',$userid)->delete())
-        {
-            return response()->json([
-                'message' => 'Post disliked successfully!'
-            ], 201);
-        }else{
-            return response()->json(['error'=>'Provide proper details','isError' => false]);
-        }
-
-
-
-    }
-
-     /**
      * @OA\Post(
      *          path="/api/v1/addCommenttoPost/{postid}/{userid}",
      *          operationId="Comment on User Post",
@@ -2670,6 +2603,7 @@ class PostController extends Controller
      *      security={ {"passport": {}} },
      *  )
      */
+    
     public function searchActivity($search,$loginUser,$start,$limit){
         $followerList = array();
         $Followers = DB::table('follow')->where('user_id',$loginUser)->get();
@@ -2680,26 +2614,30 @@ class PostController extends Controller
             $posts =  DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            //->whereIn('post_user.user_id',$followerList)
             ->whereIn('posts.id',function ($query)  use ($followerList,$search) {
                 $query->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereIn('post_user.user_id',$followerList)
-                ->Where('posts.publish','=','now');
+                ->Where('posts.publish','=','now')
+                ->where(function ($query_sub) use ($search){
+                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                });
             })
             ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
                 $query1->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-                ->Where('post_user.user_id',$loginUser);
+                ->Where('post_user.user_id',$loginUser)
+                ->where(function ($query_sub) use ($search){
+                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                });
             })
             ->whereNull('posts.deleted_at')
-            ->where(function ($query) use ($search){
-                $query->where('posts.title', 'LIKE', '%'.$search.'%')
-                      ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
-            })
             ->offset($start)->limit($limit)
             ->get();
         }else{
@@ -2711,47 +2649,60 @@ class PostController extends Controller
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->whereIn('post_user.user_id',$followerList)
-                ->Where('posts.publish','=','now');
+                ->Where('posts.publish','=','now')
+                ->where(function ($query_sub) use ($search){
+                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                });
             })
             ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
                 $query1->select('posts.id')->from('posts')
                 ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-                ->Where('post_user.user_id',$loginUser);
+                ->Where('post_user.user_id',$loginUser)
+                ->where(function ($query_sub) use ($search){
+                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                });
             })
             ->whereNull('posts.deleted_at')
-            ->where(function ($query) use ($search){
-                $query->where('posts.title', 'LIKE', '%'.$search.'%')
-                      ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
-            })
             ->get();
         }
 
          $allPost = DB::table('posts')->select('posts.*','users.first_name','users.last_name','users.display_name','users.username','users.profile','users.cover')
         ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
         ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
+       
         ->whereIn('posts.id',function ($query)  use ($followerList,$search) {
             $query->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->whereIn('post_user.user_id',$followerList)
-            ->Where('posts.publish','=','now');
+            ->Where('posts.publish','=','now')
+            ->where(function ($query_sub) use ($search){
+                $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+            });
         })
         ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
             $query1->select('posts.id')->from('posts')
             ->leftJoin('post_user', 'posts.id', '=', 'post_user.post_id')
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
-            ->Where('post_user.user_id',$loginUser);
+            ->Where('post_user.user_id',$loginUser)
+            ->where(function ($query_sub) use ($search){
+                $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
+                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+            });
         })
         ->whereNull('posts.deleted_at')
-        ->where(function ($query) use ($search){
-            $query->where('posts.title', 'LIKE', '%'.$search.'%')
-                  ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                  ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
-        })
         ->get();
+        //->toSql();
 
+        //dd($allPost); exit;
         $postData = array();
         $ID = 0;
         $lastCommenId = 0;
