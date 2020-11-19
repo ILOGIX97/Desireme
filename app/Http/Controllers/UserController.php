@@ -16,7 +16,7 @@ class UserController extends Controller
              'email_verified' => now()
           ]);
         
-          return redirect('http://brainstream.ddns.net:3099/verify/'.$role.'/'.base64_encode($id));
+          return redirect('http://122.179.134.51:3099/verify/'.$role.'/'.base64_encode($id));
     }
 
     public function paySafe(){

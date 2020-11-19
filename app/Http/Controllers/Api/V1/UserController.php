@@ -1355,8 +1355,13 @@ class UserController extends Controller
      */
 
     public function withdrawBalance(Request $request,$userId,$amount){
-        if($amount > 20)
+        $min_range = DB::table('admin_settings')->where('key_name','Min range')->get();
+        $min =  $min_range[0]->key_value;
+        $max_range = DB::table('admin_settings')->where('key_name','Max range')->get();
+        $max =  $max_range[0]->key_value;
+        if($amount > $min)
         {
+            if($amount > $min)
             $data = DB::table('withdraw_request')
                ->insert([
                 'user_id' => $userId,
@@ -1380,12 +1385,13 @@ class UserController extends Controller
             
         }else{
             return response()->json([
-                'message' => 'Amount should be more than 20',
+                'message' => 'Amount should be more than '.$min,
                 'isError' => true
             ]);
         }
         
     }
+
 
     
 
