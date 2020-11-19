@@ -2621,9 +2621,9 @@ class PostController extends Controller
                 ->whereIn('post_user.user_id',$followerList)
                 ->Where('posts.publish','=','now')
                 ->where(function ($query_sub) use ($search){
-                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                    $query_sub->Where('posts.title', 'LIKE', '%'.$search.'%')
                           ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%');
                 });
             })
             ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
@@ -2632,9 +2632,9 @@ class PostController extends Controller
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->Where('post_user.user_id',$loginUser)
                 ->where(function ($query_sub) use ($search){
-                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                    $query_sub->Where('posts.title', 'LIKE', '%'.$search.'%')
                           ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%');
                 });
             })
             ->whereNull('posts.deleted_at')
@@ -2651,9 +2651,9 @@ class PostController extends Controller
                 ->whereIn('post_user.user_id',$followerList)
                 ->Where('posts.publish','=','now')
                 ->where(function ($query_sub) use ($search){
-                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                    $query_sub->Where('posts.title', 'LIKE', '%'.$search.'%')
                           ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%');
                 });
             })
             ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
@@ -2662,9 +2662,9 @@ class PostController extends Controller
                 ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
                 ->Where('post_user.user_id',$loginUser)
                 ->where(function ($query_sub) use ($search){
-                    $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                    $query_sub->Where('posts.title', 'LIKE', '%'.$search.'%')
                           ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                          ->orWhere('posts.tags', 'LIKE', '%'.$search.'%');
                 });
             })
             ->whereNull('posts.deleted_at')
@@ -2682,9 +2682,9 @@ class PostController extends Controller
             ->whereIn('post_user.user_id',$followerList)
             ->Where('posts.publish','=','now')
             ->where(function ($query_sub) use ($search){
-                $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                $query_sub->Where('posts.title', 'LIKE', '%'.$search.'%')
                       ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%');
             });
         })
         ->orWhereIn('posts.id',function ($query1) use ($loginUser,$search) {
@@ -2693,9 +2693,9 @@ class PostController extends Controller
             ->leftJoin('users', 'users.id', '=', 'post_user.user_id')
             ->Where('post_user.user_id',$loginUser)
             ->where(function ($query_sub) use ($search){
-                $query_sub->where('posts.title', 'LIKE', '%'.$search.'%')
+                $query_sub->Where('posts.title', 'LIKE', '%'.$search.'%')
                       ->orWhere('posts.caption', 'LIKE', '%'.$search.'%')
-                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%)');
+                      ->orWhere('posts.tags', 'LIKE', '%'.$search.'%');
             });
         })
         ->whereNull('posts.deleted_at')
